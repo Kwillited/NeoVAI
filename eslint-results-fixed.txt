@@ -1,0 +1,151 @@
+[0m[0m
+[0m[4mG:\NeoVAI\src\App.vue[24m[0m
+[0m  [2m320:3[22m  [31merror[39m  'startResizeFunction' is not defined       [2mno-undef[22m[0m
+[0m  [2m330:3[22m  [31merror[39m  'startRightResizeFunction' is not defined  [2mno-undef[22m[0m
+[0m[0m
+[0m[4mG:\NeoVAI\src\components\chat\ChatMessage.vue[24m[0m
+[0m  [2m114:33[22m  [31merror[39m  Unnecessary escape character: \<                                                         [2mno-useless-escape[22m[0m
+[0m  [2m114:49[22m  [31merror[39m  Unnecessary escape character: \<                                                         [2mno-useless-escape[22m[0m
+[0m  [2m115:9[22m   [31merror[39m  'match' is assigned a value but never used. Allowed unused vars must match /^_/u         [2munused-imports/no-unused-vars[22m[0m
+[0m  [2m125:13[22m  [31merror[39m  'originalCode' is assigned a value but never used. Allowed unused vars must match /^_/u  [2munused-imports/no-unused-vars[22m[0m
+[0m  [2m209:35[22m  [31merror[39m  Unnecessary escape character: \<                                                         [2mno-useless-escape[22m[0m
+[0m  [2m209:51[22m  [31merror[39m  Unnecessary escape character: \<                                                         [2mno-useless-escape[22m[0m
+[0m  [2m209:60[22m  [31merror[39m  Unnecessary escape character: \>                                                         [2mno-useless-escape[22m[0m
+[0m[0m
+[0m[4mG:\NeoVAI\src\components\chat\MessageInputArea.vue[24m[0m
+[0m   [2m44:13[22m  [31merror[39m  'v-on' directives require a value or verb modifier (like 'stop' or 'prevent')     [2mvue/valid-v-on[22m[0m
+[0m  [2m164:7[22m   [31merror[39m  'props' is assigned a value but never used. Allowed unused vars must match /^_/u  [2munused-imports/no-unused-vars[22m[0m
+[0m[0m
+[0m[4mG:\NeoVAI\src\components\common\CommandLine.vue[24m[0m
+[0m  [2m184:27[22m  [31merror[39m  Unreachable code  [2mno-unreachable[22m[0m
+[0m[0m
+[0m[4mG:\NeoVAI\src\components\common\PanelHeader.vue[24m[0m
+[0m  [2m25:7[22m  [31merror[39m  'props' is assigned a value but never used. Allowed unused vars must match /^_/u  [2munused-imports/no-unused-vars[22m[0m
+[0m[0m
+[0m[4mG:\NeoVAI\src\components\common\StateDisplay.vue[24m[0m
+[0m  [2m28:7[22m  [31merror[39m  'props' is assigned a value but never used. Allowed unused vars must match /^_/u  [2munused-imports/no-unused-vars[22m[0m
+[0m[0m
+[0m[4mG:\NeoVAI\src\components\layout\LeftNav.vue[24m[0m
+[0m  [2m1:1[22m  [31merror[39m  The template requires child element  [2mvue/valid-template-root[22m[0m
+[0m[0m
+[0m[4mG:\NeoVAI\src\components\layout\TopNav.vue[24m[0m
+[0m  [2m335:9[22m  [31merror[39m  'menuElements' is assigned a value but never used. Allowed unused vars must match /^_/u  [2munused-imports/no-unused-vars[22m[0m
+[0m[0m
+[0m[4mG:\NeoVAI\src\components\panel\HistoryPanel.vue[24m[0m
+[0m  [2m218:7[22m  [31merror[39m  'settingsStore' is assigned a value but never used. Allowed unused vars must match /^_/u  [2munused-imports/no-unused-vars[22m[0m
+[0m[0m
+[0m[4mG:\NeoVAI\src\components\panel\McpPanel.vue[24m[0m
+[0m   [2m60:10[22m  [31merror[39m  'useSettingsStore' is defined but never used  [2munused-imports/no-unused-imports[22m[0m
+[0m  [2m127:26[22m  [31merror[39m  'FormData' is not defined                     [2mno-undef[22m[0m
+[0m[0m
+[0m[4mG:\NeoVAI\src\components\panel\ModelParamsPanel.vue[24m[0m
+[0m  [2m189:10[22m  [31merror[39m  'useSettingsStore' is defined but never used  [2munused-imports/no-unused-imports[22m[0m
+[0m[0m
+[0m[4mG:\NeoVAI\src\components\panel\PanelContent.vue[24m[0m
+[0m  [2m33:7[22m  [31merror[39m  'props' is assigned a value but never used. Allowed unused vars must match /^_/u  [2munused-imports/no-unused-vars[22m[0m
+[0m[0m
+[0m[4mG:\NeoVAI\src\components\panel\RagPanel.vue[24m[0m
+[0m  [2m347:9[22m   [31merror[39m  'readFileAsArrayBuffer' is assigned a value but never used. Allowed unused vars must match /^_/u  [2munused-imports/no-unused-vars[22m[0m
+[0m  [2m431:7[22m   [31merror[39m  'processFiles' is assigned a value but never used. Allowed unused vars must match /^_/u           [2munused-imports/no-unused-vars[22m[0m
+[0m  [2m544:7[22m   [31merror[39m  'getFolderNameById' is assigned a value but never used. Allowed unused vars must match /^_/u      [2munused-imports/no-unused-vars[22m[0m
+[0m  [2m558:7[22m   [31merror[39m  'handleReloadDocuments' is assigned a value but never used. Allowed unused vars must match /^_/u  [2munused-imports/no-unused-vars[22m[0m
+[0m  [2m569:13[22m  [31merror[39m  'filteredFiles' is assigned a value but never used. Allowed unused vars must match /^_/u          [2munused-imports/no-unused-vars[22m[0m
+[0m  [2m576:13[22m  [31merror[39m  'filteredFolders' is assigned a value but never used. Allowed unused vars must match /^_/u        [2munused-imports/no-unused-vars[22m[0m
+[0m[0m
+[0m[4mG:\NeoVAI\src\components\panel\RightPanel.vue[24m[0m
+[0m  [2m49:7[22m  [31merror[39m  'props' is assigned a value but never used. Allowed unused vars must match /^_/u  [2munused-imports/no-unused-vars[22m[0m
+[0m[0m
+[0m[4mG:\NeoVAI\src\components\rag\FolderList.vue[24m[0m
+[0m  [2m155:7[22m  [31merror[39m  'getFolderById' is assigned a value but never used. Allowed unused vars must match /^_/u    [2munused-imports/no-unused-vars[22m[0m
+[0m  [2m160:7[22m  [31merror[39m  'getFolderByName' is assigned a value but never used. Allowed unused vars must match /^_/u  [2munused-imports/no-unused-vars[22m[0m
+[0m[0m
+[0m[4mG:\NeoVAI\src\components\rag\RagPanelHeader.vue[24m[0m
+[0m  [2m30:7[22m  [31merror[39m  'props' is assigned a value but never used. Allowed unused vars must match /^_/u  [2munused-imports/no-unused-vars[22m[0m
+[0m[0m
+[0m[4mG:\NeoVAI\src\components\rag\RagToolbar.vue[24m[0m
+[0m  [2m35:7[22m  [31merror[39m  'props' is assigned a value but never used. Allowed unused vars must match /^_/u  [2munused-imports/no-unused-vars[22m[0m
+[0m[0m
+[0m[4mG:\NeoVAI\src\components\settings\ModelsSettings.vue[24m[0m
+[0m  [2m201:7[22m  [31merror[39m  'getModelDisplayName' is assigned a value but never used. Allowed unused vars must match /^_/u  [2munused-imports/no-unused-vars[22m[0m
+[0m[0m
+[0m[4mG:\NeoVAI\src\router\index.js[24m[0m
+[0m  [2m30:59[22m  [31merror[39m  'sessionStorage' is not defined  [2mno-undef[22m[0m
+[0m[0m
+[0m[4mG:\NeoVAI\src\services\apiService.js[24m[0m
+[0m  [2m136:26[22m  [31merror[39m  'AbortController' is not defined  [2mno-undef[22m[0m
+[0m  [2m143:3[22m   [31merror[39m  'fetch' is not defined            [2mno-undef[22m[0m
+[0m  [2m161:25[22m  [31merror[39m  'TextDecoder' is not defined      [2mno-undef[22m[0m
+[0m  [2m334:30[22m  [31merror[39m  'FormData' is not defined         [2mno-undef[22m[0m
+[0m[0m
+[0m[4mG:\NeoVAI\src\store\chatStore.js[24m[0m
+[0m    [2m2:22[22m  [31merror[39m  'handleStreamingResponse' is defined but never used                                        [2munused-imports/no-unused-imports[22m[0m
+[0m    [2m3:10[22m  [31merror[39m  'StorageManager' is defined but never used                                                 [2munused-imports/no-unused-imports[22m[0m
+[0m    [2m3:38[22m  [31merror[39m  'debounce' is defined but never used                                                       [2munused-imports/no-unused-imports[22m[0m
+[0m    [2m3:48[22m  [31merror[39m  'formatDateTime' is defined but never used                                                 [2munused-imports/no-unused-imports[22m[0m
+[0m   [2m95:25[22m  [31merror[39m  'model' is assigned a value but never used. Allowed unused args must match /^_/u           [2munused-imports/no-unused-vars[22m[0m
+[0m   [2m98:15[22m  [31merror[39m  'previousChatId' is assigned a value but never used. Allowed unused vars must match /^_/u  [2munused-imports/no-unused-vars[22m[0m
+[0m  [2m789:29[22m  [31merror[39m  'Audio' is not defined                                                                     [2mno-undef[22m[0m
+[0m[0m
+[0m[4mG:\NeoVAI\src\store\modelSettingStore.js[24m[0m
+[0m  [2m166:15[22m  [31merror[39m  'response' is assigned a value but never used. Allowed unused vars must match /^_/u  [2munused-imports/no-unused-vars[22m[0m
+[0m  [2m264:15[22m  [31merror[39m  'response' is assigned a value but never used. Allowed unused vars must match /^_/u  [2munused-imports/no-unused-vars[22m[0m
+[0m  [2m298:15[22m  [31merror[39m  'response' is assigned a value but never used. Allowed unused vars must match /^_/u  [2munused-imports/no-unused-vars[22m[0m
+[0m[0m
+[0m[4mG:\NeoVAI\src\store\ragStore.js[24m[0m
+[0m    [2m2:10[22m  [31merror[39m  'StorageManager' is defined but never used  [2munused-imports/no-unused-imports[22m[0m
+[0m    [2m2:38[22m  [31merror[39m  'debounce' is defined but never used        [2munused-imports/no-unused-imports[22m[0m
+[0m  [2m392:14[22m  [31merror[39m  'file' is not defined                       [2mno-undef[22m[0m
+[0m  [2m394:15[22m  [31merror[39m  'file' is not defined                       [2mno-undef[22m[0m
+[0m[0m
+[0m[4mG:\NeoVAI\src\store\settingsStore.js[24m[0m
+[0m  [2m2:41[22m  [31merror[39m  'debounce' is defined but never used    [2munused-imports/no-unused-imports[22m[0m
+[0m  [2m3:10[22m  [31merror[39m  'apiService' is defined but never used  [2munused-imports/no-unused-imports[22m[0m
+[0m[0m
+[0m[4mG:\NeoVAI\src\store\utils.js[24m[0m
+[0m    [2m1:15[22m  [31merror[39m  'computed' is defined but never used                                       [2munused-imports/no-unused-imports[22m[0m
+[0m  [2m168:13[22m  [31merror[39m  Do not access Object.prototype method 'hasOwnProperty' from target object  [2mno-prototype-builtins[22m[0m
+[0m  [2m189:22[22m  [31merror[39m  Do not access Object.prototype method 'hasOwnProperty' from target object  [2mno-prototype-builtins[22m[0m
+[0m[0m
+[0m[4mG:\NeoVAI\src\views\displayArea\ChatContent.vue[24m[0m
+[0m  [2m115:7[22m  [31merror[39m  'handleRagManagementClick' is assigned a value but never used. Allowed unused vars must match /^_/u  [2munused-imports/no-unused-vars[22m[0m
+[0m[0m
+[0m[4mG:\NeoVAI\src\views\displayArea\CodeEditorContent.vue[24m[0m
+[0m  [2m307:26[22m  [31merror[39m  'ResizeObserver' is not defined    [2mno-undef[22m[0m
+[0m  [2m462:12[22m  [31merror[39m  'error' is defined but never used  [2munused-imports/no-unused-vars[22m[0m
+[0m  [2m510:23[22m  [31merror[39m  Unreachable code                   [2mno-unreachable[22m[0m
+[0m  [2m525:16[22m  [31merror[39m  'error' is defined but never used  [2munused-imports/no-unused-vars[22m[0m
+[0m[0m
+[0m[4mG:\NeoVAI\src\views\displayArea\KnowledgeGraphContent.vue[24m[0m
+[0m   [2m43:58[22m  [31merror[39m  'inject' is defined but never used                                                       [2munused-imports/no-unused-imports[22m[0m
+[0m   [2m52:8[22m   [31merror[39m  'KnowledgeGraphInfoPanel' is defined but never used                                      [2munused-imports/no-unused-imports[22m[0m
+[0m  [2m136:7[22m   [31merror[39m  'getNodeColor' is assigned a value but never used. Allowed unused vars must match /^_/u  [2munused-imports/no-unused-vars[22m[0m
+[0m  [2m367:16[22m  [31merror[39m  'graphData' is not defined                                                               [2mno-undef[22m[0m
+[0m[0m
+[0m[4mG:\NeoVAI\src\views\displayArea\RagManagementContent.vue[24m[0m
+[0m  [2m374:7[22m  [31merror[39m  'checkSelectedFolderFromStore' is assigned a value but never used. Allowed unused vars must match /^_/u  [2munused-imports/no-unused-vars[22m[0m
+[0m  [2m505:7[22m  [31merror[39m  'handleBackToParent' is assigned a value but never used. Allowed unused vars must match /^_/u            [2munused-imports/no-unused-vars[22m[0m
+[0m  [2m516:5[22m  [31merror[39m  'setViewMode' is not defined                                                                             [2mno-undef[22m[0m
+[0m[0m
+[0m[4mG:\NeoVAI\src\views\displayArea\knowledgeGraph\KnowledgeGraphNavigation.vue[24m[0m
+[0m  [2m25:7[22m  [31merror[39m  'props' is assigned a value but never used. Allowed unused vars must match /^_/u  [2munused-imports/no-unused-vars[22m[0m
+[0m[0m
+[0m[4mG:\NeoVAI\src\views\displayArea\knowledgeGraph\KnowledgeGraphRenderer.vue[24m[0m
+[0m   [2m14:7[22m   [31merror[39m  'selectedNode' is assigned a value but never used. Allowed unused vars must match /^_/u           [2munused-imports/no-unused-vars[22m[0m
+[0m   [2m15:7[22m   [31merror[39m  'relatedNodes' is assigned a value but never used. Allowed unused vars must match /^_/u           [2munused-imports/no-unused-vars[22m[0m
+[0m   [2m19:7[22m   [31merror[39m  'hiddenNodes' is assigned a value but never used. Allowed unused vars must match /^_/u            [2munused-imports/no-unused-vars[22m[0m
+[0m   [2m21:7[22m   [31merror[39m  'updateLinksVisibility' is assigned a value but never used. Allowed unused vars must match /^_/u  [2munused-imports/no-unused-vars[22m[0m
+[0m   [2m22:7[22m   [31merror[39m  'focusOnNode' is assigned a value but never used. Allowed unused vars must match /^_/u            [2munused-imports/no-unused-vars[22m[0m
+[0m   [2m23:7[22m   [31merror[39m  'toggleNodeVisibility' is assigned a value but never used. Allowed unused vars must match /^_/u   [2munused-imports/no-unused-vars[22m[0m
+[0m  [2m319:73[22m  [31merror[39m  'Element' is not defined                                                                          [2mno-undef[22m[0m
+[0m  [2m320:28[22m  [31merror[39m  'ResizeObserver' is not defined                                                                   [2mno-undef[22m[0m
+[0m  [2m321:18[22m  [31merror[39m  'entry' is assigned a value but never used. Allowed unused vars must match /^_/u                  [2munused-imports/no-unused-vars[22m[0m
+[0m  [2m326:52[22m  [31merror[39m  'Element' is not defined                                                                          [2mno-undef[22m[0m
+[0m  [2m337:47[22m  [31merror[39m  'Element' is not defined                                                                          [2mno-undef[22m[0m
+[0m  [2m347:47[22m  [31merror[39m  'Element' is not defined                                                                          [2mno-undef[22m[0m
+[0m[0m
+[0m[4mG:\NeoVAI\src\views\displayArea\knowledgeGraph\KnowledgeGraphSettingsPanel.vue[24m[0m
+[0m  [2m134:7[22m  [31merror[39m  'props' is assigned a value but never used. Allowed unused vars must match /^_/u  [2munused-imports/no-unused-vars[22m[0m
+[0m[0m
+[0m[31m[1m✖ 83 problems (83 errors, 0 warnings)[22m[39m[0m
+[0m[31m[1m[22m[39m[31m[1m  13 errors and 0 warnings potentially fixable with the `--fix` option.[22m[39m[0m
+[0m[31m[1m[22m[39m[0m

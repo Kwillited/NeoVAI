@@ -1,0 +1,212 @@
+<template>
+  <div v-if="folders.length > 0" class="folders-list mt-3">
+    <h3 class="text-sm font-medium text-gray-700 dark:text-white mb-2 px-2">知识库文件夹 ({{ folders.length }})</h3>
+    <div v-for="folder in folders" :key="folder.id || folder.path"
+      class="folder-item bg-gray-50 border border-gray-200 dark:bg-dark-bg-secondary rounded-lg p-3 mb-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-dark-bg-tertiary transition-all duration-300"
+      @dragover.prevent="handleFolderDragOver($event, folder)"
+      @dragleave.prevent="handleFolderDragLeave"
+      @drop.prevent="handleFolderDrop($event, folder)"
+      @dblclick="handleFolderDoubleClick(folder)"
+      @click="handleFolderClick(folder)"
+      :class="{
+        'border-neutral-400 bg-neutral-100 dark:border-gray-600 dark:bg-dark-bg-tertiary': draggingFolder === folder,
+        'bg-neutral-100 dark:bg-dark-bg-tertiary border-neutral-400 dark:border-gray-600': selectedFolder === folder && draggingFolder !== folder
+      }"
+    >
+      <div class="folder-header flex items-center">
+        <i class="fa-solid fa-folder text-gray-500 dark:text-gray-400 mr-2"></i>
+        <span class="font-medium text-sm text-gray-700 dark:text-gray-300">{{ folder.name }}</span>
+        <div v-if="draggingFolder === folder" class="ml-2 text-xs text-blue-500">
+          释放以上传到此文件夹
+        </div>
+        <ActionButton
+          icon="fa-trash-can"
+          title="删除此知识库文件夹"
+          @click.stop="handleDeleteFolder(folder)"
+          class="ml-auto text-gray-500 hover:text-red-500 text-sm"
+        />
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { ref } from 'vue';
+import ActionButton from '../common/ActionButton.vue';
+
+const props = defineProps({
+  folders: {
+    type: Array,
+    default: () => []
+  }
+});
+
+// 当前悬停的文件夹
+const draggingFolder = ref(null);
+// 选中的文件夹
+const selectedFolder = ref(null);
+// 用于区分单击和双击的定时器
+let clickTimer = null;
+// 上次点击的文件夹
+let lastClickedFolder = null;
+
+// 处理文件夹拖拽悬停
+const handleFolderDragOver = (event, folder) => {
+  event.preventDefault();
+  event.stopPropagation();
+  draggingFolder.value = folder;
+};
+
+// 处理文件夹拖拽离开 - 优化以避免闪烁
+  const handleFolderDragLeave = (event) => {
+    // 获取当前鼠标位置
+    const rect = event.currentTarget.getBoundingClientRect();
+    // 使用requestAnimationFrame在下一帧检查鼠标位置
+    requestAnimationFrame(() => {
+      // 检查鼠标是否仍在文件夹元素的边界内
+      const mouseX = event.clientX;
+      const mouseY = event.clientY;
+      
+      // 如果鼠标仍然在文件夹元素的边界内，则不清除拖拽状态
+      if (mouseX >= rect.left && mouseX <= rect.right && mouseY >= rect.top && mouseY <= rect.bottom) {
+        return; // 鼠标仍在文件夹内，保持拖拽状态
+      }
+      
+      // 鼠标确实离开了文件夹区域
+      draggingFolder.value = null;
+    });
+  };
+  
+  // 处理文件夹拖拽放置
+  const handleFolderDrop = (event, folder) => {
+    draggingFolder.value = null;
+    const files = Array.from(event.dataTransfer.files);
+    
+    if (files && files.length > 0) {
+      // 触发事件通知父组件处理文件上传
+      const dropEvent = new CustomEvent('folderDrop', {
+        detail: {
+          folder,
+          files
+        }
+      });
+      window.dispatchEvent(dropEvent);
+    }
+  };
+
+// 处理文件夹点击事件 - 仅保留选中功能
+const handleFolderClick = (folder) => {
+  // 如果两次点击的是不同文件夹，直接处理单击
+  if (lastClickedFolder !== folder) {
+    lastClickedFolder = folder;
+    
+    // 清除之前的定时器
+    if (clickTimer) {
+      clearTimeout(clickTimer);
+    }
+    
+    // 立即处理选中状态切换
+    if (selectedFolder.value === folder) {
+      selectedFolder.value = null;
+    } else {
+      selectedFolder.value = folder;
+    }
+    
+    // 设置定时器处理事件发送（延迟以区分双击）
+    clickTimer = setTimeout(() => {
+      // 仅发送文件夹选中状态变化事件，移除视图切换功能
+      const event = new CustomEvent('folderSelected', {
+        detail: selectedFolder.value
+      });
+      window.dispatchEvent(event);
+      
+      clickTimer = null;
+    }, 300); // 300ms是一个常用的双击判断阈值
+  }
+};
+
+// 处理文件夹双击事件
+const handleFolderDoubleClick = (folder) => {
+  // 清除单击定时器，防止触发事件发送
+  if (clickTimer) {
+    clearTimeout(clickTimer);
+    clickTimer = null;
+  }
+  
+  // 重置上次点击的文件夹
+  lastClickedFolder = null;
+  
+  // 触发事件通知父组件进入文件夹
+  const event = new CustomEvent('folderDoubleClick', {
+    detail: folder
+  });
+  window.dispatchEvent(event);
+};
+
+// 处理删除文件夹
+const handleDeleteFolder = (folder) => {
+  const event = new CustomEvent('deleteFolder', {
+    detail: folder
+  });
+  window.dispatchEvent(event);
+};
+
+// 工具方法：根据ID获取文件夹信息
+const getFolderById = (folderId) => {
+  return props.folders.find(folder => folder.id === folderId) || null;
+};
+
+// 工具方法：根据名称获取文件夹信息
+const getFolderByName = (folderName) => {
+  return props.folders.find(folder => folder.name === folderName) || null;
+};
+</script>
+
+<style scoped>
+/* 文件夹列表样式 */
+.folders-list {
+  margin-top: 12px;
+}
+
+.folders-list h3 {
+  font-size: 13px;
+  font-weight: 500;
+  color: #4b5563;
+  margin-bottom: 8px;
+  padding: 0 8px;
+}
+
+.dark .folders-list h3 {
+  color: white;
+}
+
+.folder-item {
+  transition: all 0.2s ease;
+}
+
+.folder-item:hover {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.folder-item.cursor-pointer {
+  transition: all 0.2s ease;
+}
+
+.folder-item.cursor-pointer:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* 拖拽上传样式 */
+.folder-item.border-primary {
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+  background-color: #eff6ff;
+}
+
+.folder-header {
+  display: flex;
+  align-items: center;
+  height: 28px;
+  line-height: 28px;
+}
+</style>

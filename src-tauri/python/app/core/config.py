@@ -1,0 +1,117 @@
+"""应用配置管理"""
+import os
+import json
+from platformdirs import PlatformDirs
+
+# 初始化平台目录管理
+dirs = PlatformDirs(appname="NeoVAI", appauthor="NeoVAI")
+
+# 默认配置
+DEFAULT_CONFIG = {
+    'rag': {
+        'enabled': False,
+        'retrieval_mode': 'vector',
+        'top_k': 3,
+        'score_threshold': 0.7,
+        'vector_db_path': '',  # 将在初始化时设置为用户数据目录中的路径
+        'embedder_model': 'qwen3-embedding-0.6b',
+        'vector_db_type': 'chroma'
+    },
+    'mcp': {
+        'enabled': False,
+        'server_address': '',
+        'server_port': 8080,
+        'timeout': 30
+    },
+    'app': {
+        'debug': True,
+        'host': '0.0.0.0',
+        'port': 5000
+    }
+}
+
+class ConfigManager:
+    """配置管理器"""
+    _instance = None
+    _config = None
+    
+    @classmethod
+    def get_instance(cls):
+        """获取单例实例"""
+        if cls._instance is None:
+            cls._instance = cls()
+        return cls._instance
+    
+    def __init__(self):
+        """初始化配置管理器"""
+        if ConfigManager._instance is not None:
+            raise Exception("配置管理器是单例模式，请使用get_instance()方法获取实例")
+        ConfigManager._instance = self
+        self.load_config()
+    
+    def load_config(self):
+        """加载配置"""
+        # 首先使用默认配置
+        self._config = DEFAULT_CONFIG.copy()
+        
+        # 获取用户数据目录
+        user_data_dir = self.get_user_data_dir()
+        
+        # 设置默认的向量数据库路径
+        rag_dir = os.path.join(user_data_dir, 'Retrieval-Augmented Generation')
+        os.makedirs(rag_dir, exist_ok=True)
+        self._config['rag']['vector_db_path'] = os.path.join(rag_dir, 'vectorDb')
+        
+        # 创建config子目录
+        config_dir = os.path.join(user_data_dir, 'config')
+        os.makedirs(config_dir, exist_ok=True)
+        
+        # 创建标准的embedding模型目录 - 确保无论RAG是否启用都会创建
+        embedding_models_dir = os.path.join(user_data_dir, 'models', 'embedding')
+        os.makedirs(embedding_models_dir, exist_ok=True)
+        print(f"✅ 确保embedding模型目录存在: {embedding_models_dir}")
+        
+    def get_user_data_dir(self):
+        """获取用户数据目录"""
+        user_data_dir = dirs.user_data_dir
+        os.makedirs(user_data_dir, exist_ok=True)
+        return user_data_dir
+    
+    def _merge_config(self, base, update):
+        """递归合并配置字典"""
+        for key, value in update.items():
+            if isinstance(value, dict) and key in base and isinstance(base[key], dict):
+                self._merge_config(base[key], value)
+            else:
+                base[key] = value
+    
+    def get(self, key_path, default=None):
+        """获取配置值，支持点号分隔的路径"""
+        keys = key_path.split('.')
+        value = self._config
+        
+        for key in keys:
+            if isinstance(value, dict) and key in value:
+                value = value[key]
+            else:
+                return default
+        
+        return value
+    
+    def set(self, key_path, value):
+        """设置配置值"""
+        keys = key_path.split('.')
+        config = self._config
+        
+        # 导航到最后一个键的父级
+        for key in keys[:-1]:
+            if key not in config or not isinstance(config[key], dict):
+                config[key] = {}
+            config = config[key]
+        
+        # 设置值
+        config[keys[-1]] = value
+        return True
+
+# 创建全局配置实例
+config_manager = ConfigManager.get_instance()

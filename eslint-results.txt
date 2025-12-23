@@ -1,0 +1,725 @@
+[0m[0m
+[0m[4mG:\NeoVAI\src\App.vue[24m[0m
+[0m  [2m1:1[22m  [31merror[39m  Parsing error: Unexpected token <[0m
+[0m[0m
+[0m[4mG:\NeoVAI\src\components\chat\ChatMessage.vue[24m[0m
+[0m  [2m1:1[22m  [31merror[39m  Parsing error: Unexpected token <[0m
+[0m[0m
+[0m[4mG:\NeoVAI\src\components\chat\ChatMessagesContainer.vue[24m[0m
+[0m  [2m1:1[22m  [31merror[39m  Parsing error: Unexpected token <[0m
+[0m[0m
+[0m[4mG:\NeoVAI\src\components\chat\MessageInputArea.vue[24m[0m
+[0m  [2m1:1[22m  [31merror[39m  Parsing error: Unexpected token <[0m
+[0m[0m
+[0m[4mG:\NeoVAI\src\components\chat\ScrollToBottomButton.vue[24m[0m
+[0m  [2m1:1[22m  [31merror[39m  Parsing error: Unexpected token <[0m
+[0m[0m
+[0m[4mG:\NeoVAI\src\components\common\ActionButton.vue[24m[0m
+[0m  [2m1:1[22m  [31merror[39m  Parsing error: Unexpected token <[0m
+[0m[0m
+[0m[4mG:\NeoVAI\src\components\common\CommandLine.vue[24m[0m
+[0m  [2m1:1[22m  [31merror[39m  Parsing error: Unexpected token <[0m
+[0m[0m
+[0m[4mG:\NeoVAI\src\components\common\FeatureCard.vue[24m[0m
+[0m  [2m1:1[22m  [31merror[39m  Parsing error: Unexpected token <[0m
+[0m[0m
+[0m[4mG:\NeoVAI\src\components\common\PanelHeader.vue[24m[0m
+[0m  [2m1:1[22m  [31merror[39m  Parsing error: Unexpected token <[0m
+[0m[0m
+[0m[4mG:\NeoVAI\src\components\common\SearchBar.vue[24m[0m
+[0m  [2m1:1[22m  [31merror[39m  Parsing error: Unexpected token <[0m
+[0m[0m
+[0m[4mG:\NeoVAI\src\components\common\SettingNavItem.vue[24m[0m
+[0m  [2m1:1[22m  [31merror[39m  Parsing error: Unexpected token <[0m
+[0m[0m
+[0m[4mG:\NeoVAI\src\components\common\StateDisplay.vue[24m[0m
+[0m  [2m1:1[22m  [31merror[39m  Parsing error: Unexpected token <[0m
+[0m[0m
+[0m[4mG:\NeoVAI\src\components\layout\DisplayArea.vue[24m[0m
+[0m  [2m1:1[22m  [31merror[39m  Parsing error: Unexpected token <[0m
+[0m[0m
+[0m[4mG:\NeoVAI\src\components\layout\LeftNav.vue[24m[0m
+[0m  [2m1:1[22m  [31merror[39m  Parsing error: Unexpected token <[0m
+[0m[0m
+[0m[4mG:\NeoVAI\src\components\layout\TopNav.vue[24m[0m
+[0m  [2m1:1[22m  [31merror[39m  Parsing error: Unexpected token <[0m
+[0m[0m
+[0m[4mG:\NeoVAI\src\components\models\ModelSettingsDrawer.vue[24m[0m
+[0m  [2m1:1[22m  [31merror[39m  Parsing error: Unexpected token <[0m
+[0m[0m
+[0m[4mG:\NeoVAI\src\components\models\ModelVersionForm.vue[24m[0m
+[0m  [2m1:1[22m  [31merror[39m  Parsing error: Unexpected token <[0m
+[0m[0m
+[0m[4mG:\NeoVAI\src\components\panel\HistoryPanel.vue[24m[0m
+[0m  [2m1:1[22m  [31merror[39m  Parsing error: Unexpected token <[0m
+[0m[0m
+[0m[4mG:\NeoVAI\src\components\panel\McpPanel.vue[24m[0m
+[0m  [2m1:1[22m  [31merror[39m  Parsing error: Unexpected token <[0m
+[0m[0m
+[0m[4mG:\NeoVAI\src\components\panel\ModelParamsPanel.vue[24m[0m
+[0m  [2m1:1[22m  [31merror[39m  Parsing error: Unexpected token <[0m
+[0m[0m
+[0m[4mG:\NeoVAI\src\components\panel\PanelContent.vue[24m[0m
+[0m  [2m1:1[22m  [31merror[39m  Parsing error: Unexpected token <[0m
+[0m[0m
+[0m[4mG:\NeoVAI\src\components\panel\RagPanel.vue[24m[0m
+[0m  [2m1:1[22m  [31merror[39m  Parsing error: Unexpected token <[0m
+[0m[0m
+[0m[4mG:\NeoVAI\src\components\panel\RightPanel.vue[24m[0m
+[0m  [2m1:1[22m  [31merror[39m  Parsing error: Unexpected token <[0m
+[0m[0m
+[0m[4mG:\NeoVAI\src\components\panel\SettingsPanel.vue[24m[0m
+[0m  [2m1:1[22m  [31merror[39m  Parsing error: Unexpected token <[0m
+[0m[0m
+[0m[4mG:\NeoVAI\src\components\rag\CreateKnowledgeBaseModal.vue[24m[0m
+[0m  [2m1:1[22m  [31merror[39m  Parsing error: Unexpected token <[0m
+[0m[0m
+[0m[4mG:\NeoVAI\src\components\rag\FileList.vue[24m[0m
+[0m  [2m1:1[22m  [31merror[39m  Parsing error: Unexpected token <[0m
+[0m[0m
+[0m[4mG:\NeoVAI\src\components\rag\FolderList.vue[24m[0m
+[0m  [2m1:1[22m  [31merror[39m  Parsing error: Unexpected token <[0m
+[0m[0m
+[0m[4mG:\NeoVAI\src\components\rag\RagPanelHeader.vue[24m[0m
+[0m  [2m1:1[22m  [31merror[39m  Parsing error: Unexpected token <[0m
+[0m[0m
+[0m[4mG:\NeoVAI\src\components\rag\RagToolbar.vue[24m[0m
+[0m  [2m1:1[22m  [31merror[39m  Parsing error: Unexpected token <[0m
+[0m[0m
+[0m[4mG:\NeoVAI\src\components\settings\AboutSettings.vue[24m[0m
+[0m  [2m1:1[22m  [31merror[39m  Parsing error: Unexpected token <[0m
+[0m[0m
+[0m[4mG:\NeoVAI\src\components\settings\GeneralSettings.vue[24m[0m
+[0m  [2m1:1[22m  [31merror[39m  Parsing error: Unexpected token <[0m
+[0m[0m
+[0m[4mG:\NeoVAI\src\components\settings\McpSettings.vue[24m[0m
+[0m  [2m1:1[22m  [31merror[39m  Parsing error: Unexpected token <[0m
+[0m[0m
+[0m[4mG:\NeoVAI\src\components\settings\ModelsSettings.vue[24m[0m
+[0m  [2m1:1[22m  [31merror[39m  Parsing error: Unexpected token <[0m
+[0m[0m
+[0m[4mG:\NeoVAI\src\components\settings\NotificationsSettings.vue[24m[0m
+[0m  [2m1:1[22m  [31merror[39m  Parsing error: Unexpected token <[0m
+[0m[0m
+[0m[4mG:\NeoVAI\src\components\settings\RAGSettings.vue[24m[0m
+[0m  [2m1:1[22m  [31merror[39m  Parsing error: Unexpected token <[0m
+[0m[0m
+[0m[4mG:\NeoVAI\src\js\katex.min.js[24m[0m
+[0m      [2m3:8[22m    [31merror[39m  'module' is not defined                                                       [2mno-undef[22m[0m
+[0m      [2m4:38[22m   [31merror[39m  'define' is not defined                                                       [2mno-undef[22m[0m
+[0m      [2m5:9[22m    [31merror[39m  'define' is not defined                                                       [2mno-undef[22m[0m
+[0m      [2m7:12[22m   [31merror[39m  'exports' is not defined                                                      [2mno-undef[22m[0m
+[0m      [2m9:33[22m   [31merror[39m  'self' is not defined                                                         [2mno-undef[22m[0m
+[0m     [2m88:19[22m   [31merror[39m  Unexpected control character(s) in regular expression: \x00                   [2mno-control-regex[22m[0m
+[0m    [2m215:17[22m   [31merror[39m  Do not access Object.prototype method 'hasOwnProperty' from target object     [2mno-prototype-builtins[22m[0m
+[0m    [2m227:15[22m   [31merror[39m  'console' is not defined                                                      [2mno-undef[22m[0m
+[0m    [2m229:15[22m   [31merror[39m  'console' is not defined                                                      [2mno-undef[22m[0m
+[0m    [2m239:20[22m   [31merror[39m  'e' is defined but never used                                                 [2munused-imports/no-unused-vars[22m[0m
+[0m    [2m248:19[22m   [31merror[39m  'console' is not defined                                                      [2mno-undef[22m[0m
+[0m    [2m251:19[22m   [31merror[39m  'console' is not defined                                                      [2mno-undef[22m[0m
+[0m    [2m470:19[22m   [31merror[39m  'document' is not defined                                                     [2mno-undef[22m[0m
+[0m   [2m2739:30[22m   [31merror[39m  Do not access Object.prototype method 'hasOwnProperty' from target object     [2mno-prototype-builtins[22m[0m
+[0m   [2m2807:38[22m   [31merror[39m  Do not access Object.prototype method 'hasOwnProperty' from target object     [2mno-prototype-builtins[22m[0m
+[0m   [2m2876:19[22m   [31merror[39m  'document' is not defined                                                     [2mno-undef[22m[0m
+[0m   [2m2878:48[22m   [31merror[39m  Do not access Object.prototype method 'hasOwnProperty' from target object     [2mno-prototype-builtins[22m[0m
+[0m   [2m2879:58[22m   [31merror[39m  Do not access Object.prototype method 'hasOwnProperty' from target object     [2mno-prototype-builtins[22m[0m
+[0m   [2m2883:11[22m   [31merror[39m  Unexpected control character(s) in regular expression: \x00, \x1f             [2mno-control-regex[22m[0m
+[0m   [2m2888:48[22m   [31merror[39m  Do not access Object.prototype method 'hasOwnProperty' from target object     [2mno-prototype-builtins[22m[0m
+[0m   [2m2891:31[22m   [31merror[39m  Do not access Object.prototype method 'hasOwnProperty' from target object     [2mno-prototype-builtins[22m[0m
+[0m   [2m2969:19[22m   [31merror[39m  'document' is not defined                                                     [2mno-undef[22m[0m
+[0m   [2m2971:48[22m   [31merror[39m  Do not access Object.prototype method 'hasOwnProperty' from target object     [2mno-prototype-builtins[22m[0m
+[0m   [2m2977:48[22m   [31merror[39m  Do not access Object.prototype method 'hasOwnProperty' from target object     [2mno-prototype-builtins[22m[0m
+[0m   [2m3018:19[22m   [31merror[39m  'document' is not defined                                                     [2mno-undef[22m[0m
+[0m   [2m3020:35[22m   [31merror[39m  'document' is not defined                                                     [2mno-undef[22m[0m
+[0m   [2m3021:49[22m   [31merror[39m  'document' is not defined                                                     [2mno-undef[22m[0m
+[0m   [2m3023:22[22m   [31merror[39m  Do not access Object.prototype method 'hasOwnProperty' from target object     [2mno-prototype-builtins[22m[0m
+[0m   [2m3023:54[22m   [31merror[39m  'document' is not defined                                                     [2mno-undef[22m[0m
+[0m   [2m3032:48[22m   [31merror[39m  Do not access Object.prototype method 'hasOwnProperty' from target object     [2mno-prototype-builtins[22m[0m
+[0m   [2m3043:19[22m   [31merror[39m  'document' is not defined                                                     [2mno-undef[22m[0m
+[0m   [2m3064:19[22m   [31merror[39m  'document' is not defined                                                     [2mno-undef[22m[0m
+[0m   [2m3078:19[22m   [31merror[39m  'document' is not defined                                                     [2mno-undef[22m[0m
+[0m   [2m3848:13[22m   [31merror[39m  'console' is not defined                                                      [2mno-undef[22m[0m
+[0m   [2m3863:46[22m   [31merror[39m  Do not access Object.prototype method 'hasOwnProperty' from target object     [2mno-prototype-builtins[22m[0m
+[0m   [2m3864:46[22m   [31merror[39m  Do not access Object.prototype method 'hasOwnProperty' from target object     [2mno-prototype-builtins[22m[0m
+[0m   [2m3970:31[22m   [31merror[39m  't' is defined but never used. Allowed unused args must match /^_/u           [2munused-imports/no-unused-vars[22m[0m
+[0m   [2m4089:18[22m   [31merror[39m  Do not access Object.prototype method 'hasOwnProperty' from target object     [2mno-prototype-builtins[22m[0m
+[0m   [2m4385:19[22m   [31merror[39m  'document' is not defined                                                     [2mno-undef[22m[0m
+[0m   [2m4415:16[22m   [31merror[39m  'document' is not defined                                                     [2mno-undef[22m[0m
+[0m   [2m4452:38[22m   [31merror[39m  'document' is not defined                                                     [2mno-undef[22m[0m
+[0m   [2m4454:23[22m   [31merror[39m  'document' is not defined                                                     [2mno-undef[22m[0m
+[0m   [2m4472:17[22m   [31merror[39m  Do not access Object.prototype method 'hasOwnProperty' from target object     [2mno-prototype-builtins[22m[0m
+[0m   [2m4825:44[22m   [31merror[39m  Do not access Object.prototype method 'hasOwnProperty' from target object     [2mno-prototype-builtins[22m[0m
+[0m   [2m5379:20[22m   [31merror[39m  't' is defined but never used. Allowed unused args must match /^_/u           [2munused-imports/no-unused-vars[22m[0m
+[0m   [2m5379:23[22m   [31merror[39m  'r' is defined but never used. Allowed unused args must match /^_/u           [2munused-imports/no-unused-vars[22m[0m
+[0m   [2m6352:28[22m   [31merror[39m  't' is defined but never used. Allowed unused args must match /^_/u           [2munused-imports/no-unused-vars[22m[0m
+[0m   [2m6491:21[22m   [31merror[39m  'r' is defined but never used. Allowed unused args must match /^_/u           [2munused-imports/no-unused-vars[22m[0m
+[0m   [2m6504:23[22m   [31merror[39m  'r' is defined but never used. Allowed unused args must match /^_/u           [2munused-imports/no-unused-vars[22m[0m
+[0m   [2m7180:20[22m   [31merror[39m  't' is defined but never used. Allowed unused args must match /^_/u           [2munused-imports/no-unused-vars[22m[0m
+[0m   [2m7196:19[22m   [31merror[39m  Do not access Object.prototype method 'hasOwnProperty' from target object     [2mno-prototype-builtins[22m[0m
+[0m   [2m7270:22[22m   [31merror[39m  't' is defined but never used. Allowed unused args must match /^_/u           [2munused-imports/no-unused-vars[22m[0m
+[0m   [2m7480:38[22m   [31merror[39m  'n' is assigned a value but never used. Allowed unused vars must match /^_/u  [2munused-imports/no-unused-vars[22m[0m
+[0m   [2m7576:38[22m   [31merror[39m  'n' is assigned a value but never used. Allowed unused vars must match /^_/u  [2munused-imports/no-unused-vars[22m[0m
+[0m   [2m7585:38[22m   [31merror[39m  'n' is assigned a value but never used. Allowed unused vars must match /^_/u  [2munused-imports/no-unused-vars[22m[0m
+[0m   [2m7749:48[22m   [31merror[39m  's' is assigned a value but never used. Allowed unused vars must match /^_/u  [2munused-imports/no-unused-vars[22m[0m
+[0m   [2m7788:43[22m   [31merror[39m  Do not access Object.prototype method 'hasOwnProperty' from target object     [2mno-prototype-builtins[22m[0m
+[0m   [2m7955:20[22m   [31merror[39m  't' is defined but never used. Allowed unused args must match /^_/u           [2munused-imports/no-unused-vars[22m[0m
+[0m   [2m7968:20[22m   [31merror[39m  't' is defined but never used. Allowed unused args must match /^_/u           [2munused-imports/no-unused-vars[22m[0m
+[0m   [2m8191:20[22m   [31merror[39m  't' is defined but never used. Allowed unused args must match /^_/u           [2munused-imports/no-unused-vars[22m[0m
+[0m   [2m8599:20[22m   [31merror[39m  't' is defined but never used. Allowed unused args must match /^_/u           [2munused-imports/no-unused-vars[22m[0m
+[0m   [2m8710:18[22m   [31merror[39m  't' is defined but never used. Allowed unused args must match /^_/u           [2munused-imports/no-unused-vars[22m[0m
+[0m   [2m8911:16[22m   [31merror[39m  Do not access Object.prototype method 'hasOwnProperty' from target object     [2mno-prototype-builtins[22m[0m
+[0m   [2m8919:16[22m   [31merror[39m  Do not access Object.prototype method 'hasOwnProperty' from target object     [2mno-prototype-builtins[22m[0m
+[0m   [2m8922:24[22m   [31merror[39m  't' is defined but never used. Allowed unused args must match /^_/u           [2munused-imports/no-unused-vars[22m[0m
+[0m   [2m8924:17[22m   [31merror[39m  Do not access Object.prototype method 'hasOwnProperty' from target object     [2mno-prototype-builtins[22m[0m
+[0m   [2m8925:18[22m   [31merror[39m  Do not access Object.prototype method 'hasOwnProperty' from target object     [2mno-prototype-builtins[22m[0m
+[0m   [2m9058:17[22m   [31merror[39m  'e' is defined but never used. Allowed unused args must match /^_/u           [2munused-imports/no-unused-vars[22m[0m
+[0m   [2m9058:20[22m   [31merror[39m  't' is defined but never used. Allowed unused args must match /^_/u           [2munused-imports/no-unused-vars[22m[0m
+[0m   [2m9058:23[22m   [31merror[39m  'r' is defined but never used. Allowed unused args must match /^_/u           [2munused-imports/no-unused-vars[22m[0m
+[0m   [2m9072:26[22m   [31merror[39m  't' is defined but never used. Allowed unused args must match /^_/u           [2munused-imports/no-unused-vars[22m[0m
+[0m   [2m9150:30[22m   [31merror[39m  Do not access Object.prototype method 'hasOwnProperty' from target object     [2mno-prototype-builtins[22m[0m
+[0m   [2m9156:29[22m   [31merror[39m  Do not access Object.prototype method 'hasOwnProperty' from target object     [2mno-prototype-builtins[22m[0m
+[0m   [2m9156:64[22m   [31merror[39m  Do not access Object.prototype method 'hasOwnProperty' from target object     [2mno-prototype-builtins[22m[0m
+[0m   [2m9159:29[22m   [31merror[39m  Do not access Object.prototype method 'hasOwnProperty' from target object     [2mno-prototype-builtins[22m[0m
+[0m   [2m9167:19[22m   [31merror[39m  Do not access Object.prototype method 'hasOwnProperty' from target object     [2mno-prototype-builtins[22m[0m
+[0m   [2m9268:11[22m   [31merror[39m  'console' is not defined                                                      [2mno-undef[22m[0m
+[0m   [2m9280:11[22m   [31merror[39m  'console' is not defined                                                      [2mno-undef[22m[0m
+[0m   [2m9292:17[22m   [31merror[39m  'console' is not defined                                                      [2mno-undef[22m[0m
+[0m   [2m9907:9[22m    [31merror[39m  Unreachable code                                                              [2mno-unreachable[22m[0m
+[0m   [2m9952:14[22m   [31merror[39m  Do not access Object.prototype method 'hasOwnProperty' from target object     [2mno-prototype-builtins[22m[0m
+[0m   [2m9953:19[22m   [31merror[39m  Do not access Object.prototype method 'hasOwnProperty' from target object     [2mno-prototype-builtins[22m[0m
+[0m   [2m9954:19[22m   [31merror[39m  Do not access Object.prototype method 'hasOwnProperty' from target object     [2mno-prototype-builtins[22m[0m
+[0m   [2m9955:14[22m   [31merror[39m  Do not access Object.prototype method 'hasOwnProperty' from target object     [2mno-prototype-builtins[22m[0m
+[0m   [2m9962:16[22m   [31merror[39m  Do not access Object.prototype method 'hasOwnProperty' from target object     [2mno-prototype-builtins[22m[0m
+[0m  [2m10729:100[22m  [31merror[39m  Do not access Object.prototype method 'hasOwnProperty' from target object     [2mno-prototype-builtins[22m[0m
+[0m  [2m10762:12[22m   [31merror[39m  Do not access Object.prototype method 'hasOwnProperty' from target object     [2mno-prototype-builtins[22m[0m
+[0m  [2m10789:18[22m   [31merror[39m  Do not access Object.prototype method 'hasOwnProperty' from target object     [2mno-prototype-builtins[22m[0m
+[0m  [2m10845:24[22m   [31merror[39m  'document' is not defined                                                     [2mno-undef[22m[0m
+[0m  [2m10847:9[22m    [31merror[39m  'console' is not defined                                                      [2mno-undef[22m[0m
+[0m[0m
+[0m[4mG:\NeoVAI\src\js\katex\katex.min.js[24m[0m
+[0m      [2m3:8[22m    [31merror[39m  'module' is not defined                                                       [2mno-undef[22m[0m
+[0m      [2m4:38[22m   [31merror[39m  'define' is not defined                                                       [2mno-undef[22m[0m
+[0m      [2m5:9[22m    [31merror[39m  'define' is not defined                                                       [2mno-undef[22m[0m
+[0m      [2m7:12[22m   [31merror[39m  'exports' is not defined                                                      [2mno-undef[22m[0m
+[0m      [2m9:33[22m   [31merror[39m  'self' is not defined                                                         [2mno-undef[22m[0m
+[0m     [2m88:19[22m   [31merror[39m  Unexpected control character(s) in regular expression: \x00                   [2mno-control-regex[22m[0m
+[0m    [2m215:17[22m   [31merror[39m  Do not access Object.prototype method 'hasOwnProperty' from target object     [2mno-prototype-builtins[22m[0m
+[0m    [2m227:15[22m   [31merror[39m  'console' is not defined                                                      [2mno-undef[22m[0m
+[0m    [2m229:15[22m   [31merror[39m  'console' is not defined                                                      [2mno-undef[22m[0m
+[0m    [2m239:20[22m   [31merror[39m  'e' is defined but never used                                                 [2munused-imports/no-unused-vars[22m[0m
+[0m    [2m248:19[22m   [31merror[39m  'console' is not defined                                                      [2mno-undef[22m[0m
+[0m    [2m251:19[22m   [31merror[39m  'console' is not defined                                                      [2mno-undef[22m[0m
+[0m    [2m470:19[22m   [31merror[39m  'document' is not defined                                                     [2mno-undef[22m[0m
+[0m   [2m2739:30[22m   [31merror[39m  Do not access Object.prototype method 'hasOwnProperty' from target object     [2mno-prototype-builtins[22m[0m
+[0m   [2m2807:38[22m   [31merror[39m  Do not access Object.prototype method 'hasOwnProperty' from target object     [2mno-prototype-builtins[22m[0m
+[0m   [2m2876:19[22m   [31merror[39m  'document' is not defined                                                     [2mno-undef[22m[0m
+[0m   [2m2878:48[22m   [31merror[39m  Do not access Object.prototype method 'hasOwnProperty' from target object     [2mno-prototype-builtins[22m[0m
+[0m   [2m2879:58[22m   [31merror[39m  Do not access Object.prototype method 'hasOwnProperty' from target object     [2mno-prototype-builtins[22m[0m
+[0m   [2m2883:11[22m   [31merror[39m  Unexpected control character(s) in regular expression: \x00, \x1f             [2mno-control-regex[22m[0m
+[0m   [2m2888:48[22m   [31merror[39m  Do not access Object.prototype method 'hasOwnProperty' from target object     [2mno-prototype-builtins[22m[0m
+[0m   [2m2891:31[22m   [31merror[39m  Do not access Object.prototype method 'hasOwnProperty' from target object     [2mno-prototype-builtins[22m[0m
+[0m   [2m2969:19[22m   [31merror[39m  'document' is not defined                                                     [2mno-undef[22m[0m
+[0m   [2m2971:48[22m   [31merror[39m  Do not access Object.prototype method 'hasOwnProperty' from target object     [2mno-prototype-builtins[22m[0m
+[0m   [2m2977:48[22m   [31merror[39m  Do not access Object.prototype method 'hasOwnProperty' from target object     [2mno-prototype-builtins[22m[0m
+[0m   [2m3018:19[22m   [31merror[39m  'document' is not defined                                                     [2mno-undef[22m[0m
+[0m   [2m3020:35[22m   [31merror[39m  'document' is not defined                                                     [2mno-undef[22m[0m
+[0m   [2m3021:49[22m   [31merror[39m  'document' is not defined                                                     [2mno-undef[22m[0m
+[0m   [2m3023:22[22m   [31merror[39m  Do not access Object.prototype method 'hasOwnProperty' from target object     [2mno-prototype-builtins[22m[0m
+[0m   [2m3023:54[22m   [31merror[39m  'document' is not defined                                                     [2mno-undef[22m[0m
+[0m   [2m3032:48[22m   [31merror[39m  Do not access Object.prototype method 'hasOwnProperty' from target object     [2mno-prototype-builtins[22m[0m
+[0m   [2m3043:19[22m   [31merror[39m  'document' is not defined                                                     [2mno-undef[22m[0m
+[0m   [2m3064:19[22m   [31merror[39m  'document' is not defined                                                     [2mno-undef[22m[0m
+[0m   [2m3078:19[22m   [31merror[39m  'document' is not defined                                                     [2mno-undef[22m[0m
+[0m   [2m3848:13[22m   [31merror[39m  'console' is not defined                                                      [2mno-undef[22m[0m
+[0m   [2m3863:46[22m   [31merror[39m  Do not access Object.prototype method 'hasOwnProperty' from target object     [2mno-prototype-builtins[22m[0m
+[0m   [2m3864:46[22m   [31merror[39m  Do not access Object.prototype method 'hasOwnProperty' from target object     [2mno-prototype-builtins[22m[0m
+[0m   [2m3970:31[22m   [31merror[39m  't' is defined but never used. Allowed unused args must match /^_/u           [2munused-imports/no-unused-vars[22m[0m
+[0m   [2m4089:18[22m   [31merror[39m  Do not access Object.prototype method 'hasOwnProperty' from target object     [2mno-prototype-builtins[22m[0m
+[0m   [2m4385:19[22m   [31merror[39m  'document' is not defined                                                     [2mno-undef[22m[0m
+[0m   [2m4415:16[22m   [31merror[39m  'document' is not defined                                                     [2mno-undef[22m[0m
+[0m   [2m4452:38[22m   [31merror[39m  'document' is not defined                                                     [2mno-undef[22m[0m
+[0m   [2m4454:23[22m   [31merror[39m  'document' is not defined                                                     [2mno-undef[22m[0m
+[0m   [2m4472:17[22m   [31merror[39m  Do not access Object.prototype method 'hasOwnProperty' from target object     [2mno-prototype-builtins[22m[0m
+[0m   [2m4825:44[22m   [31merror[39m  Do not access Object.prototype method 'hasOwnProperty' from target object     [2mno-prototype-builtins[22m[0m
+[0m   [2m5379:20[22m   [31merror[39m  't' is defined but never used. Allowed unused args must match /^_/u           [2munused-imports/no-unused-vars[22m[0m
+[0m   [2m5379:23[22m   [31merror[39m  'r' is defined but never used. Allowed unused args must match /^_/u           [2munused-imports/no-unused-vars[22m[0m
+[0m   [2m6352:28[22m   [31merror[39m  't' is defined but never used. Allowed unused args must match /^_/u           [2munused-imports/no-unused-vars[22m[0m
+[0m   [2m6491:21[22m   [31merror[39m  'r' is defined but never used. Allowed unused args must match /^_/u           [2munused-imports/no-unused-vars[22m[0m
+[0m   [2m6504:23[22m   [31merror[39m  'r' is defined but never used. Allowed unused args must match /^_/u           [2munused-imports/no-unused-vars[22m[0m
+[0m   [2m7180:20[22m   [31merror[39m  't' is defined but never used. Allowed unused args must match /^_/u           [2munused-imports/no-unused-vars[22m[0m
+[0m   [2m7196:19[22m   [31merror[39m  Do not access Object.prototype method 'hasOwnProperty' from target object     [2mno-prototype-builtins[22m[0m
+[0m   [2m7270:22[22m   [31merror[39m  't' is defined but never used. Allowed unused args must match /^_/u           [2munused-imports/no-unused-vars[22m[0m
+[0m   [2m7480:38[22m   [31merror[39m  'n' is assigned a value but never used. Allowed unused vars must match /^_/u  [2munused-imports/no-unused-vars[22m[0m
+[0m   [2m7576:38[22m   [31merror[39m  'n' is assigned a value but never used. Allowed unused vars must match /^_/u  [2munused-imports/no-unused-vars[22m[0m
+[0m   [2m7585:38[22m   [31merror[39m  'n' is assigned a value but never used. Allowed unused vars must match /^_/u  [2munused-imports/no-unused-vars[22m[0m
+[0m   [2m7749:48[22m   [31merror[39m  's' is assigned a value but never used. Allowed unused vars must match /^_/u  [2munused-imports/no-unused-vars[22m[0m
+[0m   [2m7788:43[22m   [31merror[39m  Do not access Object.prototype method 'hasOwnProperty' from target object     [2mno-prototype-builtins[22m[0m
+[0m   [2m7955:20[22m   [31merror[39m  't' is defined but never used. Allowed unused args must match /^_/u           [2munused-imports/no-unused-vars[22m[0m
+[0m   [2m7968:20[22m   [31merror[39m  't' is defined but never used. Allowed unused args must match /^_/u           [2munused-imports/no-unused-vars[22m[0m
+[0m   [2m8191:20[22m   [31merror[39m  't' is defined but never used. Allowed unused args must match /^_/u           [2munused-imports/no-unused-vars[22m[0m
+[0m   [2m8599:20[22m   [31merror[39m  't' is defined but never used. Allowed unused args must match /^_/u           [2munused-imports/no-unused-vars[22m[0m
+[0m   [2m8710:18[22m   [31merror[39m  't' is defined but never used. Allowed unused args must match /^_/u           [2munused-imports/no-unused-vars[22m[0m
+[0m   [2m8911:16[22m   [31merror[39m  Do not access Object.prototype method 'hasOwnProperty' from target object     [2mno-prototype-builtins[22m[0m
+[0m   [2m8919:16[22m   [31merror[39m  Do not access Object.prototype method 'hasOwnProperty' from target object     [2mno-prototype-builtins[22m[0m
+[0m   [2m8922:24[22m   [31merror[39m  't' is defined but never used. Allowed unused args must match /^_/u           [2munused-imports/no-unused-vars[22m[0m
+[0m   [2m8924:17[22m   [31merror[39m  Do not access Object.prototype method 'hasOwnProperty' from target object     [2mno-prototype-builtins[22m[0m
+[0m   [2m8925:18[22m   [31merror[39m  Do not access Object.prototype method 'hasOwnProperty' from target object     [2mno-prototype-builtins[22m[0m
+[0m   [2m9058:17[22m   [31merror[39m  'e' is defined but never used. Allowed unused args must match /^_/u           [2munused-imports/no-unused-vars[22m[0m
+[0m   [2m9058:20[22m   [31merror[39m  't' is defined but never used. Allowed unused args must match /^_/u           [2munused-imports/no-unused-vars[22m[0m
+[0m   [2m9058:23[22m   [31merror[39m  'r' is defined but never used. Allowed unused args must match /^_/u           [2munused-imports/no-unused-vars[22m[0m
+[0m   [2m9072:26[22m   [31merror[39m  't' is defined but never used. Allowed unused args must match /^_/u           [2munused-imports/no-unused-vars[22m[0m
+[0m   [2m9150:30[22m   [31merror[39m  Do not access Object.prototype method 'hasOwnProperty' from target object     [2mno-prototype-builtins[22m[0m
+[0m   [2m9156:29[22m   [31merror[39m  Do not access Object.prototype method 'hasOwnProperty' from target object     [2mno-prototype-builtins[22m[0m
+[0m   [2m9156:64[22m   [31merror[39m  Do not access Object.prototype method 'hasOwnProperty' from target object     [2mno-prototype-builtins[22m[0m
+[0m   [2m9159:29[22m   [31merror[39m  Do not access Object.prototype method 'hasOwnProperty' from target object     [2mno-prototype-builtins[22m[0m
+[0m   [2m9167:19[22m   [31merror[39m  Do not access Object.prototype method 'hasOwnProperty' from target object     [2mno-prototype-builtins[22m[0m
+[0m   [2m9268:11[22m   [31merror[39m  'console' is not defined                                                      [2mno-undef[22m[0m
+[0m   [2m9280:11[22m   [31merror[39m  'console' is not defined                                                      [2mno-undef[22m[0m
+[0m   [2m9292:17[22m   [31merror[39m  'console' is not defined                                                      [2mno-undef[22m[0m
+[0m   [2m9907:9[22m    [31merror[39m  Unreachable code                                                              [2mno-unreachable[22m[0m
+[0m   [2m9952:14[22m   [31merror[39m  Do not access Object.prototype method 'hasOwnProperty' from target object     [2mno-prototype-builtins[22m[0m
+[0m   [2m9953:19[22m   [31merror[39m  Do not access Object.prototype method 'hasOwnProperty' from target object     [2mno-prototype-builtins[22m[0m
+[0m   [2m9954:19[22m   [31merror[39m  Do not access Object.prototype method 'hasOwnProperty' from target object     [2mno-prototype-builtins[22m[0m
+[0m   [2m9955:14[22m   [31merror[39m  Do not access Object.prototype method 'hasOwnProperty' from target object     [2mno-prototype-builtins[22m[0m
+[0m   [2m9962:16[22m   [31merror[39m  Do not access Object.prototype method 'hasOwnProperty' from target object     [2mno-prototype-builtins[22m[0m
+[0m  [2m10729:100[22m  [31merror[39m  Do not access Object.prototype method 'hasOwnProperty' from target object     [2mno-prototype-builtins[22m[0m
+[0m  [2m10762:12[22m   [31merror[39m  Do not access Object.prototype method 'hasOwnProperty' from target object     [2mno-prototype-builtins[22m[0m
+[0m  [2m10789:18[22m   [31merror[39m  Do not access Object.prototype method 'hasOwnProperty' from target object     [2mno-prototype-builtins[22m[0m
+[0m  [2m10845:24[22m   [31merror[39m  'document' is not defined                                                     [2mno-undef[22m[0m
+[0m  [2m10847:9[22m    [31merror[39m  'console' is not defined                                                      [2mno-undef[22m[0m
+[0m[0m
+[0m[4mG:\NeoVAI\src\js\marked.min.js[24m[0m
+[0m     [2m8:9[22m    [31merror[39m  'exports' is not defined                                                   [2mno-undef[22m[0m
+[0m     [2m9:38[22m   [31merror[39m  'define' is not defined                                                    [2mno-undef[22m[0m
+[0m    [2m10:9[22m    [31merror[39m  'define' is not defined                                                    [2mno-undef[22m[0m
+[0m    [2m11:70[22m   [31merror[39m  'self' is not defined                                                      [2mno-undef[22m[0m
+[0m    [2m38:13[22m   [31merror[39m  'F' is a function                                                          [2mno-func-assign[22m[0m
+[0m   [2m139:17[22m   [31merror[39m  Unnecessary escape character: \[                                           [2mno-useless-escape[22m[0m
+[0m   [2m158:16[22m   [31merror[39m  'e' is defined but never used                                              [2munused-imports/no-unused-vars[22m[0m
+[0m   [2m181:14[22m   [31merror[39m  'e' is defined but never used                                              [2munused-imports/no-unused-vars[22m[0m
+[0m   [2m221:7[22m    [31merror[39m  't' is already defined                                                     [2mno-redeclare[22m[0m
+[0m   [2m222:29[22m   [31merror[39m  Unnecessary escape character: \[                                           [2mno-useless-escape[22m[0m
+[0m   [2m242:13[22m   [31merror[39m  'e' is already defined                                                     [2mno-redeclare[22m[0m
+[0m   [2m254:13[22m   [31merror[39m  'e' is already defined                                                     [2mno-redeclare[22m[0m
+[0m   [2m277:13[22m   [31merror[39m  'e' is already defined                                                     [2mno-redeclare[22m[0m
+[0m   [2m293:13[22m   [31merror[39m  'e' is already defined                                                     [2mno-redeclare[22m[0m
+[0m   [2m397:13[22m   [31merror[39m  'e' is already defined                                                     [2mno-redeclare[22m[0m
+[0m   [2m418:13[22m   [31merror[39m  'e' is already defined                                                     [2mno-redeclare[22m[0m
+[0m   [2m472:13[22m   [31merror[39m  'e' is already defined                                                     [2mno-redeclare[22m[0m
+[0m   [2m532:15[22m   [31merror[39m  'u' is already defined                                                     [2mno-redeclare[22m[0m
+[0m   [2m556:21[22m   [31merror[39m  Expected a conditional expression and instead saw an assignment            [2mno-cond-assign[22m[0m
+[0m   [2m599:13[22m   [31merror[39m  'e' is already defined                                                     [2mno-redeclare[22m[0m
+[0m   [2m619:13[22m   [31merror[39m  'e' is already defined                                                     [2mno-redeclare[22m[0m
+[0m   [2m669:34[22m   [31merror[39m  Unnecessary escape character: \[                                           [2mno-useless-escape[22m[0m
+[0m   [2m754:46[22m   [31merror[39m  Unnecessary escape character: \[                                           [2mno-useless-escape[22m[0m
+[0m   [2m755:19[22m   [31merror[39m  Unexpected control character(s) in regular expression: \x00, \x1f          [2mno-control-regex[22m[0m
+[0m   [2m765:32[22m   [31merror[39m  Unnecessary escape character: \_                                           [2mno-useless-escape[22m[0m
+[0m   [2m765:34[22m   [31merror[39m  Unnecessary escape character: \_                                           [2mno-useless-escape[22m[0m
+[0m   [2m765:75[22m   [31merror[39m  Unnecessary escape character: \_                                           [2mno-useless-escape[22m[0m
+[0m   [2m765:77[22m   [31merror[39m  Unnecessary escape character: \_                                           [2mno-useless-escape[22m[0m
+[0m   [2m767:53[22m   [31merror[39m  Unnecessary escape character: \_                                           [2mno-useless-escape[22m[0m
+[0m   [2m767:114[22m  [31merror[39m  Unnecessary escape character: \_                                           [2mno-useless-escape[22m[0m
+[0m   [2m767:152[22m  [31merror[39m  Unnecessary escape character: \_                                           [2mno-useless-escape[22m[0m
+[0m   [2m767:184[22m  [31merror[39m  Unnecessary escape character: \_                                           [2mno-useless-escape[22m[0m
+[0m   [2m767:210[22m  [31merror[39m  Unnecessary escape character: \_                                           [2mno-useless-escape[22m[0m
+[0m   [2m767:236[22m  [31merror[39m  Unnecessary escape character: \_                                           [2mno-useless-escape[22m[0m
+[0m   [2m772:60[22m   [31merror[39m  Unnecessary escape character: \[                                           [2mno-useless-escape[22m[0m
+[0m   [2m779:30[22m   [31merror[39m  Unnecessary escape character: \[                                           [2mno-useless-escape[22m[0m
+[0m   [2m781:30[22m   [31merror[39m  Unnecessary escape character: \[                                           [2mno-useless-escape[22m[0m
+[0m   [2m794:36[22m   [31merror[39m  Unnecessary escape character: \)                                           [2mno-useless-escape[22m[0m
+[0m   [2m800:47[22m   [31merror[39m  Unnecessary escape character: \[                                           [2mno-useless-escape[22m[0m
+[0m   [2m807:32[22m   [31merror[39m  Unnecessary escape character: \[                                           [2mno-useless-escape[22m[0m
+[0m   [2m807:58[22m   [31merror[39m  Unnecessary escape character: \[                                           [2mno-useless-escape[22m[0m
+[0m   [2m808:16[22m   [31merror[39m  Unexpected control character(s) in regular expression: \x00, \x1f          [2mno-control-regex[22m[0m
+[0m   [2m838:54[22m   [31merror[39m  Unnecessary escape character: \-                                           [2mno-useless-escape[22m[0m
+[0m   [2m841:65[22m   [31merror[39m  Unnecessary escape character: \/                                           [2mno-useless-escape[22m[0m
+[0m   [2m841:72[22m   [31merror[39m  Unnecessary escape character: \|                                           [2mno-useless-escape[22m[0m
+[0m   [2m841:101[22m  [31merror[39m  Unnecessary escape character: \[                                           [2mno-useless-escape[22m[0m
+[0m   [2m841:179[22m  [31merror[39m  Unnecessary escape character: \/                                           [2mno-useless-escape[22m[0m
+[0m   [2m841:186[22m  [31merror[39m  Unnecessary escape character: \|                                           [2mno-useless-escape[22m[0m
+[0m   [2m841:214[22m  [31merror[39m  Unnecessary escape character: \/                                           [2mno-useless-escape[22m[0m
+[0m   [2m841:221[22m  [31merror[39m  Unnecessary escape character: \|                                           [2mno-useless-escape[22m[0m
+[0m   [2m968:19[22m   [31merror[39m  'console' is not defined                                                   [2mno-undef[22m[0m
+[0m  [2m1065:19[22m   [31merror[39m  'console' is not defined                                                   [2mno-undef[22m[0m
+[0m  [2m1081:10[22m   [31merror[39m  Unexpected constant truthiness on the left-hand side of a `&&` expression  [2mno-constant-binary-expression[22m[0m
+[0m  [2m1095:13[22m   [31merror[39m  't' is already defined                                                     [2mno-redeclare[22m[0m
+[0m  [2m1224:26[22m   [31merror[39m  Unnecessary escape character: \/                                           [2mno-useless-escape[22m[0m
+[0m  [2m1231:25[22m   [31merror[39m  Do not access Object.prototype method 'hasOwnProperty' from target object  [2mno-prototype-builtins[22m[0m
+[0m  [2m1231:98[22m   [31merror[39m  Do not access Object.prototype method 'hasOwnProperty' from target object  [2mno-prototype-builtins[22m[0m
+[0m  [2m1349:56[22m   [31merror[39m  'console' is not defined                                                   [2mno-undef[22m[0m
+[0m  [2m1402:56[22m   [31merror[39m  'console' is not defined                                                   [2mno-undef[22m[0m
+[0m  [2m1457:11[22m   [31merror[39m  'console' is not defined                                                   [2mno-undef[22m[0m
+[0m  [2m1489:21[22m   [31merror[39m  'setTimeout' is not defined                                                [2mno-undef[22m[0m
+[0m  [2m1682:7[22m    [31merror[39m  'k' is already defined                                                     [2mno-redeclare[22m[0m
+[0m[0m
+[0m[4mG:\NeoVAI\src\js\tailwind-config.js[24m[0m
+[0m  [2m1:1[22m  [31merror[39m  'tailwind' is not defined  [2mno-undef[22m[0m
+[0m[0m
+[0m[4mG:\NeoVAI\src\js\tailwindcss.min.js[24m[0m
+[0m     [2m10:47[22m   [31merror[39m  'require' is not defined                                                       [2mno-undef[22m[0m
+[0m     [2m50:32[22m   [31merror[39m  'self' is not defined                                                          [2mno-undef[22m[0m
+[0m     [2m52:56[22m   [31merror[39m  'self' is not defined                                                          [2mno-undef[22m[0m
+[0m    [2m421:24[22m   [31merror[39m  'console' is not defined                                                       [2mno-undef[22m[0m
+[0m    [2m421:59[22m   [31merror[39m  'console' is not defined                                                       [2mno-undef[22m[0m
+[0m    [2m767:27[22m   [31merror[39m  Do not access Object.prototype method 'hasOwnProperty' from target object      [2mno-prototype-builtins[22m[0m
+[0m    [2m768:57[22m   [31merror[39m  Do not access Object.prototype method 'hasOwnProperty' from target object      [2mno-prototype-builtins[22m[0m
+[0m    [2m780:28[22m   [31merror[39m  Unnecessary escape character: \[                                               [2mno-useless-escape[22m[0m
+[0m    [2m780:37[22m   [31merror[39m  Unnecessary escape character: \[                                               [2mno-useless-escape[22m[0m
+[0m   [2m1286:16[22m   [31merror[39m  Unnecessary escape character: \ .                                              [2mno-useless-escape[22m[0m
+[0m   [2m1581:9[22m    [31merror[39m  Redundant double negation                                                      [2mno-extra-boolean-cast[22m[0m
+[0m   [2m2795:16[22m   [31merror[39m  'e' is defined but never used                                                  [2munused-imports/no-unused-vars[22m[0m
+[0m   [2m2795:19[22m   [31merror[39m  Empty block statement                                                          [2mno-empty[22m[0m
+[0m   [2m3690:7[22m    [31merror[39m  Expected getter 'first' to always return a value                               [2mgetter-return[22m[0m
+[0m   [2m3691:13[22m   [31merror[39m  Redundant double negation                                                      [2mno-extra-boolean-cast[22m[0m
+[0m   [2m3693:7[22m    [31merror[39m  Expected getter 'last' to always return a value                                [2mgetter-return[22m[0m
+[0m   [2m3694:13[22m   [31merror[39m  Redundant double negation                                                      [2mno-extra-boolean-cast[22m[0m
+[0m   [2m3913:24[22m   [31merror[39m  'URL' is not defined                                                           [2mno-undef[22m[0m
+[0m   [2m4617:7[22m    [31merror[39m  Unnecessary try/catch wrapper                                                  [2mno-useless-catch[22m[0m
+[0m   [2m4689:64[22m   [31merror[39m  'console' is not defined                                                       [2mno-undef[22m[0m
+[0m   [2m4689:80[22m   [31merror[39m  'console' is not defined                                                       [2mno-undef[22m[0m
+[0m   [2m4703:7[22m    [31merror[39m  'W3' is assigned a value but never used. Allowed unused vars must match /^_/u  [2munused-imports/no-unused-vars[22m[0m
+[0m   [2m4816:13[22m   [31merror[39m  'console' is not defined                                                       [2mno-undef[22m[0m
+[0m   [2m4816:24[22m   [31merror[39m  'console' is not defined                                                       [2mno-undef[22m[0m
+[0m   [2m4816:41[22m   [31merror[39m  'console' is not defined                                                       [2mno-undef[22m[0m
+[0m   [2m5042:7[22m    [31merror[39m  'Q3' is assigned a value but never used. Allowed unused vars must match /^_/u  [2munused-imports/no-unused-vars[22m[0m
+[0m   [2m5191:9[22m    [31merror[39m  'console' is not defined                                                       [2mno-undef[22m[0m
+[0m   [2m5192:11[22m   [31merror[39m  'console' is not defined                                                       [2mno-undef[22m[0m
+[0m   [2m5195:11[22m   [31merror[39m  'console' is not defined                                                       [2mno-undef[22m[0m
+[0m   [2m5202:13[22m   [31merror[39m  'console' is not defined                                                       [2mno-undef[22m[0m
+[0m   [2m5252:5[22m    [31merror[39m  'Z3' is assigned a value but never used. Allowed unused vars must match /^_/u  [2munused-imports/no-unused-vars[22m[0m
+[0m   [2m5253:5[22m    [31merror[39m  'J3' is assigned a value but never used. Allowed unused vars must match /^_/u  [2munused-imports/no-unused-vars[22m[0m
+[0m   [2m5254:5[22m    [31merror[39m  'eI' is assigned a value but never used. Allowed unused vars must match /^_/u  [2munused-imports/no-unused-vars[22m[0m
+[0m   [2m5255:5[22m    [31merror[39m  'tI' is assigned a value but never used. Allowed unused vars must match /^_/u  [2munused-imports/no-unused-vars[22m[0m
+[0m   [2m5256:5[22m    [31merror[39m  'rI' is assigned a value but never used. Allowed unused vars must match /^_/u  [2munused-imports/no-unused-vars[22m[0m
+[0m   [2m5257:5[22m    [31merror[39m  'iI' is assigned a value but never used. Allowed unused vars must match /^_/u  [2munused-imports/no-unused-vars[22m[0m
+[0m   [2m5258:5[22m    [31merror[39m  'nI' is assigned a value but never used. Allowed unused vars must match /^_/u  [2munused-imports/no-unused-vars[22m[0m
+[0m   [2m5259:5[22m    [31merror[39m  'sI' is assigned a value but never used. Allowed unused vars must match /^_/u  [2munused-imports/no-unused-vars[22m[0m
+[0m   [2m5260:5[22m    [31merror[39m  'aI' is assigned a value but never used. Allowed unused vars must match /^_/u  [2munused-imports/no-unused-vars[22m[0m
+[0m   [2m5261:5[22m    [31merror[39m  'oI' is assigned a value but never used. Allowed unused vars must match /^_/u  [2munused-imports/no-unused-vars[22m[0m
+[0m   [2m5262:5[22m    [31merror[39m  'lI' is assigned a value but never used. Allowed unused vars must match /^_/u  [2munused-imports/no-unused-vars[22m[0m
+[0m   [2m5263:5[22m    [31merror[39m  'uI' is assigned a value but never used. Allowed unused vars must match /^_/u  [2munused-imports/no-unused-vars[22m[0m
+[0m   [2m5264:5[22m    [31merror[39m  'fI' is assigned a value but never used. Allowed unused vars must match /^_/u  [2munused-imports/no-unused-vars[22m[0m
+[0m   [2m5265:5[22m    [31merror[39m  'cI' is assigned a value but never used. Allowed unused vars must match /^_/u  [2munused-imports/no-unused-vars[22m[0m
+[0m   [2m5266:5[22m    [31merror[39m  'pI' is assigned a value but never used. Allowed unused vars must match /^_/u  [2munused-imports/no-unused-vars[22m[0m
+[0m   [2m5267:5[22m    [31merror[39m  'dI' is assigned a value but never used. Allowed unused vars must match /^_/u  [2munused-imports/no-unused-vars[22m[0m
+[0m   [2m5268:5[22m    [31merror[39m  'hI' is assigned a value but never used. Allowed unused vars must match /^_/u  [2munused-imports/no-unused-vars[22m[0m
+[0m   [2m5269:5[22m    [31merror[39m  'mI' is assigned a value but never used. Allowed unused vars must match /^_/u  [2munused-imports/no-unused-vars[22m[0m
+[0m   [2m5270:5[22m    [31merror[39m  'gI' is assigned a value but never used. Allowed unused vars must match /^_/u  [2munused-imports/no-unused-vars[22m[0m
+[0m   [2m5271:5[22m    [31merror[39m  'yI' is assigned a value but never used. Allowed unused vars must match /^_/u  [2munused-imports/no-unused-vars[22m[0m
+[0m   [2m5272:5[22m    [31merror[39m  'bI' is assigned a value but never used. Allowed unused vars must match /^_/u  [2munused-imports/no-unused-vars[22m[0m
+[0m   [2m5273:5[22m    [31merror[39m  'wI' is assigned a value but never used. Allowed unused vars must match /^_/u  [2munused-imports/no-unused-vars[22m[0m
+[0m   [2m5274:5[22m    [31merror[39m  'vI' is assigned a value but never used. Allowed unused vars must match /^_/u  [2munused-imports/no-unused-vars[22m[0m
+[0m   [2m5275:5[22m    [31merror[39m  'xI' is assigned a value but never used. Allowed unused vars must match /^_/u  [2munused-imports/no-unused-vars[22m[0m
+[0m   [2m5441:15[22m   [31merror[39m  Redundant double negation                                                      [2mno-extra-boolean-cast[22m[0m
+[0m   [2m5441:19[22m   [31merror[39m  Do not access Object.prototype method 'hasOwnProperty' from target object      [2mno-prototype-builtins[22m[0m
+[0m   [2m5597:15[22m   [31merror[39m  'Mp' is a function                                                             [2mno-func-assign[22m[0m
+[0m   [2m5632:11[22m   [31merror[39m  Redundant double negation                                                      [2mno-extra-boolean-cast[22m[0m
+[0m   [2m5662:10[22m   [31merror[39m  'Pa' is a function                                                             [2mno-func-assign[22m[0m
+[0m   [2m5896:10[22m   [31merror[39m  'Ia' is a function                                                             [2mno-func-assign[22m[0m
+[0m   [2m5950:10[22m   [31merror[39m  'qa' is a function                                                             [2mno-func-assign[22m[0m
+[0m   [2m5980:17[22m   [31merror[39m  Unnecessary escape character: \.                                               [2mno-useless-escape[22m[0m
+[0m   [2m5980:19[22m   [31merror[39m  Unnecessary escape character: \/                                               [2mno-useless-escape[22m[0m
+[0m   [2m5980:24[22m   [31merror[39m  Unnecessary escape character: \[                                               [2mno-useless-escape[22m[0m
+[0m   [2m5980:27[22m   [31merror[39m  Unnecessary escape character: \^                                               [2mno-useless-escape[22m[0m
+[0m   [2m5980:30[22m   [31merror[39m  Unnecessary escape character: \{                                               [2mno-useless-escape[22m[0m
+[0m   [2m5981:17[22m   [31merror[39m  Unnecessary escape character: \.                                               [2mno-useless-escape[22m[0m
+[0m   [2m5981:19[22m   [31merror[39m  Unnecessary escape character: \/                                               [2mno-useless-escape[22m[0m
+[0m   [2m5981:24[22m   [31merror[39m  Unnecessary escape character: \[                                               [2mno-useless-escape[22m[0m
+[0m   [2m5981:28[22m   [31merror[39m  Unnecessary escape character: \^                                               [2mno-useless-escape[22m[0m
+[0m   [2m5981:31[22m   [31merror[39m  Unnecessary escape character: \{                                               [2mno-useless-escape[22m[0m
+[0m   [2m6004:17[22m   [31merror[39m  Unexpected control character(s) in regular expression: \x0b                    [2mno-control-regex[22m[0m
+[0m   [2m6052:10[22m   [31merror[39m  'Ma' is a function                                                             [2mno-func-assign[22m[0m
+[0m   [2m6109:10[22m   [31merror[39m  'Ba' is a function                                                             [2mno-func-assign[22m[0m
+[0m   [2m6143:10[22m   [31merror[39m  'ja' is a function                                                             [2mno-func-assign[22m[0m
+[0m   [2m6196:10[22m   [31merror[39m  'Ua' is a function                                                             [2mno-func-assign[22m[0m
+[0m   [2m6275:10[22m   [31merror[39m  'Va' is a function                                                             [2mno-func-assign[22m[0m
+[0m   [2m6309:10[22m   [31merror[39m  'Wa' is a function                                                             [2mno-func-assign[22m[0m
+[0m   [2m6343:10[22m   [31merror[39m  'Qa' is a function                                                             [2mno-func-assign[22m[0m
+[0m   [2m6412:10[22m   [31merror[39m  'Za' is a function                                                             [2mno-func-assign[22m[0m
+[0m   [2m6601:28[22m   [31merror[39m  'n' is defined but never used. Allowed unused args must match /^_/u            [2munused-imports/no-unused-vars[22m[0m
+[0m   [2m6700:10[22m   [31merror[39m  'ro' is a function                                                             [2mno-func-assign[22m[0m
+[0m   [2m6734:10[22m   [31merror[39m  'no' is a function                                                             [2mno-func-assign[22m[0m
+[0m   [2m6768:10[22m   [31merror[39m  'ao' is a function                                                             [2mno-func-assign[22m[0m
+[0m   [2m6911:15[22m   [31merror[39m  'pd' is a function                                                             [2mno-func-assign[22m[0m
+[0m   [2m7112:15[22m   [31merror[39m  'yd' is a function                                                             [2mno-func-assign[22m[0m
+[0m   [2m7161:11[22m   [31merror[39m  Redundant double negation                                                      [2mno-extra-boolean-cast[22m[0m
+[0m   [2m7249:15[22m   [31merror[39m  Expected a 'break' statement before 'case'                                     [2mno-fallthrough[22m[0m
+[0m   [2m7753:13[22m   [31merror[39m  Expected a 'break' statement before 'case'                                     [2mno-fallthrough[22m[0m
+[0m   [2m7755:13[22m   [31merror[39m  Expected a 'break' statement before 'default'                                  [2mno-fallthrough[22m[0m
+[0m   [2m8120:15[22m   [31merror[39m  'Pd' is a function                                                             [2mno-func-assign[22m[0m
+[0m   [2m8530:9[22m    [31merror[39m  'console' is not defined                                                       [2mno-undef[22m[0m
+[0m   [2m8531:11[22m   [31merror[39m  'console' is not defined                                                       [2mno-undef[22m[0m
+[0m   [2m8534:13[22m   [31merror[39m  'console' is not defined                                                       [2mno-undef[22m[0m
+[0m   [2m8576:5[22m    [31merror[39m  'HI' is assigned a value but never used. Allowed unused vars must match /^_/u  [2munused-imports/no-unused-vars[22m[0m
+[0m   [2m8577:5[22m    [31merror[39m  'WI' is assigned a value but never used. Allowed unused vars must match /^_/u  [2munused-imports/no-unused-vars[22m[0m
+[0m   [2m8578:5[22m    [31merror[39m  'GI' is assigned a value but never used. Allowed unused vars must match /^_/u  [2munused-imports/no-unused-vars[22m[0m
+[0m   [2m8579:5[22m    [31merror[39m  'QI' is assigned a value but never used. Allowed unused vars must match /^_/u  [2munused-imports/no-unused-vars[22m[0m
+[0m   [2m8740:16[22m   [31merror[39m  Unnecessary escape character: \,                                               [2mno-useless-escape[22m[0m
+[0m   [2m8741:16[22m   [31merror[39m  Unnecessary escape character: \ .                                              [2mno-useless-escape[22m[0m
+[0m   [2m9879:38[22m   [31merror[39m  'i' is defined but never used. Allowed unused args must match /^_/u            [2munused-imports/no-unused-vars[22m[0m
+[0m  [2m10050:38[22m   [31merror[39m  'i' is defined but never used. Allowed unused args must match /^_/u            [2munused-imports/no-unused-vars[22m[0m
+[0m  [2m10071:40[22m   [31merror[39m  'i' is defined but never used. Allowed unused args must match /^_/u            [2munused-imports/no-unused-vars[22m[0m
+[0m  [2m10100:40[22m   [31merror[39m  'i' is defined but never used. Allowed unused args must match /^_/u            [2munused-imports/no-unused-vars[22m[0m
+[0m  [2m11311:19[22m   [31merror[39m  'URL' is not defined                                                           [2mno-undef[22m[0m
+[0m  [2m11313:14[22m   [31merror[39m  'e' is defined but never used                                                  [2munused-imports/no-unused-vars[22m[0m
+[0m  [2m11330:14[22m   [31merror[39m  't' is defined but never used                                                  [2munused-imports/no-unused-vars[22m[0m
+[0m  [2m11396:102[22m  [31merror[39m  'y' is defined but never used. Allowed unused args must match /^_/u            [2munused-imports/no-unused-vars[22m[0m
+[0m  [2m11576:14[22m   [31merror[39m  'e' is defined but never used                                                  [2munused-imports/no-unused-vars[22m[0m
+[0m  [2m12268:61[22m   [31merror[39m  'le' is defined but never used. Allowed unused args must match /^_/u           [2munused-imports/no-unused-vars[22m[0m
+[0m  [2m12341:9[22m    [31merror[39m  Redundant double negation                                                      [2mno-extra-boolean-cast[22m[0m
+[0m  [2m12370:17[22m   [31merror[39m  'console' is not defined                                                       [2mno-undef[22m[0m
+[0m  [2m12390:17[22m   [31merror[39m  'console' is not defined                                                       [2mno-undef[22m[0m
+[0m  [2m12502:13[22m   [31merror[39m  Empty block statement                                                          [2mno-empty[22m[0m
+[0m  [2m12641:22[22m   [31merror[39m  Do not access Object.prototype method 'hasOwnProperty' from target object      [2mno-prototype-builtins[22m[0m
+[0m  [2m12715:29[22m   [31merror[39m  'n' is defined but never used. Allowed unused args must match /^_/u            [2munused-imports/no-unused-vars[22m[0m
+[0m  [2m12744:23[22m   [31merror[39m  't' is defined but never used. Allowed unused args must match /^_/u            [2munused-imports/no-unused-vars[22m[0m
+[0m  [2m12909:41[22m   [31merror[39m  'console' is not defined                                                       [2mno-undef[22m[0m
+[0m  [2m13643:18[22m   [31merror[39m  'i' is defined but never used                                                  [2munused-imports/no-unused-vars[22m[0m
+[0m  [2m14281:30[22m   [31merror[39m  'i' is assigned a value but never used. Allowed unused args must match /^_/u   [2munused-imports/no-unused-vars[22m[0m
+[0m  [2m14467:13[22m   [31merror[39m  Empty block statement                                                          [2mno-empty[22m[0m
+[0m  [2m14513:17[22m   [31merror[39m  'console' is not defined                                                       [2mno-undef[22m[0m
+[0m  [2m14521:25[22m   [31merror[39m  'console' is not defined                                                       [2mno-undef[22m[0m
+[0m  [2m14759:27[22m   [31merror[39m  Unnecessary escape character: \[                                               [2mno-useless-escape[22m[0m
+[0m  [2m14770:39[22m   [31merror[39m  Unnecessary escape character: \[                                               [2mno-useless-escape[22m[0m
+[0m  [2m14770:51[22m   [31merror[39m  Unnecessary escape character: \[                                               [2mno-useless-escape[22m[0m
+[0m  [2m14770:66[22m   [31merror[39m  Unnecessary escape character: \[                                               [2mno-useless-escape[22m[0m
+[0m  [2m14780:39[22m   [31merror[39m  Unnecessary escape character: \[                                               [2mno-useless-escape[22m[0m
+[0m  [2m14780:51[22m   [31merror[39m  Unnecessary escape character: \[                                               [2mno-useless-escape[22m[0m
+[0m  [2m14780:65[22m   [31merror[39m  Unnecessary escape character: \[                                               [2mno-useless-escape[22m[0m
+[0m  [2m14785:18[22m   [31merror[39m  Unnecessary escape character: \/                                               [2mno-useless-escape[22m[0m
+[0m  [2m14793:24[22m   [31merror[39m  Unnecessary escape character: \[                                               [2mno-useless-escape[22m[0m
+[0m  [2m14794:24[22m   [31merror[39m  Unnecessary escape character: \[                                               [2mno-useless-escape[22m[0m
+[0m  [2m14795:23[22m   [31merror[39m  Unnecessary escape character: \[                                               [2mno-useless-escape[22m[0m
+[0m  [2m14798:24[22m   [31merror[39m  Unnecessary escape character: \[                                               [2mno-useless-escape[22m[0m
+[0m  [2m14799:24[22m   [31merror[39m  Unnecessary escape character: \[                                               [2mno-useless-escape[22m[0m
+[0m  [2m14800:21[22m   [31merror[39m  Unnecessary escape character: \[                                               [2mno-useless-escape[22m[0m
+[0m  [2m14838:17[22m   [31merror[39m  Unnecessary escape character: \[                                               [2mno-useless-escape[22m[0m
+[0m  [2m14838:29[22m   [31merror[39m  Unnecessary escape character: \[                                               [2mno-useless-escape[22m[0m
+[0m  [2m14879:19[22m   [31merror[39m  'console' is not defined                                                       [2mno-undef[22m[0m
+[0m  [2m14895:19[22m   [31merror[39m  'console' is not defined                                                       [2mno-undef[22m[0m
+[0m  [2m14897:20[22m   [31merror[39m  'console' is not defined                                                       [2mno-undef[22m[0m
+[0m  [2m14897:64[22m   [31merror[39m  'console' is not defined                                                       [2mno-undef[22m[0m
+[0m  [2m14899:20[22m   [31merror[39m  'console' is not defined                                                       [2mno-undef[22m[0m
+[0m  [2m14901:21[22m   [31merror[39m  'console' is not defined                                                       [2mno-undef[22m[0m
+[0m  [2m14902:21[22m   [31merror[39m  'console' is not defined                                                       [2mno-undef[22m[0m
+[0m  [2m14904:21[22m   [31merror[39m  'console' is not defined                                                       [2mno-undef[22m[0m
+[0m  [2m14927:22[22m   [31merror[39m  'console' is not defined                                                       [2mno-undef[22m[0m
+[0m  [2m14927:66[22m   [31merror[39m  'console' is not defined                                                       [2mno-undef[22m[0m
+[0m  [2m15232:70[22m   [31merror[39m  'window' is not defined                                                        [2mno-undef[22m[0m
+[0m  [2m15619:36[22m   [31merror[39m  Unnecessary escape character: \[                                               [2mno-useless-escape[22m[0m
+[0m  [2m15619:57[22m   [31merror[39m  Unnecessary escape character: \/                                               [2mno-useless-escape[22m[0m
+[0m  [2m15967:17[22m   [31merror[39m  'console' is not defined                                                       [2mno-undef[22m[0m
+[0m  [2m15969:17[22m   [31merror[39m  'console' is not defined                                                       [2mno-undef[22m[0m
+[0m  [2m15986:17[22m   [31merror[39m  'console' is not defined                                                       [2mno-undef[22m[0m
+[0m  [2m15987:17[22m   [31merror[39m  'console' is not defined                                                       [2mno-undef[22m[0m
+[0m  [2m17263:63[22m   [31merror[39m  Unexpected constant truthiness on the left-hand side of a `||` expression      [2mno-constant-binary-expression[22m[0m
+[0m  [2m18176:72[22m   [31merror[39m  'n' is defined but never used. Allowed unused args must match /^_/u            [2munused-imports/no-unused-vars[22m[0m
+[0m  [2m19605:15[22m   [31merror[39m  Redundant double negation                                                      [2mno-extra-boolean-cast[22m[0m
+[0m  [2m20419:13[22m   [31merror[39m  'console' is not defined                                                       [2mno-undef[22m[0m
+[0m  [2m20421:17[22m   [31merror[39m  'console' is not defined                                                       [2mno-undef[22m[0m
+[0m  [2m20422:17[22m   [31merror[39m  'console' is not defined                                                       [2mno-undef[22m[0m
+[0m  [2m20492:3[22m    [31merror[39m  'console' is not defined                                                       [2mno-undef[22m[0m
+[0m  [2m20512:3[22m    [31merror[39m  'window' is not defined                                                        [2mno-undef[22m[0m
+[0m  [2m20526:7[22m    [31merror[39m  'MutationObserver' is not defined                                              [2mno-undef[22m[0m
+[0m  [2m20529:16[22m   [31merror[39m  'MutationObserver' is not defined                                              [2mno-undef[22m[0m
+[0m  [2m20530:21[22m   [31merror[39m  'document' is not defined                                                      [2mno-undef[22m[0m
+[0m  [2m20536:14[22m   [31merror[39m  'document' is not defined                                                      [2mno-undef[22m[0m
+[0m  [2m20540:19[22m   [31merror[39m  'document' is not defined                                                      [2mno-undef[22m[0m
+[0m  [2m20542:19[22m   [31merror[39m  'document' is not defined                                                      [2mno-undef[22m[0m
+[0m  [2m20543:9[22m    [31merror[39m  'document' is not defined                                                      [2mno-undef[22m[0m
+[0m  [2m20545:30[22m   [31merror[39m  'self' is not defined                                                          [2mno-undef[22m[0m
+[0m  [2m20548:14[22m   [31merror[39m  'window' is not defined                                                        [2mno-undef[22m[0m
+[0m  [2m20551:54[22m   [31merror[39m  'window' is not defined                                                        [2mno-undef[22m[0m
+[0m  [2m20551:83[22m   [31merror[39m  'window' is not defined                                                        [2mno-undef[22m[0m
+[0m  [2m20555:43[22m   [31merror[39m  'document' is not defined                                                      [2mno-undef[22m[0m
+[0m  [2m20555:77[22m   [31merror[39m  'document' is not defined                                                      [2mno-undef[22m[0m
+[0m[0m
+[0m[4mG:\NeoVAI\src\main.js[24m[0m
+[0m   [2m8:1[22m  [31merror[39m  'document' is not defined  [2mno-undef[22m[0m
+[0m  [2m26:7[22m  [31merror[39m  'console' is not defined   [2mno-undef[22m[0m
+[0m  [2m27:7[22m  [31merror[39m  'console' is not defined   [2mno-undef[22m[0m
+[0m  [2m29:5[22m  [31merror[39m  'console' is not defined   [2mno-undef[22m[0m
+[0m[0m
+[0m[4mG:\NeoVAI\src\router\index.js[24m[0m
+[0m  [2m30:22[22m  [31merror[39m  'localStorage' is not defined    [2mno-undef[22m[0m
+[0m  [2m30:59[22m  [31merror[39m  'sessionStorage' is not defined  [2mno-undef[22m[0m
+[0m[0m
+[0m[4mG:\NeoVAI\src\services\apiService.js[24m[0m
+[0m   [2m24:5[22m   [31merror[39m  'console' is not defined          [2mno-undef[22m[0m
+[0m   [2m34:5[22m   [31merror[39m  'console' is not defined          [2mno-undef[22m[0m
+[0m   [2m48:5[22m   [31merror[39m  'console' is not defined          [2mno-undef[22m[0m
+[0m   [2m66:3[22m   [31merror[39m  'console' is not defined          [2mno-undef[22m[0m
+[0m   [2m74:9[22m   [31merror[39m  'console' is not defined          [2mno-undef[22m[0m
+[0m   [2m78:9[22m   [31merror[39m  'console' is not defined          [2mno-undef[22m[0m
+[0m   [2m81:9[22m   [31merror[39m  'console' is not defined          [2mno-undef[22m[0m
+[0m   [2m84:9[22m   [31merror[39m  'console' is not defined          [2mno-undef[22m[0m
+[0m   [2m87:9[22m   [31merror[39m  'console' is not defined          [2mno-undef[22m[0m
+[0m   [2m91:5[22m   [31merror[39m  'console' is not defined          [2mno-undef[22m[0m
+[0m   [2m94:5[22m   [31merror[39m  'console' is not defined          [2mno-undef[22m[0m
+[0m  [2m107:40[22m  [31merror[39m  'setTimeout' is not defined       [2mno-undef[22m[0m
+[0m  [2m118:7[22m   [31merror[39m  'console' is not defined          [2mno-undef[22m[0m
+[0m  [2m136:26[22m  [31merror[39m  'AbortController' is not defined  [2mno-undef[22m[0m
+[0m  [2m143:3[22m   [31merror[39m  'fetch' is not defined            [2mno-undef[22m[0m
+[0m  [2m161:25[22m  [31merror[39m  'TextDecoder' is not defined      [2mno-undef[22m[0m
+[0m  [2m182:11[22m  [31merror[39m  'console' is not defined          [2mno-undef[22m[0m
+[0m  [2m190:11[22m  [31merror[39m  'console' is not defined          [2mno-undef[22m[0m
+[0m  [2m200:7[22m   [31merror[39m  'console' is not defined          [2mno-undef[22m[0m
+[0m  [2m220:11[22m  [31merror[39m  'console' is not defined          [2mno-undef[22m[0m
+[0m  [2m223:11[22m  [31merror[39m  'console' is not defined          [2mno-undef[22m[0m
+[0m  [2m296:11[22m  [31merror[39m  'console' is not defined          [2mno-undef[22m[0m
+[0m  [2m334:30[22m  [31merror[39m  'FormData' is not defined         [2mno-undef[22m[0m
+[0m[0m
+[0m[4mG:\NeoVAI\src\services\eventBus.js[24m[0m
+[0m  [2m69:9[22m  [31merror[39m  'console' is not defined  [2mno-undef[22m[0m
+[0m[0m
+[0m[4mG:\NeoVAI\src\services\notificationUtils.js[24m[0m
+[0m  [2m45:30[22m  [31merror[39m  'document' is not defined    [2mno-undef[22m[0m
+[0m  [2m56:9[22m   [31merror[39m  'document' is not defined    [2mno-undef[22m[0m
+[0m  [2m59:9[22m   [31merror[39m  'setTimeout' is not defined  [2mno-undef[22m[0m
+[0m  [2m61:13[22m  [31merror[39m  'setTimeout' is not defined  [2mno-undef[22m[0m
+[0m  [2m73:9[22m   [31merror[39m  'console' is not defined     [2mno-undef[22m[0m
+[0m  [2m78:34[22m  [31merror[39m  'document' is not defined    [2mno-undef[22m[0m
+[0m  [2m89:13[22m  [31merror[39m  'document' is not defined    [2mno-undef[22m[0m
+[0m  [2m92:13[22m  [31merror[39m  'setTimeout' is not defined  [2mno-undef[22m[0m
+[0m  [2m94:17[22m  [31merror[39m  'setTimeout' is not defined  [2mno-undef[22m[0m
+[0m  [2m97:13[22m  [31merror[39m  'console' is not defined     [2mno-undef[22m[0m
+[0m[0m
+[0m[4mG:\NeoVAI\src\store\chatStore.js[24m[0m
+[0m    [2m2:22[22m  [31merror[39m  'handleStreamingResponse' is defined but never used                                        [2munused-imports/no-unused-imports[22m[0m
+[0m    [2m3:10[22m  [31merror[39m  'StorageManager' is defined but never used                                                 [2munused-imports/no-unused-imports[22m[0m
+[0m    [2m3:38[22m  [31merror[39m  'debounce' is defined but never used                                                       [2munused-imports/no-unused-imports[22m[0m
+[0m    [2m3:48[22m  [31merror[39m  'formatDateTime' is defined but never used                                                 [2munused-imports/no-unused-imports[22m[0m
+[0m   [2m95:25[22m  [31merror[39m  'model' is assigned a value but never used. Allowed unused args must match /^_/u           [2munused-imports/no-unused-vars[22m[0m
+[0m   [2m98:15[22m  [31merror[39m  'previousChatId' is assigned a value but never used. Allowed unused vars must match /^_/u  [2munused-imports/no-unused-vars[22m[0m
+[0m  [2m102:38[22m  [31merror[39m  'setTimeout' is not defined                                                                [2mno-undef[22m[0m
+[0m  [2m104:9[22m   [31merror[39m  'console' is not defined                                                                   [2mno-undef[22m[0m
+[0m  [2m106:9[22m   [31merror[39m  'console' is not defined                                                                   [2mno-undef[22m[0m
+[0m  [2m117:9[22m   [31merror[39m  'console' is not defined                                                                   [2mno-undef[22m[0m
+[0m  [2m118:9[22m   [31merror[39m  'console' is not defined                                                                   [2mno-undef[22m[0m
+[0m  [2m141:9[22m   [31merror[39m  'console' is not defined                                                                   [2mno-undef[22m[0m
+[0m  [2m254:17[22m  [31merror[39m  'console' is not defined                                                                   [2mno-undef[22m[0m
+[0m  [2m340:17[22m  [31merror[39m  'console' is not defined                                                                   [2mno-undef[22m[0m
+[0m  [2m345:21[22m  [31merror[39m  'console' is not defined                                                                   [2mno-undef[22m[0m
+[0m  [2m389:13[22m  [31merror[39m  'console' is not defined                                                                   [2mno-undef[22m[0m
+[0m  [2m484:9[22m   [31merror[39m  'console' is not defined                                                                   [2mno-undef[22m[0m
+[0m  [2m516:9[22m   [31merror[39m  'console' is not defined                                                                   [2mno-undef[22m[0m
+[0m  [2m533:9[22m   [31merror[39m  'console' is not defined                                                                   [2mno-undef[22m[0m
+[0m  [2m545:9[22m   [31merror[39m  'console' is not defined                                                                   [2mno-undef[22m[0m
+[0m  [2m551:9[22m   [31merror[39m  'console' is not defined                                                                   [2mno-undef[22m[0m
+[0m  [2m586:9[22m   [31merror[39m  'console' is not defined                                                                   [2mno-undef[22m[0m
+[0m  [2m589:9[22m   [31merror[39m  'console' is not defined                                                                   [2mno-undef[22m[0m
+[0m  [2m608:9[22m   [31merror[39m  'console' is not defined                                                                   [2mno-undef[22m[0m
+[0m  [2m616:11[22m  [31merror[39m  'console' is not defined                                                                   [2mno-undef[22m[0m
+[0m  [2m619:11[22m  [31merror[39m  'setTimeout' is not defined                                                                [2mno-undef[22m[0m
+[0m  [2m623:11[22m  [31merror[39m  'console' is not defined                                                                   [2mno-undef[22m[0m
+[0m  [2m699:9[22m   [31merror[39m  'console' is not defined                                                                   [2mno-undef[22m[0m
+[0m  [2m730:13[22m  [31merror[39m  'console' is not defined                                                                   [2mno-undef[22m[0m
+[0m  [2m742:13[22m  [31merror[39m  'console' is not defined                                                                   [2mno-undef[22m[0m
+[0m  [2m744:13[22m  [31merror[39m  'console' is not defined                                                                   [2mno-undef[22m[0m
+[0m  [2m763:9[22m   [31merror[39m  'console' is not defined                                                                   [2mno-undef[22m[0m
+[0m  [2m774:9[22m   [31merror[39m  'console' is not defined                                                                   [2mno-undef[22m[0m
+[0m  [2m776:9[22m   [31merror[39m  'console' is not defined                                                                   [2mno-undef[22m[0m
+[0m  [2m789:29[22m  [31merror[39m  'Audio' is not defined                                                                     [2mno-undef[22m[0m
+[0m  [2m792:13[22m  [31merror[39m  'console' is not defined                                                                   [2mno-undef[22m[0m
+[0m  [2m796:9[22m   [31merror[39m  'console' is not defined                                                                   [2mno-undef[22m[0m
+[0m[0m
+[0m[4mG:\NeoVAI\src\store\modelSettingStore.js[24m[0m
+[0m   [2m69:9[22m   [31merror[39m  'console' is not defined                                                             [2mno-undef[22m[0m
+[0m  [2m106:9[22m   [31merror[39m  'console' is not defined                                                             [2mno-undef[22m[0m
+[0m  [2m166:15[22m  [31merror[39m  'response' is assigned a value but never used. Allowed unused vars must match /^_/u  [2munused-imports/no-unused-vars[22m[0m
+[0m  [2m183:9[22m   [31merror[39m  'console' is not defined                                                             [2mno-undef[22m[0m
+[0m  [2m211:9[22m   [31merror[39m  'console' is not defined                                                             [2mno-undef[22m[0m
+[0m  [2m239:9[22m   [31merror[39m  'console' is not defined                                                             [2mno-undef[22m[0m
+[0m  [2m261:9[22m   [31merror[39m  'console' is not defined                                                             [2mno-undef[22m[0m
+[0m  [2m264:15[22m  [31merror[39m  'response' is assigned a value but never used. Allowed unused vars must match /^_/u  [2munused-imports/no-unused-vars[22m[0m
+[0m  [2m275:9[22m   [31merror[39m  'console' is not defined                                                             [2mno-undef[22m[0m
+[0m  [2m298:15[22m  [31merror[39m  'response' is assigned a value but never used. Allowed unused vars must match /^_/u  [2munused-imports/no-unused-vars[22m[0m
+[0m  [2m309:9[22m   [31merror[39m  'console' is not defined                                                             [2mno-undef[22m[0m
+[0m  [2m341:9[22m   [31merror[39m  'console' is not defined                                                             [2mno-undef[22m[0m
+[0m  [2m370:9[22m   [31merror[39m  'console' is not defined                                                             [2mno-undef[22m[0m
+[0m  [2m396:9[22m   [31merror[39m  'console' is not defined                                                             [2mno-undef[22m[0m
+[0m[0m
+[0m[4mG:\NeoVAI\src\store\ragStore.js[24m[0m
+[0m    [2m2:10[22m  [31merror[39m  'StorageManager' is defined but never used  [2munused-imports/no-unused-imports[22m[0m
+[0m    [2m2:38[22m  [31merror[39m  'debounce' is defined but never used        [2munused-imports/no-unused-imports[22m[0m
+[0m   [2m84:9[22m   [31merror[39m  'console' is not defined                    [2mno-undef[22m[0m
+[0m  [2m115:7[22m   [31merror[39m  'console' is not defined                    [2mno-undef[22m[0m
+[0m  [2m204:9[22m   [31merror[39m  'console' is not defined                    [2mno-undef[22m[0m
+[0m  [2m246:9[22m   [31merror[39m  'console' is not defined                    [2mno-undef[22m[0m
+[0m  [2m276:9[22m   [31merror[39m  'console' is not defined                    [2mno-undef[22m[0m
+[0m  [2m309:7[22m   [31merror[39m  'console' is not defined                    [2mno-undef[22m[0m
+[0m  [2m343:7[22m   [31merror[39m  'console' is not defined                    [2mno-undef[22m[0m
+[0m  [2m370:9[22m   [31merror[39m  'console' is not defined                    [2mno-undef[22m[0m
+[0m  [2m392:14[22m  [31merror[39m  'file' is not defined                       [2mno-undef[22m[0m
+[0m  [2m394:15[22m  [31merror[39m  'file' is not defined                       [2mno-undef[22m[0m
+[0m  [2m397:9[22m   [31merror[39m  'console' is not defined                    [2mno-undef[22m[0m
+[0m  [2m421:15[22m  [31merror[39m  'console' is not defined                    [2mno-undef[22m[0m
+[0m  [2m430:13[22m  [31merror[39m  'console' is not defined                    [2mno-undef[22m[0m
+[0m  [2m448:9[22m   [31merror[39m  'console' is not defined                    [2mno-undef[22m[0m
+[0m[0m
+[0m[4mG:\NeoVAI\src\store\settingsStore.js[24m[0m
+[0m    [2m2:41[22m  [31merror[39m  'debounce' is defined but never used    [2munused-imports/no-unused-imports[22m[0m
+[0m    [2m3:10[22m  [31merror[39m  'apiService' is defined but never used  [2munused-imports/no-unused-imports[22m[0m
+[0m  [2m222:9[22m   [31merror[39m  'document' is not defined               [2mno-undef[22m[0m
+[0m  [2m224:9[22m   [31merror[39m  'document' is not defined               [2mno-undef[22m[0m
+[0m  [2m245:9[22m   [31merror[39m  'document' is not defined               [2mno-undef[22m[0m
+[0m  [2m249:9[22m   [31merror[39m  'document' is not defined               [2mno-undef[22m[0m
+[0m  [2m312:13[22m  [31merror[39m  'document' is not defined               [2mno-undef[22m[0m
+[0m  [2m315:13[22m  [31merror[39m  'document' is not defined               [2mno-undef[22m[0m
+[0m  [2m322:9[22m   [31merror[39m  'console' is not defined                [2mno-undef[22m[0m
+[0m  [2m365:9[22m   [31merror[39m  'console' is not defined                [2mno-undef[22m[0m
+[0m  [2m390:9[22m   [31merror[39m  'console' is not defined                [2mno-undef[22m[0m
+[0m[0m
+[0m[4mG:\NeoVAI\src\store\utils.js[24m[0m
+[0m    [2m1:15[22m  [31merror[39m  'computed' is defined but never used                                       [2munused-imports/no-unused-imports[22m[0m
+[0m   [2m24:20[22m  [31merror[39m  'localStorage' is not defined                                              [2mno-undef[22m[0m
+[0m   [2m27:7[22m   [31merror[39m  'console' is not defined                                                   [2mno-undef[22m[0m
+[0m   [2m40:7[22m   [31merror[39m  'localStorage' is not defined                                              [2mno-undef[22m[0m
+[0m   [2m43:7[22m   [31merror[39m  'console' is not defined                                                   [2mno-undef[22m[0m
+[0m   [2m55:7[22m   [31merror[39m  'localStorage' is not defined                                              [2mno-undef[22m[0m
+[0m   [2m58:7[22m   [31merror[39m  'console' is not defined                                                   [2mno-undef[22m[0m
+[0m   [2m69:7[22m   [31merror[39m  'localStorage' is not defined                                              [2mno-undef[22m[0m
+[0m   [2m72:7[22m   [31merror[39m  'console' is not defined                                                   [2mno-undef[22m[0m
+[0m   [2m88:7[22m   [31merror[39m  'clearTimeout' is not defined                                              [2mno-undef[22m[0m
+[0m   [2m91:5[22m   [31merror[39m  'clearTimeout' is not defined                                              [2mno-undef[22m[0m
+[0m   [2m92:15[22m  [31merror[39m  'setTimeout' is not defined                                                [2mno-undef[22m[0m
+[0m  [2m108:7[22m   [31merror[39m  'setTimeout' is not defined                                                [2mno-undef[22m[0m
+[0m  [2m168:13[22m  [31merror[39m  Do not access Object.prototype method 'hasOwnProperty' from target object  [2mno-prototype-builtins[22m[0m
+[0m  [2m189:22[22m  [31merror[39m  Do not access Object.prototype method 'hasOwnProperty' from target object  [2mno-prototype-builtins[22m[0m
+[0m[0m
+[0m[4mG:\NeoVAI\src\views\displayArea\ChatContent.vue[24m[0m
+[0m  [2m1:1[22m  [31merror[39m  Parsing error: Unexpected token <[0m
+[0m[0m
+[0m[4mG:\NeoVAI\src\views\displayArea\CodeEditorContent.vue[24m[0m
+[0m  [2m1:1[22m  [31merror[39m  Parsing error: Unexpected token <[0m
+[0m[0m
+[0m[4mG:\NeoVAI\src\views\displayArea\KnowledgeGraphContent.vue[24m[0m
+[0m  [2m1:1[22m  [31merror[39m  Parsing error: Unexpected token <[0m
+[0m[0m
+[0m[4mG:\NeoVAI\src\views\displayArea\RagManagementContent.vue[24m[0m
+[0m  [2m1:1[22m  [31merror[39m  Parsing error: Unexpected token <[0m
+[0m[0m
+[0m[4mG:\NeoVAI\src\views\displayArea\SendMessageContent.vue[24m[0m
+[0m  [2m1:1[22m  [31merror[39m  Parsing error: Unexpected token <[0m
+[0m[0m
+[0m[4mG:\NeoVAI\src\views\displayArea\SettingsContent.vue[24m[0m
+[0m  [2m1:1[22m  [31merror[39m  Parsing error: Unexpected token <[0m
+[0m[0m
+[0m[4mG:\NeoVAI\src\views\displayArea\knowledgeGraph\KnowledgeGraphInfoPanel.vue[24m[0m
+[0m  [2m1:1[22m  [31merror[39m  Parsing error: Unexpected token <[0m
+[0m[0m
+[0m[4mG:\NeoVAI\src\views\displayArea\knowledgeGraph\KnowledgeGraphNavigation.vue[24m[0m
+[0m  [2m1:1[22m  [31merror[39m  Parsing error: Unexpected token <[0m
+[0m[0m
+[0m[4mG:\NeoVAI\src\views\displayArea\knowledgeGraph\KnowledgeGraphNodeInfoPanel.vue[24m[0m
+[0m  [2m1:1[22m  [31merror[39m  Parsing error: Unexpected token <[0m
+[0m[0m
+[0m[4mG:\NeoVAI\src\views\displayArea\knowledgeGraph\KnowledgeGraphRenderer.vue[24m[0m
+[0m  [2m1:1[22m  [31merror[39m  Parsing error: Unexpected token <[0m
+[0m[0m
+[0m[4mG:\NeoVAI\src\views\displayArea\knowledgeGraph\KnowledgeGraphSettingsPanel.vue[24m[0m
+[0m  [2m1:1[22m  [31merror[39m  Parsing error: Unexpected token <[0m
+[0m[0m
+[0m[31m[1m✖ 599 problems (599 errors, 0 warnings)[22m[39m[0m
+[0m[31m[1m[22m[39m[31m[1m  17 errors and 0 warnings potentially fixable with the `--fix` option.[22m[39m[0m
+[0m[31m[1m[22m[39m[0m

@@ -1,0 +1,12 @@
+flask==2.2.3
+flask-cors==3.0.10
+werkzeug==2.2.3
+langchain-ollama
+python-dotenv==1.0.1
+requests
+langchain>=0.2.0
+langchain-community>=0.2.0
+langchain-openai>=0.1.0
+langchain-anthropic>=0.1.0
+langchain-google-genai>=0.1.0
+platformdirs>=3.0.0

@@ -1,0 +1,426 @@
+import axios from 'axios';
+import { useSettingsStore } from '../store/settingsStore.js';
+
+// 创建axios实例
+const api = axios.create({
+  baseURL: '/api',
+  timeout: 60000, // 增加超时时间到60秒，以确保非流式请求有足够时间完成
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+// 请求拦截器
+api.interceptors.request.use(
+  (config) => {
+    // 可以在这里添加token等认证信息
+    const settingsStore = useSettingsStore();
+
+    // 显示全局加载状态（如果需要）
+    if (settingsStore) {
+      settingsStore.setLoading(true);
+    }
+
+    console.log('API请求:', config.method?.toUpperCase(), config.url);
+    return config;
+  },
+  (error) => {
+    // 请求错误时隐藏加载状态
+    const settingsStore = useSettingsStore();
+    if (settingsStore) {
+      settingsStore.setLoading(false);
+    }
+
+    console.error('API请求错误:', error);
+    return Promise.reject(error);
+  }
+);
+
+// 响应拦截器
+api.interceptors.response.use(
+  (response) => {
+    // 隐藏全局加载状态
+    const settingsStore = useSettingsStore();
+    if (settingsStore) {
+      settingsStore.setLoading(false);
+    }
+
+    console.log('API响应:', response.status, response.config.url);
+    return response.data;
+  },
+  (error) => {
+    // 隐藏全局加载状态
+    const settingsStore = useSettingsStore();
+    if (settingsStore) {
+      settingsStore.setLoading(false);
+    }
+
+    // 统一错误处理
+    handleApiError(error);
+    return Promise.reject(error);
+  }
+);
+
+// 统一错误处理函数
+function handleApiError(error) {
+  console.error('API错误:', error.message);
+
+  if (error.response) {
+    // 服务器返回错误状态码
+    const { status, data } = error.response;
+
+    switch (status) {
+      case 401:
+        console.error('未授权访问，请登录');
+        // 可以在这里跳转到登录页面
+        break;
+      case 403:
+        console.error('禁止访问');
+        break;
+      case 404:
+        console.error('请求的资源不存在');
+        break;
+      case 500:
+        console.error('服务器内部错误');
+        break;
+      default:
+        console.error(`请求失败: ${data?.message || '未知错误'}`);
+    }
+  } else if (error.request) {
+    // 请求已发送但没有收到响应
+    console.error('网络错误，请检查您的网络连接');
+  } else {
+    // 请求配置错误
+    console.error('请求配置错误:', error.message);
+  }
+}
+
+// 创建API请求重试函数
+async function requestWithRetry(config, retryLimit = 2, delay = 500) {
+  let lastError;
+
+  for (let attempt = 0; attempt < retryLimit; attempt++) {
+    try {
+      if (attempt > 0) {
+        // 线性退避策略，比指数退避更快速
+        const waitTime = delay + (attempt - 1) * 500;
+        await new Promise((resolve) => setTimeout(resolve, waitTime));
+      }
+
+      return await api(config);
+    } catch (error) {
+      // 只对特定错误进行重试
+      if (!isRetryableError(error)) {
+        throw error;
+      }
+
+      lastError = error;
+      console.warn(`请求失败，正在重试 (${attempt + 1}/${retryLimit})`);
+    }
+  }
+
+  throw lastError;
+}
+
+// 判断是否为可重试的错误
+function isRetryableError(error) {
+  // 网络错误、超时、500系列错误可以重试
+  return (
+    !error.response || error.code === 'ECONNABORTED' || (error.response.status >= 500 && error.response.status < 600)
+  );
+}
+
+// 处理SSE流式响应的方法（使用传统fetch）
+export function handleStreamingResponse(url, data, onMessage, onError, onComplete) {
+  // 创建AbortController用于取消请求
+  const controller = new AbortController();
+  const signal = controller.signal;
+  
+  // 用于存储累积的数据
+  let buffer = '';
+  
+  // 发送流式请求
+  fetch('/api' + url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(data),
+    signal: signal
+  }).then(response => {
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    // 检查响应是否支持流式处理
+    if (!response.body) {
+      throw new Error('响应体不支持流式处理');
+    }
+    
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    
+    // 处理流式响应数据
+    function processStream() {
+      reader.read().then(({ done, value }) => {
+        if (done) {
+          // 处理缓冲区中剩余的数据
+          if (buffer.trim()) {
+            processStreamData('');
+          }
+          onComplete?.();
+          return;
+        }
+        
+        try {
+          // 解码二进制数据
+          const chunk = decoder.decode(value, { stream: true });
+          if (chunk) {
+            processStreamData(chunk);
+          }
+        } catch (error) {
+          console.error('解码数据失败:', error);
+          onError?.(error);
+        }
+        
+        // 继续处理下一块数据
+        processStream();
+      }).catch(error => {
+        if (!signal.aborted) {
+          console.error('读取流数据失败:', error);
+          onError?.(error);
+        }
+      });
+    }
+    
+    // 开始处理流式数据
+    processStream();
+  }).catch(error => {
+    if (!signal.aborted) {
+      console.error('流式请求失败:', error);
+      onError?.(error);
+    }
+  });
+  
+  // 处理流式数据的函数
+  function processStreamData(text) {
+    buffer += text;
+    
+    // 分割数据块（根据SSE格式）
+    const lines = buffer.split('\n\n');
+    
+    // 处理所有完整的数据行
+    for (let i = 0; i < lines.length - 1; i++) {
+      const line = lines[i];
+      if (line.startsWith('data: ')) {
+        const dataPart = line.slice(6); // 移除 'data: ' 前缀
+        
+        try {
+          const parsedData = JSON.parse(dataPart);
+          console.log('接收到流式数据块:', parsedData); // 添加日志追踪
+          onMessage(parsedData);
+        } catch (error) {
+          console.error('解析SSE消息失败:', error);
+          onError?.(error);
+        }
+      }
+    }
+    
+    // 保留不完整的行在缓冲区
+    buffer = lines[lines.length - 1];
+  }
+  
+  // 返回关闭函数
+  return () => {
+    controller.abort(); // 取消请求
+  };
+}
+
+// API服务方法
+export const apiService = {
+  // 聊天相关API
+  chat: {
+    createChat: async (title = '新对话') => {
+      return await requestWithRetry({
+        method: 'POST',
+        url: '/api/chats',
+        data: { title },
+      });
+    },
+    
+    sendMessage: async (chatId, message, files, options = {}) => {
+      const { model = 'GPT-4', stream = false, modelParams = {}, ragConfig = {} } = options;
+      
+      // 使用合并后的单个端点，通过stream参数控制响应类型
+      const endpoint = `/api/chats/${chatId}/messages`;
+      
+      return await requestWithRetry({
+        method: 'POST',
+        url: endpoint,
+        data: {
+          message,
+          model,
+          modelParams,
+          ragConfig,
+          files,
+          stream // 传递stream参数给后端
+        },
+      });
+    },
+    
+    // 发送流式消息
+    sendStreamingMessage: async (chatId, message, files, options = {}, onMessage, onError, onComplete) => {
+      const { model = 'GPT-4', modelParams = {}, ragConfig = {} } = options;
+      
+      const url = `/api/chats/${chatId}/messages`;
+      const data = {
+        message,
+        files,
+        model,
+        modelParams,
+        ragConfig,
+        stream: true  // 传递stream参数给后端
+      };
+      
+      // 创建一个Promise来包装流式请求
+      return new Promise((resolve, reject) => {
+        try {
+          const closeConnection = handleStreamingResponse(url, data, onMessage, onError, () => {
+            onComplete?.();
+            resolve();
+          });
+          
+          // 存储关闭连接的方法，以便在需要时手动关闭
+          apiService.chat.activeStreamingConnection = closeConnection;
+        } catch (error) {
+          console.error('创建流式连接失败:', error);
+          reject(error);
+        }
+      });
+    },
+    
+    // 关闭活动的流式连接
+    closeStreamingConnection: () => {
+      if (apiService.chat.activeStreamingConnection) {
+        apiService.chat.activeStreamingConnection();
+        apiService.chat.activeStreamingConnection = null;
+      }
+    },
+    getHistory: async () => {
+      return await requestWithRetry({
+        method: 'GET',
+        url: '/api/chats',
+      });
+    },
+    deleteChat: async (chatId) => {
+      return await requestWithRetry({
+        method: 'DELETE',
+        url: `/api/chats/${chatId}`,
+      });
+    },
+    
+    // 删除所有对话
+    deleteAllChats: async () => {
+      return await requestWithRetry({
+        method: 'DELETE',
+        url: '/api/chats/delete-all',
+      });
+    },
+  },
+  
+  // RAG相关API
+  rag: {
+      uploadFile: async (file, folder_id = '') => {
+        const formData = new FormData();
+        formData.append('file', file);
+        // 如果提供了folder_id参数，将其添加到FormData中
+        if (folder_id) {
+          formData.append('folder_id', folder_id);
+        }
+
+        return await requestWithRetry({
+          method: 'POST',
+          url: '/api/rag/upload',
+          data: formData,
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+      },
+    getDocuments: async () => {
+      return await requestWithRetry({
+        method: 'GET',
+        url: '/api/rag/documents',
+      });
+    },
+    deleteDocument: async (filename, foldername = '') => {
+      return await requestWithRetry({
+        method: 'DELETE',
+        url: `/api/rag/${foldername}/${filename}`,
+      });
+    },
+    getFolders: async () => {
+      return await requestWithRetry({
+        method: 'GET',
+        url: '/api/rag/folders',
+      });
+    },
+    // 验证向量数据库路径是否有效
+    validateVectorDbPath: async (path) => {
+      return await requestWithRetry({
+        method: 'POST',
+        url: '/api/rag/validate-path',
+        data: { path, type: 'vector_db' },
+      });
+    },
+    // 验证知识库路径是否有效
+    validateKnowledgeBasePath: async (path) => {
+      return await requestWithRetry({
+        method: 'POST',
+        url: '/api/rag/validate-path',
+        data: { path, type: 'knowledge_base' },
+      });
+    },
+    // 获取系统实际使用的路径信息
+    getActualPaths: async () => {
+      return await requestWithRetry({
+        method: 'GET',
+        url: '/api/rag/paths',
+      });
+    },
+  },
+
+  // 模型相关API
+  models: {
+    getModels: async () => {
+      return await requestWithRetry({
+        method: 'GET',
+        url: '/api/models',
+      });
+    },
+    
+    updateModelParams: async (model, params) => {
+      return await requestWithRetry({
+        method: 'POST',
+        url: `/api/models/${model}/params`,
+        data: params,
+      });
+    },
+  },
+
+  // 通用请求方法
+  get: async (url, params = {}) => {
+    return await requestWithRetry({ method: 'GET', url, params });
+  },
+  post: async (url, data = {}) => {
+    return await requestWithRetry({ method: 'POST', url, data });
+  },
+  put: async (url, data = {}) => {
+    return await requestWithRetry({ method: 'PUT', url, data });
+  },
+  delete: async (url) => {
+      return await requestWithRetry({ method: 'DELETE', url });
+    },
+  };
+
+export default api;

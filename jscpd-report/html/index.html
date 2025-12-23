@@ -1,0 +1,1071 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Copy/Paste Detector Report</title><link href="styles/tailwind.css" rel="stylesheet"><link href="styles/prism.css" rel="stylesheet"></head><body class="bg-gray-100"><header class="bg-white shadow py-4"><div class="container mx-auto px-4"><h1 class="text-3xl font-semibold text-gray-800">jscpd - copy/paste report</h1></div></header><main class="container mx-auto my-8 p-4 bg-white shadow rounded"><section class="mb-8" id="dashboard"><h2 class="text-2xl font-semibold text-gray-700 mb-4">Dashboard</h2><div class="grid grid-cols-4 gap-4"><div class="bg-blue-200 p-4 rounded text-center"><h3 class="text-lg font-semibold text-blue-800 mb-2">Total Files</h3><span class="text-4xl font-bold text-blue-800">65</span></div><div class="bg-green-200 p-4 rounded text-center"><h3 class="text-lg font-semibold text-green-800 mb-2">Total Lines of Code</h3><span class="text-4xl font-bold text-green-800">14709</span></div><div class="bg-yellow-200 p-4 rounded text-center"><h3 class="text-lg font-semibold text-yellow-800 mb-2">Number of Clones</h3><span class="text-4xl font-bold text-yellow-800">73</span></div><div class="bg-red-200 p-4 rounded text-center"><h3 class="text-lg font-semibold text-red-800 mb-2">Duplicated Lines</h3><span class="text-4xl font-bold text-red-800">1062 (7.22%)</span></div></div></section><section class="mb-8" id="formats"><h2 class="text-2xl font-semibold text-gray-700 mb-4">Formats with Duplications</h2><table class="w-full table-auto"><thead><tr class="bg-gray-200 text-gray-600 uppercase text-sm leading-normal"><th class="py-3 px-6 text-left">Format</th><th class="py-3 px-6 text-left">Files</th><th class="py-3 px-6 text-left">Lines</th><th class="py-3 px-6 text-left">Clones</th><th class="py-3 px-6 text-left">Duplicated Lines</th><th class="py-3 px-6 text-left">Duplicated Tokens</th></tr></thead><tbody><tr class="bg-white border-b border-gray-200 text-gray-800 text-sm"><td class="py-3 px-6"><a class="text-blue-600 hover:underline" href="#markup-clones">markup</a></td><td class="py-3 px-6">46</td><td class="py-3 px-6">10855</td><td class="py-3 px-6">59</td><td class="py-3 px-6">889</td><td class="py-3 px-6">5776</td></tr><tr class="bg-white border-b border-gray-200 text-gray-800 text-sm"><td class="py-3 px-6"><a class="text-blue-600 hover:underline" href="#javascript-clones">javascript</a></td><td class="py-3 px-6">15</td><td class="py-3 px-6">3411</td><td class="py-3 px-6">14</td><td class="py-3 px-6">173</td><td class="py-3 px-6">1432</td></tr><tr class="bg-white border-b border-gray-200 text-gray-800 text-sm"><td class="py-3 px-6"><a class="text-blue-600 hover:underline" href="#markdown-clones">markdown</a></td><td class="py-3 px-6">1</td><td class="py-3 px-6">177</td><td class="py-3 px-6">0</td><td class="py-3 px-6">0</td><td class="py-3 px-6">0</td></tr><tr class="bg-white border-b border-gray-200 text-gray-800 text-sm"><td class="py-3 px-6"><a class="text-blue-600 hover:underline" href="#css-clones">css</a></td><td class="py-3 px-6">3</td><td class="py-3 px-6">266</td><td class="py-3 px-6">0</td><td class="py-3 px-6">0</td><td class="py-3 px-6">0</td></tr></tbody></table></section><section class="mb-8" id="txt-clones"><a name="markup-clones"></a><h2 class="text-2xl font-semibold text-gray-700 mb-4">markup</h2><div class="divide-y divide-gray-200 border-b-2"><div class="py-4"><p class="text-gray-600">src\views\displayArea\knowledgeGraph\KnowledgeGraphRenderer.vue (Line 346:9 - Line 352:31), src\views\displayArea\knowledgeGraph\KnowledgeGraphRenderer.vue (Line 336:9 - Line 341:2)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn0" onclick="toggleCodeBlock('cloneGroup0', 'expandBtn0', 'collapseBtn0')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn0" onclick="toggleCodeBlock('cloneGroup0', 'expandBtn0', 'collapseBtn0')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup0"><code class="language-markup text-sm text-gray-800">const container = getContainer();
+        if (container &amp;&amp; container instanceof Element) {
+          const rect = container.getBoundingClientRect();
+          mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+          mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+          
+          raycaster.setFromCamera(mouse,</code></pre></div><div class="py-4"><p class="text-gray-600">src\views\displayArea\knowledgeGraph\KnowledgeGraphNodeInfoPanel.vue (Line 9:13 - Line 16:17), src\views\displayArea\knowledgeGraph\KnowledgeGraphSettingsPanel.vue (Line 8:2 - Line 15:16)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn1" onclick="toggleCodeBlock('cloneGroup1', 'expandBtn1', 'collapseBtn1')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn1" onclick="toggleCodeBlock('cloneGroup1', 'expandBtn1', 'collapseBtn1')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup1"><code class="language-markup text-sm text-gray-800">&quot;
+      &gt;
+        &lt;i class=&quot;fa-solid fa-xmark&quot;&gt;&lt;/i&gt;
+      &lt;/button&gt;
+    &lt;/div&gt;
+
+    &lt;div class=&quot;overflow-y-auto flex-1 p-4 space-y-6&quot;&gt;
+      &lt;!-- 节点名称和描述 --&gt;</code></pre></div><div class="py-4"><p class="text-gray-600">src\views\displayArea\RagManagementContent.vue (Line 129:13 - Line 138:2), src\views\displayArea\RagManagementContent.vue (Line 90:27 - Line 99:13)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn2" onclick="toggleCodeBlock('cloneGroup2', 'expandBtn2', 'collapseBtn2')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn2" onclick="toggleCodeBlock('cloneGroup2', 'expandBtn2', 'collapseBtn2')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup2"><code class="language-markup text-sm text-gray-800">&quot;&gt;
+              &lt;i v-if=&quot;file.type === 'pdf'&quot; class=&quot;fa-solid fa-file-pdf&quot;&gt;&lt;/i&gt;
+              &lt;i v-else-if=&quot;file.type === 'docx' || file.type === 'doc'&quot; class=&quot;fa-solid fa-file-word&quot;&gt;&lt;/i&gt;
+              &lt;i v-else-if=&quot;file.type === 'xlsx' || file.type === 'xls'&quot; class=&quot;fa-solid fa-file-excel&quot;&gt;&lt;/i&gt;
+              &lt;i v-else-if=&quot;file.type === 'pptx' || file.type === 'ppt'&quot; class=&quot;fa-solid fa-file-powerpoint&quot;&gt;&lt;/i&gt;
+              &lt;i v-else-if=&quot;file.type === 'txt'&quot; class=&quot;fa-solid fa-file-lines&quot;&gt;&lt;/i&gt;
+              &lt;i v-else-if=&quot;file.type === 'md'&quot; class=&quot;fa-solid fa-file-markdown&quot;&gt;&lt;/i&gt;
+              &lt;i v-else class=&quot;fa-solid fa-file&quot;&gt;&lt;/i&gt;
+            &lt;/div&gt;
+            &lt;</code></pre></div><div class="py-4"><p class="text-gray-600">src\views\displayArea\RagManagementContent.vue (Line 192:1 - Line 211:5), src\views\displayArea\SendMessageContent.vue (Line 53:1 - Line 72:9)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn3" onclick="toggleCodeBlock('cloneGroup3', 'expandBtn3', 'collapseBtn3')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn3" onclick="toggleCodeBlock('cloneGroup3', 'expandBtn3', 'collapseBtn3')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup3"><code class="language-markup text-sm text-gray-800">const chatStore = useChatStore();
+
+// 处理新对话点击事件
+const handleNewChat = () =&gt; {
+  // 取消当前会话的激活状态
+  chatStore.currentChatId = null;
+  
+  // 清除所有对话的未读标记
+  chatStore.chats = chatStore.chats.map(chat =&gt; ({
+    ...chat,
+    hasUnreadMessage: false
+  }));
+  
+  // 切换到发送消息视图
+  if (window.setActiveContent) {
+    window.setActiveContent('sendMessage');
+  }
+};
+
+// 本地状态</code></pre></div><div class="py-4"><p class="text-gray-600">src\views\displayArea\KnowledgeGraphContent.vue (Line 62:1 - Line 98:13), src\views\displayArea\knowledgeGraph\KnowledgeGraphRenderer.vue (Line 434:1 - Line 470:22)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn4" onclick="toggleCodeBlock('cloneGroup4', 'expandBtn4', 'collapseBtn4')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn4" onclick="toggleCodeBlock('cloneGroup4', 'expandBtn4', 'collapseBtn4')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup4"><code class="language-markup text-sm text-gray-800">const createStars = (scene, config) =&gt; {
+  // 如果已经存在星空，先移除
+  if (starsRef.value &amp;&amp; scene) {
+    scene.remove(starsRef.value);
+  }
+  
+  const geometry = new THREE.BufferGeometry();
+  const count = config.particleCount;
+  const positions = new Float32Array(count * 3);
+  
+  for (let i = 0; i &lt; count; i++) {
+    const i3 = i * 3;
+    positions[i3] = (Math.random() - 0.5) * 2000;
+    positions[i3 + 1] = (Math.random() - 0.5) * 2000;
+    positions[i3 + 2] = (Math.random() - 0.5) * 2000;
+  }
+  
+  geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  
+  const material = new THREE.PointsMaterial({
+    color: 0xffffff,
+    size: config.particleSize,
+    transparent: true,
+    opacity: config.particleOpacity
+  });
+  
+  const stars = new THREE.Points(geometry, material);
+  
+  // 根据配置决定是否显示星空
+  if (config.showBackground &amp;&amp; scene) {
+    scene.add(stars);
+  }
+  
+  return stars;
+};
+
+// 初始化知识图谱store</code></pre></div><div class="py-4"><p class="text-gray-600">src\views\displayArea\KnowledgeGraphContent.vue (Line 227:5 - Line 271:3), src\views\displayArea\KnowledgeGraphContent.vue (Line 164:5 - Line 208:4)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn5" onclick="toggleCodeBlock('cloneGroup5', 'expandBtn5', 'collapseBtn5')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn5" onclick="toggleCodeBlock('cloneGroup5', 'expandBtn5', 'collapseBtn5')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup5"><code class="language-markup text-sm text-gray-800">new THREE.MeshStandardMaterial({
+      color: 0x6366f1,
+      emissive: new THREE.Color(0x6366f1).multiplyScalar(0.3),
+      emissiveIntensity: 0.3,
+      roughness: 0.2,
+      metalness: 0.8,
+      transparent: true,
+      opacity: 0.9
+    }),
+    new THREE.MeshStandardMaterial({
+      color: 0x8b5cf6,
+      emissive: new THREE.Color(0x8b5cf6).multiplyScalar(0.3),
+      emissiveIntensity: 0.3,
+      roughness: 0.2,
+      metalness: 0.8,
+      transparent: true,
+      opacity: 0.9
+    }),
+    new THREE.MeshStandardMaterial({
+      color: 0xec4899,
+      emissive: new THREE.Color(0xec4899).multiplyScalar(0.3),
+      emissiveIntensity: 0.3,
+      roughness: 0.2,
+      metalness: 0.8,
+      transparent: true,
+      opacity: 0.9
+    }),
+    new THREE.MeshStandardMaterial({
+      color: 0x10b981,
+      emissive: new THREE.Color(0x10b981).multiplyScalar(0.3),
+      emissiveIntensity: 0.3,
+      roughness: 0.2,
+      metalness: 0.8,
+      transparent: true,
+      opacity: 0.9
+    }),
+    new THREE.MeshStandardMaterial({
+      color: 0x3b82f6,
+      emissive: new THREE.Color(0x3b82f6).multiplyScalar(0.3),
+      emissiveIntensity: 0.3,
+      roughness: 0.2,
+      metalness: 0.8,
+      transparent: true,
+      opacity: 0.9
+    })</code></pre></div><div class="py-4"><p class="text-gray-600">src\views\displayArea\ChatContent.vue (Line 5:100 - Line 23:16), src\views\displayArea\SendMessageContent.vue (Line 5:111 - Line 24:18)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn6" onclick="toggleCodeBlock('cloneGroup6', 'expandBtn6', 'collapseBtn6')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn6" onclick="toggleCodeBlock('cloneGroup6', 'expandBtn6', 'collapseBtn6')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup6"><code class="language-markup text-sm text-gray-800">&quot;&gt;
+      &lt;!-- 左侧按钮组 --&gt;
+        &lt;div class=&quot;absolute left-3 flex space-x-2&quot;&gt;
+          &lt;!-- 隐藏左侧面板按钮 --&gt;
+          &lt;ActionButton 
+            icon=&quot;bars&quot;
+            title=&quot;隐藏左侧面板&quot;
+            @click=&quot;handleSideMenuToggle&quot;
+          /&gt;
+          &lt;!-- 新增会话按钮 --&gt;
+          &lt;ActionButton 
+            id=&quot;newChat&quot;
+            icon=&quot;comment-dots&quot;
+            title=&quot;新对话&quot;
+            @click=&quot;handleNewChat&quot;
+          /&gt;
+        &lt;/div&gt;
+        
+        &lt;!-- 标题绝对居中 --&gt;</code></pre></div><div class="py-4"><p class="text-gray-600">src\views\displayArea\ChatContent.vue (Line 85:3 - Line 102:15), src\views\displayArea\SendMessageContent.vue (Line 55:1 - Line 72:9)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn7" onclick="toggleCodeBlock('cloneGroup7', 'expandBtn7', 'collapseBtn7')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn7" onclick="toggleCodeBlock('cloneGroup7', 'expandBtn7', 'collapseBtn7')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup7"><code class="language-markup text-sm text-gray-800">// 处理新对话点击事件
+  const handleNewChat = () =&gt; {
+    // 取消当前会话的激活状态
+    chatStore.currentChatId = null;
+    
+    // 清除所有对话的未读标记
+    chatStore.chats = chatStore.chats.map(chat =&gt; ({
+      ...chat,
+      hasUnreadMessage: false
+    }));
+    
+    // 切换到发送消息视图
+    if (window.setActiveContent) {
+      window.setActiveContent('sendMessage');
+    }
+  };
+
+// 从store计算属性获取数据</code></pre></div><div class="py-4"><p class="text-gray-600">src\components\settings\RAGSettings.vue (Line 97:5 - Line 104:7), src\components\settings\RAGSettings.vue (Line 60:5 - Line 67:8)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn8" onclick="toggleCodeBlock('cloneGroup8', 'expandBtn8', 'collapseBtn8')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn8" onclick="toggleCodeBlock('cloneGroup8', 'expandBtn8', 'collapseBtn8')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup8"><code class="language-markup text-sm text-gray-800">&lt;/option&gt;
+              &lt;/select&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+
+          &lt;div class=&quot;setting-item p-3 rounded-lg&quot;&gt;
+            &lt;div&gt;
+              &lt;div class=&quot;font-medium text-sm&quot;&gt;检索文档数量</code></pre></div><div class="py-4"><p class="text-gray-600">src\components\settings\RAGSettings.vue (Line 165:42 - Line 170:26), src\components\settings\RAGSettings.vue (Line 149:37 - Line 154:21)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn9" onclick="toggleCodeBlock('cloneGroup9', 'expandBtn9', 'collapseBtn9')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn9" onclick="toggleCodeBlock('cloneGroup9', 'expandBtn9', 'collapseBtn9')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup9"><code class="language-markup text-sm text-gray-800">&quot;
+                class=&quot;input-field w-full text-sm px-2 py-1.5 mt-2 focus:outline-none focus:ring-1 focus:ring-primary&quot;
+                placeholder=&quot;留空使用默认路径&quot;
+                @change=&quot;updateRagConfig&quot;
+              /&gt;
+              &lt;div class=&quot;text-xs text-neutral mt-1&quot;&gt;系统默认路径: 用户数据目录下的 &quot;Retrieval-Augmented Generation\knowledgeBase&quot;</code></pre></div><div class="py-4"><p class="text-gray-600">src\components\settings\NotificationsSettings.vue (Line 4:3 - Line 10:6), src\components\settings\RAGSettings.vue (Line 32:2 - Line 37:8)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn10" onclick="toggleCodeBlock('cloneGroup10', 'expandBtn10', 'collapseBtn10')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn10" onclick="toggleCodeBlock('cloneGroup10', 'expandBtn10', 'collapseBtn10')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup10"><code class="language-markup text-sm text-gray-800">&gt;
+
+      &lt;div class=&quot;space-y-4&quot;&gt;
+        &lt;div class=&quot;setting-item p-3 rounded-lg&quot;&gt;
+          &lt;div class=&quot;flex justify-between items-center&quot;&gt;
+            &lt;div&gt;
+              &lt;div class=&quot;font-medium text-sm&quot;&gt;新消息通知</code></pre></div><div class="py-4"><p class="text-gray-600">src\components\settings\NotificationsSettings.vue (Line 14:10 - Line 21:2), src\components\settings\RAGSettings.vue (Line 41:23 - Line 48:2)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn11" onclick="toggleCodeBlock('cloneGroup11', 'expandBtn11', 'collapseBtn11')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn11" onclick="toggleCodeBlock('cloneGroup11', 'expandBtn11', 'collapseBtn11')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup11"><code class="language-markup text-sm text-gray-800">&quot; /&gt;
+              &lt;span class=&quot;toggle-slider&quot;&gt;&lt;/span&gt;
+            &lt;/label&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+
+        &lt;div class=&quot;setting-item p-3 rounded-lg&quot;&gt;
+          &lt;div </code></pre></div><div class="py-4"><p class="text-gray-600">src\components\settings\NotificationsSettings.vue (Line 18:4 - Line 23:5), src\components\settings\RAGSettings.vue (Line 33:2 - Line 37:8)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn12" onclick="toggleCodeBlock('cloneGroup12', 'expandBtn12', 'collapseBtn12')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn12" onclick="toggleCodeBlock('cloneGroup12', 'expandBtn12', 'collapseBtn12')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup12"><code class="language-markup text-sm text-gray-800">&gt;
+
+        &lt;div class=&quot;setting-item p-3 rounded-lg&quot;&gt;
+          &lt;div class=&quot;flex justify-between items-center&quot;&gt;
+            &lt;div&gt;
+              &lt;div class=&quot;font-medium text-sm&quot;&gt;声音提示</code></pre></div><div class="py-4"><p class="text-gray-600">src\components\settings\NotificationsSettings.vue (Line 27:6 - Line 36:5), src\components\settings\NotificationsSettings.vue (Line 14:11 - Line 37:8)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn13" onclick="toggleCodeBlock('cloneGroup13', 'expandBtn13', 'collapseBtn13')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn13" onclick="toggleCodeBlock('cloneGroup13', 'expandBtn13', 'collapseBtn13')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup13"><code class="language-markup text-sm text-gray-800">', $event)&quot; /&gt;
+              &lt;span class=&quot;toggle-slider&quot;&gt;&lt;/span&gt;
+            &lt;/label&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+
+        &lt;div class=&quot;setting-item p-3 rounded-lg&quot;&gt;
+          &lt;div class=&quot;flex justify-between items-center&quot;&gt;
+            &lt;div&gt;
+              &lt;div class=&quot;font-medium text-sm&quot;&gt;系统通知</code></pre></div><div class="py-4"><p class="text-gray-600">src\components\settings\NotificationsSettings.vue (Line 40:7 - Line 48:7), src\components\settings\NotificationsSettings.vue (Line 14:11 - Line 49:11)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn14" onclick="toggleCodeBlock('cloneGroup14', 'expandBtn14', 'collapseBtn14')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn14" onclick="toggleCodeBlock('cloneGroup14', 'expandBtn14', 'collapseBtn14')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup14"><code class="language-markup text-sm text-gray-800">', $event)&quot; /&gt;
+              &lt;span class=&quot;toggle-slider&quot;&gt;&lt;/span&gt;
+            &lt;/label&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+
+        &lt;div class=&quot;setting-item p-3 rounded-lg&quot;&gt;
+          &lt;div&gt;
+            &lt;div class=&quot;font-medium text-sm&quot;&gt;通知显示时间</code></pre></div><div class="py-4"><p class="text-gray-600">src\components\settings\ModelsSettings.vue (Line 88:25 - Line 96:60), src\components\settings\ModelsSettings.vue (Line 9:23 - Line 17:60)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn15" onclick="toggleCodeBlock('cloneGroup15', 'expandBtn15', 'collapseBtn15')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn15" onclick="toggleCodeBlock('cloneGroup15', 'expandBtn15', 'collapseBtn15')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup15"><code class="language-markup text-sm text-gray-800">&quot;
+            placeholder=&quot;搜索模型...&quot;
+            class=&quot;w-full text-xs pl-7 pr-3 py-1.5 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all&quot;
+          /&gt;
+          &lt;i class=&quot;fa-solid fa-search absolute left-2.5 top-1/2 transform -translate-y-1/2 text-gray-400 text-xs&quot;&gt;&lt;/i&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+
+      &lt;div class=&quot;space-y-3 max-h-[400px] overflow-y-auto pr-2 scrollbar-thin</code></pre></div><div class="py-4"><p class="text-gray-600">src\components\settings\ModelsSettings.vue (Line 109:34 - Line 116:3), src\components\settings\ModelsSettings.vue (Line 30:39 - Line 39:2)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn16" onclick="toggleCodeBlock('cloneGroup16', 'expandBtn16', 'collapseBtn16')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn16" onclick="toggleCodeBlock('cloneGroup16', 'expandBtn16', 'collapseBtn16')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup16"><code class="language-markup text-sm text-gray-800">&quot;&gt;
+              &lt;div class=&quot;flex items-center gap-2&quot;&gt;
+                &lt;div class=&quot;p-1 rounded-full w-11 h-11 flex items-center justify-center overflow-hidden&quot;&gt;
+                  &lt;img v-if=&quot;model.icon_url&quot; :src=&quot;model.icon_url&quot; :alt=&quot;model.name + ' 图标'&quot; class=&quot;w-9 h-9 object-contain&quot; /&gt;
+                  &lt;i v-else :class=&quot;model.icon_class + ' text-xl'&quot;&gt;&lt;/i&gt;
+                &lt;/div&gt;
+                &lt;div&gt;
+                  &lt;div class=&quot;font-medium text-sm&quot;&gt;{{ model.name }}&lt;/</code></pre></div><div class="py-4"><p class="text-gray-600">src\components\settings\McpSettings.vue (Line 4:8 - Line 10:8), src\components\settings\NotificationsSettings.vue (Line 4:5 - Line 37:8)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn17" onclick="toggleCodeBlock('cloneGroup17', 'expandBtn17', 'collapseBtn17')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn17" onclick="toggleCodeBlock('cloneGroup17', 'expandBtn17', 'collapseBtn17')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup17"><code class="language-markup text-sm text-gray-800">&lt;/h4&gt;
+
+      &lt;div class=&quot;space-y-4&quot;&gt;
+        &lt;div class=&quot;setting-item p-3 rounded-lg&quot;&gt;
+          &lt;div class=&quot;flex justify-between items-center&quot;&gt;
+            &lt;div&gt;
+              &lt;div class=&quot;font-medium text-sm&quot;&gt;启用MCP服务</code></pre></div><div class="py-4"><p class="text-gray-600">src\components\settings\McpSettings.vue (Line 14:23 - Line 22:9), src\components\settings\RAGSettings.vue (Line 41:23 - Line 49:11)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn18" onclick="toggleCodeBlock('cloneGroup18', 'expandBtn18', 'collapseBtn18')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn18" onclick="toggleCodeBlock('cloneGroup18', 'expandBtn18', 'collapseBtn18')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup18"><code class="language-markup text-sm text-gray-800">&quot; /&gt;
+              &lt;span class=&quot;toggle-slider&quot;&gt;&lt;/span&gt;
+            &lt;/label&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+
+        &lt;div class=&quot;setting-item p-3 rounded-lg&quot;&gt;
+          &lt;div&gt;
+            &lt;div class=&quot;font-medium text-sm&quot;&gt;MCP服务器配置</code></pre></div><div class="py-4"><p class="text-gray-600">src\components\settings\McpSettings.vue (Line 43:13 - Line 49:10), src\components\settings\RAGSettings.vue (Line 154:21 - Line 160:8)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn19" onclick="toggleCodeBlock('cloneGroup19', 'expandBtn19', 'collapseBtn19')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn19" onclick="toggleCodeBlock('cloneGroup19', 'expandBtn19', 'collapseBtn19')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup19"><code class="language-markup text-sm text-gray-800">&lt;/div&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+
+        &lt;div class=&quot;setting-item p-3 rounded-lg&quot;&gt;
+          &lt;div&gt;
+            &lt;div class=&quot;font-medium text-sm&quot;&gt;MCP服务超时设置</code></pre></div><div class="py-4"><p class="text-gray-600">src\components\settings\McpSettings.vue (Line 61:11 - Line 73:12), src\components\settings\NotificationsSettings.vue (Line 60:11 - Line 72:9)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn20" onclick="toggleCodeBlock('cloneGroup20', 'expandBtn20', 'collapseBtn20')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn20" onclick="toggleCodeBlock('cloneGroup20', 'expandBtn20', 'collapseBtn20')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup20"><code class="language-markup text-sm text-gray-800">&lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/template&gt;
+
+&lt;script setup&gt;
+import { useSettingsStore } from '../../store/settingsStore.js';
+
+const settingsStore = useSettingsStore();
+
+// 处理MCP启用状态变更</code></pre></div><div class="py-4"><p class="text-gray-600">src\components\settings\GeneralSettings.vue (Line 15:4 - Line 22:13), src\components\settings\RAGSettings.vue (Line 2:2 - Line 8:13)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn21" onclick="toggleCodeBlock('cloneGroup21', 'expandBtn21', 'collapseBtn21')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn21" onclick="toggleCodeBlock('cloneGroup21', 'expandBtn21', 'collapseBtn21')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup21"><code class="language-markup text-sm text-gray-800">&gt;
+
+    &lt;div class=&quot;card depth-1 hover:depth-2 transition-all duration-300&quot;&gt;
+      &lt;!-- 选项卡导航 --&gt;
+      &lt;div class=&quot;border-b&quot;&gt;
+        &lt;div class=&quot;flex&quot;&gt;
+          &lt;button
+            </code></pre></div><div class="py-4"><p class="text-gray-600">src\components\settings\GeneralSettings.vue (Line 46:5 - Line 52:7), src\components\settings\RAGSettings.vue (Line 32:6 - Line 37:8)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn22" onclick="toggleCodeBlock('cloneGroup22', 'expandBtn22', 'collapseBtn22')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn22" onclick="toggleCodeBlock('cloneGroup22', 'expandBtn22', 'collapseBtn22')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup22"><code class="language-markup text-sm text-gray-800">'&quot; class=&quot;p-4&quot;&gt;
+        &lt;div class=&quot;space-y-4&quot;&gt;
+
+          &lt;div class=&quot;setting-item p-3 rounded-lg&quot;&gt;
+            &lt;div class=&quot;flex justify-between items-center&quot;&gt;
+              &lt;div&gt;
+                &lt;div class=&quot;font-medium text-sm&quot;&gt;启用流式输出</code></pre></div><div class="py-4"><p class="text-gray-600">src\components\settings\GeneralSettings.vue (Line 56:16 - Line 64:5), src\components\settings\RAGSettings.vue (Line 41:23 - Line 49:11)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn23" onclick="toggleCodeBlock('cloneGroup23', 'expandBtn23', 'collapseBtn23')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn23" onclick="toggleCodeBlock('cloneGroup23', 'expandBtn23', 'collapseBtn23')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup23"><code class="language-markup text-sm text-gray-800">&quot; /&gt;
+                &lt;span class=&quot;toggle-slider&quot;&gt;&lt;/span&gt;
+              &lt;/label&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+
+          &lt;div class=&quot;setting-item p-3 rounded-lg&quot;&gt;
+            &lt;div&gt;
+              &lt;div class=&quot;font-medium text-sm&quot;&gt;默认模型</code></pre></div><div class="py-4"><p class="text-gray-600">src\components\settings\GeneralSettings.vue (Line 95:6 - Line 100:5), src\components\settings\RAGSettings.vue (Line 32:6 - Line 37:8)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn24" onclick="toggleCodeBlock('cloneGroup24', 'expandBtn24', 'collapseBtn24')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn24" onclick="toggleCodeBlock('cloneGroup24', 'expandBtn24', 'collapseBtn24')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup24"><code class="language-markup text-sm text-gray-800">'&quot; class=&quot;p-4&quot;&gt;
+        &lt;div class=&quot;space-y-4&quot;&gt;
+          &lt;div class=&quot;setting-item p-3 rounded-lg&quot;&gt;
+            &lt;div class=&quot;flex justify-between items-center&quot;&gt;
+              &lt;div&gt;
+                &lt;div class=&quot;font-medium text-sm&quot;&gt;深色模式</code></pre></div><div class="py-4"><p class="text-gray-600">src\components\settings\GeneralSettings.vue (Line 104:15 - Line 111:5), src\components\settings\RAGSettings.vue (Line 41:23 - Line 49:11)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn25" onclick="toggleCodeBlock('cloneGroup25', 'expandBtn25', 'collapseBtn25')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn25" onclick="toggleCodeBlock('cloneGroup25', 'expandBtn25', 'collapseBtn25')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup25"><code class="language-markup text-sm text-gray-800">&quot; /&gt;
+                &lt;span class=&quot;toggle-slider&quot;&gt;&lt;/span&gt;
+              &lt;/label&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+          &lt;div class=&quot;setting-item p-3 rounded-lg&quot;&gt;
+            &lt;div&gt;
+              &lt;div class=&quot;font-medium text-sm&quot;&gt;对话样式</code></pre></div><div class="py-4"><p class="text-gray-600">src\components\settings\GeneralSettings.vue (Line 131:15 - Line 137:7), src\components\settings\RAGSettings.vue (Line 154:21 - Line 160:8)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn26" onclick="toggleCodeBlock('cloneGroup26', 'expandBtn26', 'collapseBtn26')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn26" onclick="toggleCodeBlock('cloneGroup26', 'expandBtn26', 'collapseBtn26')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup26"><code class="language-markup text-sm text-gray-800">&lt;/div&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+
+          &lt;div class=&quot;setting-item p-3 rounded-lg&quot;&gt;
+            &lt;div&gt;
+              &lt;div class=&quot;font-medium text-sm&quot;&gt;文件视图模式</code></pre></div><div class="py-4"><p class="text-gray-600">src\components\settings\GeneralSettings.vue (Line 187:17 - Line 194:5), src\components\settings\GeneralSettings.vue (Line 130:17 - Line 160:8)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn27" onclick="toggleCodeBlock('cloneGroup27', 'expandBtn27', 'collapseBtn27')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn27" onclick="toggleCodeBlock('cloneGroup27', 'expandBtn27', 'collapseBtn27')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup27"><code class="language-markup text-sm text-gray-800">&lt;/button&gt;
+              &lt;/div&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+
+          &lt;div class=&quot;setting-item p-3 rounded-lg&quot;&gt;
+            &lt;div&gt;
+              &lt;div class=&quot;font-medium text-sm&quot;&gt;节点大小</code></pre></div><div class="py-4"><p class="text-gray-600">src\components\settings\GeneralSettings.vue (Line 212:4 - Line 219:7), src\components\settings\NotificationsSettings.vue (Line 16:6 - Line 37:8)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn28" onclick="toggleCodeBlock('cloneGroup28', 'expandBtn28', 'collapseBtn28')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn28" onclick="toggleCodeBlock('cloneGroup28', 'expandBtn28', 'collapseBtn28')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup28"><code class="language-markup text-sm text-gray-800">&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+
+          &lt;div class=&quot;setting-item p-3 rounded-lg&quot;&gt;
+            &lt;div class=&quot;flex justify-between items-center&quot;&gt;
+              &lt;div&gt;
+                &lt;div class=&quot;font-medium text-sm&quot;&gt;显示节点标签</code></pre></div><div class="py-4"><p class="text-gray-600">src\components\settings\GeneralSettings.vue (Line 223:22 - Line 232:5), src\components\settings\RAGSettings.vue (Line 41:23 - Line 37:8)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn29" onclick="toggleCodeBlock('cloneGroup29', 'expandBtn29', 'collapseBtn29')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn29" onclick="toggleCodeBlock('cloneGroup29', 'expandBtn29', 'collapseBtn29')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup29"><code class="language-markup text-sm text-gray-800">&quot; /&gt;
+                &lt;span class=&quot;toggle-slider&quot;&gt;&lt;/span&gt;
+              &lt;/label&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+
+          &lt;div class=&quot;setting-item p-3 rounded-lg&quot;&gt;
+            &lt;div class=&quot;flex justify-between items-center&quot;&gt;
+              &lt;div&gt;
+                &lt;div class=&quot;font-medium text-sm&quot;&gt;动画效果</code></pre></div><div class="py-4"><p class="text-gray-600">src\components\settings\GeneralSettings.vue (Line 238:6 - Line 248:11), src\views\displayArea\CodeEditorContent.vue (Line 161:5 - Line 171:10)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn30" onclick="toggleCodeBlock('cloneGroup30', 'expandBtn30', 'collapseBtn30')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn30" onclick="toggleCodeBlock('cloneGroup30', 'expandBtn30', 'collapseBtn30')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup30"><code class="language-markup text-sm text-gray-800">&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/template&gt;
+
+&lt;script setup&gt;
+import { ref, computed, onMounted,</code></pre></div><div class="py-4"><p class="text-gray-600">src\components\settings\GeneralSettings.vue (Line 245:1 - Line 254:6), src\components\settings\ModelsSettings.vue (Line 148:1 - Line 156:7)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn31" onclick="toggleCodeBlock('cloneGroup31', 'expandBtn31', 'collapseBtn31')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn31" onclick="toggleCodeBlock('cloneGroup31', 'expandBtn31', 'collapseBtn31')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup31"><code class="language-markup text-sm text-gray-800">&lt;/template&gt;
+
+&lt;script setup&gt;
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
+import { useSettingsStore } from '../../store/settingsStore.js';
+import { useModelSettingStore } from '../../store/modelSettingStore.js';
+import { eventBus } from '../../services/eventBus.js';
+import { showNotification } from '../../services/notificationUtils.js';
+
+const</code></pre></div><div class="py-4"><p class="text-gray-600">src\components\settings\AboutSettings.vue (Line 29:5 - Line 36:33), src\components\settings\AboutSettings.vue (Line 22:5 - Line 29:31)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn32" onclick="toggleCodeBlock('cloneGroup32', 'expandBtn32', 'collapseBtn32')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn32" onclick="toggleCodeBlock('cloneGroup32', 'expandBtn32', 'collapseBtn32')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup32"><code class="language-markup text-sm text-gray-800">&lt;/span&gt;
+        &lt;i class=&quot;fa-solid fa-chevron-right text-xs&quot;&gt;&lt;/i&gt;
+      &lt;/button&gt;
+
+      &lt;button
+        class=&quot;w-full text-left p-3 rounded-lg text-primary hover:bg-primary/5 transition-colors flex items-center justify-between hover-scale&quot;
+      &gt;
+        &lt;span&gt;&lt;i class=&quot;fa-solid fa-circle-question mr-2</code></pre></div><div class="py-4"><p class="text-gray-600">src\components\rag\FileList.vue (Line 63:2 - Line 72:13), src\views\displayArea\RagManagementContent.vue (Line 336:2 - Line 345:8)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn33" onclick="toggleCodeBlock('cloneGroup33', 'expandBtn33', 'collapseBtn33')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn33" onclick="toggleCodeBlock('cloneGroup33', 'expandBtn33', 'collapseBtn33')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup33"><code class="language-markup text-sm text-gray-800">=== 0) return '0 Bytes';
+  
+  const k = 1024;
+  const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+};
+
+// 处理上传文件到当前文件夹</code></pre></div><div class="py-4"><p class="text-gray-600">src\components\panel\RagPanel.vue (Line 222:5 - Line 253:6), src\views\displayArea\RagManagementContent.vue (Line 416:7 - Line 447:4)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn34" onclick="toggleCodeBlock('cloneGroup34', 'expandBtn34', 'collapseBtn34')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn34" onclick="toggleCodeBlock('cloneGroup34', 'expandBtn34', 'collapseBtn34')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup34"><code class="language-markup text-sm text-gray-800">const cleanup = () =&gt; {
+      cancelBtn.removeEventListener('click', handleCancel);
+      confirmBtn.removeEventListener('click', handleConfirm);
+      document.body.removeChild(confirmationDialog);
+    };
+    
+    const handleCancel = () =&gt; {
+      cleanup();
+      resolve(false);
+    };
+    
+    const handleConfirm = () =&gt; {
+      cleanup();
+      resolve(true);
+    };
+    
+    cancelBtn.addEventListener('click', handleCancel);
+    confirmBtn.addEventListener('click', handleConfirm);
+    
+    // 允许按ESC键取消
+    const handleEsc = (e) =&gt; {
+      if (e.key === 'Escape') {
+        handleCancel();
+        document.removeEventListener('keydown', handleEsc);
+      }
+    };
+    
+    document.addEventListener('keydown', handleEsc);
+  });
+  
+  if (confirmed) {
+    const</code></pre></div><div class="py-4"><p class="text-gray-600">src\components\panel\RagPanel.vue (Line 451:3 - Line 457:12), src\views\displayArea\RagManagementContent.vue (Line 391:5 - Line 397:12)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn35" onclick="toggleCodeBlock('cloneGroup35', 'expandBtn35', 'collapseBtn35')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn35" onclick="toggleCodeBlock('cloneGroup35', 'expandBtn35', 'collapseBtn35')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup35"><code class="language-markup text-sm text-gray-800">// 创建自定义确认弹窗元素
+  const confirmationDialog = document.createElement('div');
+  confirmationDialog.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+  confirmationDialog.innerHTML = `
+    &lt;div class=&quot;bg-white dark:bg-gray-800 dark:text-white rounded-lg shadow-xl dark:shadow-panel-dark p-6 w-full max-w-md&quot;&gt;
+      &lt;h3 class=&quot;text-lg font-semibold text-gray-800 dark:text-white mb-4&quot;&gt;确认删除&lt;/h3&gt;
+      &lt;p class=&quot;text-gray-600 dark:text-gray-300 mb-6&quot;&gt;确定要删除知识库文件夹</code></pre></div><div class="py-4"><p class="text-gray-600">src\components\panel\RagPanel.vue (Line 457:18 - Line 508:41), src\views\displayArea\RagManagementContent.vue (Line 397:12 - Line 448:15)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn36" onclick="toggleCodeBlock('cloneGroup36', 'expandBtn36', 'collapseBtn36')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn36" onclick="toggleCodeBlock('cloneGroup36', 'expandBtn36', 'collapseBtn36')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup36"><code class="language-markup text-sm text-gray-800">&lt;/p&gt;
+      &lt;div class=&quot;flex justify-end gap-3&quot;&gt;
+        &lt;button id=&quot;cancelDelete&quot; class=&quot;px-4 py-2 rounded-md border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 text-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors&quot;&gt;
+          取消
+        &lt;/button&gt;
+        &lt;button id=&quot;confirmDelete&quot; class=&quot;px-4 py-2 rounded-md bg-red-500 text-white hover:bg-red-600 transition-colors&quot;&gt;
+          确认删除
+        &lt;/button&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  `;
+  
+  document.body.appendChild(confirmationDialog);
+  
+  // 使用Promise包装确认逻辑
+  const confirmed = await new Promise((resolve) =&gt; {
+    const cancelBtn = confirmationDialog.querySelector('#cancelDelete');
+    const confirmBtn = confirmationDialog.querySelector('#confirmDelete');
+    
+    const cleanup = () =&gt; {
+      cancelBtn.removeEventListener('click', handleCancel);
+      confirmBtn.removeEventListener('click', handleConfirm);
+      document.body.removeChild(confirmationDialog);
+    };
+    
+    const handleCancel = () =&gt; {
+      cleanup();
+      resolve(false);
+    };
+    
+    const handleConfirm = () =&gt; {
+      cleanup();
+      resolve(true);
+    };
+    
+    cancelBtn.addEventListener('click', handleCancel);
+    confirmBtn.addEventListener('click', handleConfirm);
+    
+    // 允许按ESC键取消
+    const handleEsc = (e) =&gt; {
+      if (e.key === 'Escape') {
+        handleCancel();
+        document.removeEventListener('keydown', handleEsc);
+      }
+    };
+    
+    document.addEventListener('keydown', handleEsc);
+  });
+  
+  if (confirmed) {
+    try {
+          // 调用后端API删除文件夹，现在使用folder_id而不是folder_name</code></pre></div><div class="py-4"><p class="text-gray-600">src\components\panel\ModelParamsPanel.vue (Line 224:1 - Line 251:10), src\views\displayArea\KnowledgeGraphContent.vue (Line 334:1 - Line 361:8)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn37" onclick="toggleCodeBlock('cloneGroup37', 'expandBtn37', 'collapseBtn37')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn37" onclick="toggleCodeBlock('cloneGroup37', 'expandBtn37', 'collapseBtn37')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup37"><code class="language-markup text-sm text-gray-800">// 显示提示信息
+const showTooltip = (tooltipId, event) =&gt; {
+  activeTooltip.value = tooltipId;
+  
+  // 计算弹窗位置
+  if (event) {
+    const rect = event.target.getBoundingClientRect();
+    tooltipStyle.value = {
+      top: `${rect.bottom + 8}px`,
+      left: `${rect.left}px`
+    };
+  }
+};
+
+// 隐藏提示信息
+const hideTooltip = (tooltipId) =&gt; {
+  // 如果传入了tooltipId，只隐藏特定的提示
+  if (tooltipId) {
+    if (activeTooltip.value === tooltipId) {
+      activeTooltip.value = '';
+    }
+  } else {
+    // 否则隐藏所有提示
+    activeTooltip.value = '';
+  }
+};
+
+// 组件挂载时加载参数</code></pre></div><div class="py-4"><p class="text-gray-600">src\components\panel\McpPanel.vue (Line 51:11 - Line 61:12), src\components\panel\ModelParamsPanel.vue (Line 178:11 - Line 190:2)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn38" onclick="toggleCodeBlock('cloneGroup38', 'expandBtn38', 'collapseBtn38')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn38" onclick="toggleCodeBlock('cloneGroup38', 'expandBtn38', 'collapseBtn38')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup38"><code class="language-markup text-sm text-gray-800">&lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/template&gt;
+
+&lt;script setup&gt;
+import { ref, computed, onMounted } from 'vue';
+import { useSettingsStore } from '../../store/settingsStore.js';
+import PanelHeader</code></pre></div><div class="py-4"><p class="text-gray-600">src\components\panel\HistoryPanel.vue (Line 41:96 - Line 47:96), src\components\panel\HistoryPanel.vue (Line 35:96 - Line 35:96)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn39" onclick="toggleCodeBlock('cloneGroup39', 'expandBtn39', 'collapseBtn39')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn39" onclick="toggleCodeBlock('cloneGroup39', 'expandBtn39', 'collapseBtn39')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup39"><code class="language-markup text-sm text-gray-800">&quot;&gt;&lt;/div&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;
+              &lt;div class=&quot;p-2 rounded-lg bg-gray-50 dark:bg-dark-700 transition-colors duration-300&quot;&gt;
+                &lt;div class=&quot;flex items-center w-full&quot;&gt;
+                  &lt;div class=&quot;w-4 h-4 bg-gray-200 dark:bg-dark-600 rounded-full mr-2 transition-colors duration-300&quot;&gt;&lt;/div&gt;
+                  &lt;div class=&quot;h-4 bg-gray-200 dark:bg-dark-600 rounded-md flex-1 max-w-[180px] transition-colors duration-300</code></pre></div><div class="py-4"><p class="text-gray-600">src\components\models\ModelSettingsDrawer.vue (Line 181:2 - Line 201:11), src\components\models\ModelVersionForm.vue (Line 201:2 - Line 221:14)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn40" onclick="toggleCodeBlock('cloneGroup40', 'expandBtn40', 'collapseBtn40')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn40" onclick="toggleCodeBlock('cloneGroup40', 'expandBtn40', 'collapseBtn40')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup40"><code class="language-markup text-sm text-gray-800">{
+          errors.value.modelVersion = '请输入模型版本';
+          hasError = true;
+        }
+        
+        if (!isOllama.value &amp;&amp; !apiKey.value.trim()) {
+          errors.value.apiKey = '请输入API密钥';
+          hasError = true;
+        }
+        
+        if (!apiBaseUrl.value.trim()) {
+          errors.value.apiBaseUrl = '请输入API基础URL';
+          hasError = true;
+        }
+        
+        if (hasError) {
+          return;
+        }
+        
+        // 构建请求数据
+        const configData</code></pre></div><div class="py-4"><p class="text-gray-600">src\components\layout\TopNav.vue (Line 72:27 - Line 77:17), src\components\layout\TopNav.vue (Line 39:29 - Line 44:14)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn41" onclick="toggleCodeBlock('cloneGroup41', 'expandBtn41', 'collapseBtn41')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn41" onclick="toggleCodeBlock('cloneGroup41', 'expandBtn41', 'collapseBtn41')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup41"><code class="language-markup text-sm text-gray-800">&quot;&gt;&lt;/i&gt;
+            &lt;/button&gt;
+            &lt;div class=&quot;my-1 w-8 border-t border-gray-200 dark:border-dark-700&quot;&gt;&lt;/div&gt;
+            &lt;button 
+              class=&quot;w-10 h-10 rounded-full flex items-center justify-center transition-colors hover:bg-gray-100 text-gray-500 dark:hover:bg-dark-700 dark:text-gray-300&quot;
+              @click=&quot;handleCliCommand</code></pre></div><div class="py-4"><p class="text-gray-600">src\components\layout\TopNav.vue (Line 80:29 - Line 85:23), src\components\layout\TopNav.vue (Line 39:29 - Line 44:14)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn42" onclick="toggleCodeBlock('cloneGroup42', 'expandBtn42', 'collapseBtn42')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn42" onclick="toggleCodeBlock('cloneGroup42', 'expandBtn42', 'collapseBtn42')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup42"><code class="language-markup text-sm text-gray-800">&quot;&gt;&lt;/i&gt;
+            &lt;/button&gt;
+            &lt;div class=&quot;my-1 w-8 border-t border-gray-200 dark:border-dark-700&quot;&gt;&lt;/div&gt;
+            &lt;button 
+              class=&quot;w-10 h-10 rounded-full flex items-center justify-center transition-colors hover:bg-gray-100 text-gray-500 dark:hover:bg-dark-700 dark:text-gray-300&quot;
+              @click=&quot;handleModelParamsClick</code></pre></div><div class="py-4"><p class="text-gray-600">src\components\layout\TopNav.vue (Line 88:28 - Line 93:16), src\components\layout\TopNav.vue (Line 39:29 - Line 44:14)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn43" onclick="toggleCodeBlock('cloneGroup43', 'expandBtn43', 'collapseBtn43')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn43" onclick="toggleCodeBlock('cloneGroup43', 'expandBtn43', 'collapseBtn43')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup43"><code class="language-markup text-sm text-gray-800">&quot;&gt;&lt;/i&gt;
+            &lt;/button&gt;
+            &lt;div class=&quot;my-1 w-8 border-t border-gray-200 dark:border-dark-700&quot;&gt;&lt;/div&gt;
+            &lt;button 
+              class=&quot;w-10 h-10 rounded-full flex items-center justify-center transition-colors hover:bg-gray-100 text-gray-500 dark:hover:bg-dark-700 dark:text-gray-300&quot;
+              @click=&quot;toggleViewPanel</code></pre></div><div class="py-4"><p class="text-gray-600">src\components\layout\TopNav.vue (Line 96:28 - Line 101:18), src\components\layout\TopNav.vue (Line 39:29 - Line 44:14)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn44" onclick="toggleCodeBlock('cloneGroup44', 'expandBtn44', 'collapseBtn44')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn44" onclick="toggleCodeBlock('cloneGroup44', 'expandBtn44', 'collapseBtn44')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup44"><code class="language-markup text-sm text-gray-800">&quot;&gt;&lt;/i&gt;
+            &lt;/button&gt;
+            &lt;div class=&quot;my-1 w-8 border-t border-gray-200 dark:border-dark-700&quot;&gt;&lt;/div&gt;
+            &lt;button 
+              class=&quot;w-10 h-10 rounded-full flex items-center justify-center transition-colors hover:bg-gray-100 text-gray-500 dark:hover:bg-dark-700 dark:text-gray-300&quot;
+              @click=&quot;handlePluginClick</code></pre></div><div class="py-4"><p class="text-gray-600">src\components\layout\TopNav.vue (Line 365:1 - Line 431:6), src\views\displayArea\RagManagementContent.vue (Line 630:1 - Line 696:7)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn45" onclick="toggleCodeBlock('cloneGroup45', 'expandBtn45', 'collapseBtn45')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn45" onclick="toggleCodeBlock('cloneGroup45', 'expandBtn45', 'collapseBtn45')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup45"><code class="language-markup text-sm text-gray-800">/* 视图切换滑块样式 */
+.toggle-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  background-color: #f0f2f5;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  user-select: none;
+}
+
+.toggle-wrapper:hover {
+  background-color: #e4e6eb;
+}
+
+.toggle-wrapper.is-active {
+  background-color: #f0f2f5;
+}
+
+.toggle-slider {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  background-color: #fff;
+  border-radius: 50%;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.toggle-slider.is-active {
+    transform: translateX(24px);
+  }
+
+.toggle-label {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #65676b;
+  transition: color 0.3s ease;
+}
+
+.toggle-wrapper.is-active .list-label {
+  color: #fff;
+}
+
+.toggle-wrapper:not(.is-active) .grid-label {
+  color: #fff;
+}
+
+.toggle-wrapper.is-active .grid-label {
+  color: #65676b;
+}
+
+.toggle-wrapper:not(.is-active) .list-label {
+  color: #65676b;
+}
+
+/* 动画效果增强 */
+.toggle-wrapper:active .toggle-slider {
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* 适配暗色模式 */
+  .dark</code></pre></div><div class="py-4"><p class="text-gray-600">src\components\common\CommandLine.vue (Line 22:2 - Line 28:12), src\views\displayArea\CodeEditorContent.vue (Line 143:2 - Line 149:15)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn46" onclick="toggleCodeBlock('cloneGroup46', 'expandBtn46', 'collapseBtn46')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn46" onclick="toggleCodeBlock('cloneGroup46', 'expandBtn46', 'collapseBtn46')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup46"><code class="language-markup text-sm text-gray-800">}}{{ prompt }}&lt;/span&gt;
+            &lt;span class=&quot;command-text&quot;&gt;{{ entry.command }}&lt;/span&gt;
+          &lt;/div&gt;
+            &lt;div v-if=&quot;entry.response&quot; class=&quot;command-response&quot;&gt;{{ entry.response }}&lt;/div&gt;
+          &lt;/div&gt;
+          &lt;div class=&quot;command-input active&quot;&gt;
+            &lt;span class=&quot;prompt&quot;&gt;{{ currentPath</code></pre></div><div class="py-4"><p class="text-gray-600">src\components\common\CommandLine.vue (Line 93:2 - Line 120:49), src\views\displayArea\CodeEditorContent.vue (Line 410:2 - Line 437:59)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn47" onclick="toggleCodeBlock('cloneGroup47', 'expandBtn47', 'collapseBtn47')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn47" onclick="toggleCodeBlock('cloneGroup47', 'expandBtn47', 'collapseBtn47')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup47"><code class="language-markup text-sm text-gray-800">command, response: null });
+      
+      // 保存到历史缓冲区
+      const historyBufferCopy = [...historyBuffer.value];
+      historyBufferCopy.push(command);
+      historyBuffer.value = historyBufferCopy;
+      
+      // 清空当前命令
+      const executedCommand = command;
+      currentCommand.value = '';
+      historyIndex.value = -1;
+
+      // 滚动到底部
+      await nextTick();
+      if (outputContainer.value) {
+        outputContainer.value.scrollTop = outputContainer.value.scrollHeight;
+      }
+
+      // 执行命令并获取响应
+      let response = '';
+      try {
+        response = await handleCommand(executedCommand);
+      } catch (error) {
+        response = `错误: ${error.message}`;
+      }
+
+      // 更新响应
+      const lastEntry = commandHistory.value[commandHistory.value.length</code></pre></div><div class="py-4"><p class="text-gray-600">src\components\common\CommandLine.vue (Line 120:2 - Line 134:10), src\views\displayArea\CodeEditorContent.vue (Line 437:2 - Line 451:9)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn48" onclick="toggleCodeBlock('cloneGroup48', 'expandBtn48', 'collapseBtn48')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn48" onclick="toggleCodeBlock('cloneGroup48', 'expandBtn48', 'collapseBtn48')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup48"><code class="language-markup text-sm text-gray-800">- 1];
+      lastEntry.response = response;
+
+      // 再次滚动到底部
+      await nextTick();
+      if (outputContainer.value) {
+        outputContainer.value.scrollTop = outputContainer.value.scrollHeight;
+      }
+    };
+
+    // 获取当前工作路径
+    const getCurrentPath = async () =&gt; {
+      try {
+        const path = await invoke('execute_command', { command: 'cd' });
+        // 清理路径输出，Windows系统的cd命令输出格式为&quot;当前目录为: X:\\path&quot;</code></pre></div><div class="py-4"><p class="text-gray-600">src\components\common\CommandLine.vue (Line 142:7 - Line 156:23), src\views\displayArea\CodeEditorContent.vue (Line 466:3 - Line 480:57)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn49" onclick="toggleCodeBlock('cloneGroup49', 'expandBtn49', 'collapseBtn49')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn49" onclick="toggleCodeBlock('cloneGroup49', 'expandBtn49', 'collapseBtn49')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup49"><code class="language-markup text-sm text-gray-800">}
+    };
+
+    // 命令处理函数
+    const handleCommand = async (command) =&gt; {
+      const [cmd, ...args] = command.split(' ');
+      
+      // 检查是否是cd命令，如果是则特殊处理
+      if (cmd.toLowerCase() === 'cd') {
+        try {
+          const newPath = args.join(' ');
+          await invoke('execute_command', { command: `cd ${newPath}` });
+          // 更新当前路径
+          await getCurrentPath();
+          return `已切换到: ${currentPath.value}`;</code></pre></div><div class="py-4"><p class="text-gray-600">src\components\common\CommandLine.vue (Line 157:9 - Line 175:21), src\views\displayArea\CodeEditorContent.vue (Line 481:5 - Line 499:55)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn50" onclick="toggleCodeBlock('cloneGroup50', 'expandBtn50', 'collapseBtn50')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn50" onclick="toggleCodeBlock('cloneGroup50', 'expandBtn50', 'collapseBtn50')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup50"><code class="language-markup text-sm text-gray-800">} catch (error) {
+          return `切换目录失败: ${error.message}`;
+        }
+      }
+      
+      switch (cmd.toLowerCase()) {
+        case 'help':
+          return `
+可用命令列表:
+  help              - 显示此帮助信息
+  clear             - 清除命令行历史
+  exit              - 关闭命令行窗口
+  list-models       - 列出可用的模型
+  echo [text]       - 显示文本
+  version           - 显示NeoVAI版本信息
+          `;
+          
+        case 'clear':
+          commandHistory.value</code></pre></div><div class="py-4"><p class="text-gray-600">src\components\common\CommandLine.vue (Line 180:11 - Line 230:6), src\views\displayArea\CodeEditorContent.vue (Line 504:7 - Line 554:5)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn51" onclick="toggleCodeBlock('cloneGroup51', 'expandBtn51', 'collapseBtn51')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn51" onclick="toggleCodeBlock('cloneGroup51', 'expandBtn51', 'collapseBtn51')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup51"><code class="language-markup text-sm text-gray-800">return '正在关闭命令行...';
+          
+        case 'list-models':
+          try {
+            // 这里可以从modelSettingStore获取模型列表
+            return '可用模型: OpenAI GPT-4, Claude 3, Gemini, 本地模型';
+          } catch (error) {
+            return '无法获取模型列表: ' + error.message;
+          }
+          
+        case 'echo':
+          return args.join(' ');
+          
+        case 'version':
+          return 'NeoVAI v0.1.0 - AI助手应用';
+          
+        default:
+          try {
+            // 尝试通过Tauri调用系统命令
+            const result = await invoke('execute_command', { command: command });
+            return result;
+          } catch (error) {
+            return `未知命令: ${cmd}`;
+          }
+      }
+    };
+
+    // 历史导航
+    const navigateHistory = (direction) =&gt; {
+      if (historyBuffer.value.length === 0) return;
+      
+      // 保存当前输入（如果是新命令）
+      if (historyIndex.value === -1) {
+        historyBuffer.value.push(currentCommand.value);
+      }
+      
+      // 更新索引
+      historyIndex.value += direction;
+      
+      // 边界检查
+      if (historyIndex.value &lt; 0) {
+        historyIndex.value = historyBuffer.value.length - 1;
+      } else if (historyIndex.value &gt;= historyBuffer.value.length) {
+        historyIndex.value = 0;
+      }
+      
+      // 设置当前命令
+      currentCommand.value = historyBuffer.value[historyIndex.value];
+    };
+
+    // 关闭命令行</code></pre></div><div class="py-4"><p class="text-gray-600">src\components\common\CommandLine.vue (Line 344:1 - Line 364:26), src\views\displayArea\CodeEditorContent.vue (Line 654:1 - Line 674:19)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn52" onclick="toggleCodeBlock('cloneGroup52', 'expandBtn52', 'collapseBtn52')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn52" onclick="toggleCodeBlock('cloneGroup52', 'expandBtn52', 'collapseBtn52')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup52"><code class="language-markup text-sm text-gray-800">}
+
+.command-line-btn {
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: none;
+  color: #cccccc;
+  cursor: pointer;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+}
+
+.command-line-btn:hover {
+  background-color: #404040;
+}
+
+.command-line-close:hover</code></pre></div><div class="py-4"><p class="text-gray-600">src\components\common\CommandLine.vue (Line 371:3 - Line 443:21), src\views\displayArea\CodeEditorContent.vue (Line 675:3 - Line 747:3)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn53" onclick="toggleCodeBlock('cloneGroup53', 'expandBtn53', 'collapseBtn53')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn53" onclick="toggleCodeBlock('cloneGroup53', 'expandBtn53', 'collapseBtn53')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup53"><code class="language-markup text-sm text-gray-800">overflow: hidden;
+  background-color: #1e1e1e;
+}
+
+.command-line-output {
+  height: 100%;
+  overflow-y: auto;
+  padding: 16px;
+  color: #d4d4d4;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.command-entry {
+  margin-bottom: 8px;
+}
+
+.command-input {
+  display: flex;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.command-input.active {
+  position: relative;
+}
+
+.prompt {
+  color: #569cd6;
+  font-weight: 600;
+  margin-right: 4px;
+}
+
+.command-text {
+  color: #d4d4d4;
+}
+
+.command-input-field {
+  flex: 1;
+  background: none;
+  border: none;
+  color: #d4d4d4;
+  font-family: inherit;
+  font-size: inherit;
+  outline: none;
+  padding: 0;
+}
+
+.command-response {
+  color: #9cdcfe;
+  margin-left: 20px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.cursor {
+  width: 8px;
+  height: 16px;
+  background-color: #d4d4d4;
+  margin-left: 2px;
+  display: inline-block;
+}
+
+.cursor.blinking {
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+.command-line-footer</code></pre></div><div class="py-4"><p class="text-gray-600">src\components\common\ActionButton.vue (Line 8:7 - Line 27:2), src\components\common\FeatureCard.vue (Line 8:4 - Line 27:3)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn54" onclick="toggleCodeBlock('cloneGroup54', 'expandBtn54', 'collapseBtn54')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn54" onclick="toggleCodeBlock('cloneGroup54', 'expandBtn54', 'collapseBtn54')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup54"><code class="language-markup text-sm text-gray-800">&gt;
+&lt;/template&gt;
+
+&lt;script setup&gt;
+import { defineComponent } from 'vue';
+
+// 定义组件属性
+const props = defineProps({
+  icon: {
+    type: String,
+    required: true,
+    validator: (value) =&gt; {
+      // 基本的Font Awesome图标验证
+      return typeof value === 'string' &amp;&amp; value.length &gt; 0;
+    }
+  },
+  title: {
+    type: String,
+    required: true
+  }</code></pre></div><div class="py-4"><p class="text-gray-600">src\components\chat\MessageInputArea.vue (Line 525:3 - Line 556:3), src\views\displayArea\ChatContent.vue (Line 321:3 - Line 351:3)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn55" onclick="toggleCodeBlock('cloneGroup55', 'expandBtn55', 'collapseBtn55')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn55" onclick="toggleCodeBlock('cloneGroup55', 'expandBtn55', 'collapseBtn55')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup55"><code class="language-markup text-sm text-gray-800">transition: box-shadow 0.3s ease;
+}
+
+/* 深度效果 - 增加特异性确保样式应用 */
+.depth-1 {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+}
+
+.depth-1:hover {
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+}
+
+.depth-2 {
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+}
+
+/* 按钮悬停效果 */
+.hover-scale:hover {
+  transform: scale(1.05);
+}
+
+/* 焦点环效果 */
+.focus-ring:focus {
+  outline: 2px solid rgba(66, 153, 225, 0.5);
+  outline-offset: 2px;
+}
+
+/*</code></pre></div><div class="py-4"><p class="text-gray-600">src\components\chat\ChatMessagesContainer.vue (Line 58:1 - Line 76:10), src\views\displayArea\ChatContent.vue (Line 293:1 - Line 311:5)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn56" onclick="toggleCodeBlock('cloneGroup56', 'expandBtn56', 'collapseBtn56')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn56" onclick="toggleCodeBlock('cloneGroup56', 'expandBtn56', 'collapseBtn56')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup56"><code class="language-markup text-sm text-gray-800">/* 滚动条样式 */
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 3px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+/* 深色模式滚动条样式</code></pre></div><div class="py-4"><p class="text-gray-600">src\components\chat\ChatMessage.vue (Line 57:83 - Line 67:35), src\components\chat\ChatMessage.vue (Line 20:2 - Line 30:20)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn57" onclick="toggleCodeBlock('cloneGroup57', 'expandBtn57', 'collapseBtn57')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn57" onclick="toggleCodeBlock('cloneGroup57', 'expandBtn57', 'collapseBtn57')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup57"><code class="language-markup text-sm text-gray-800">&quot;&gt;
+          &lt;div class=&quot;markdown-content text-gray-800 dark:text-gray-100 leading-relaxed&quot; v-html=&quot;formattedContent&quot; :key=&quot;updateKey&quot;&gt;&lt;/div&gt;
+        
+        &lt;!-- 错误状态显示 --&gt;
+        &lt;div v-if=&quot;messageValue.error&quot; class=&quot;chat-error mt-2&quot;&gt;
+          &lt;i class=&quot;fa-solid fa-circle-exclamation text-red-500 mr-1&quot;&gt;&lt;/i&gt;
+          &lt;span&gt;{{ messageValue.error }}&lt;/span&gt;
+        &lt;/div&gt;
+        
+        &lt;!-- 打字动画 --&gt;
+        &lt;div v-if=&quot;messageValue.isTyping&quot; class=&quot;flex justify-center space-x-1 mt-2</code></pre></div><div class="py-4"><p class="text-gray-600">src\components\chat\ChatMessage.vue (Line 67:35 - Line 73:3), src\components\chat\ChatMessage.vue (Line 30:20 - Line 37:18)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn58" onclick="toggleCodeBlock('cloneGroup58', 'expandBtn58', 'collapseBtn58')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn58" onclick="toggleCodeBlock('cloneGroup58', 'expandBtn58', 'collapseBtn58')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup58"><code class="language-markup text-sm text-gray-800">&quot;&gt;
+          &lt;div class=&quot;w-2 h-2 rounded-full bg-gray-400 animate-bounce&quot; style=&quot;animation-delay: 0ms;&quot;&gt;&lt;/div&gt;
+          &lt;div class=&quot;w-2 h-2 rounded-full bg-gray-400 animate-bounce&quot; style=&quot;animation-delay: 150ms;&quot;&gt;&lt;/div&gt;
+          &lt;div class=&quot;w-2 h-2 rounded-full bg-gray-400 animate-bounce&quot; style=&quot;animation-delay: 300ms;&quot;&gt;&lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/</code></pre></div><!-- Add more clone groups for .txt format as needed         // Add more clone groups for .txt format as needed--></div><a name="javascript-clones"></a><h2 class="text-2xl font-semibold text-gray-700 mb-4">javascript</h2><div class="divide-y divide-gray-200 border-b-2"><div class="py-4"><p class="text-gray-600">src\store\settingsStore.js (Line 256:2 - Line 268:2), src\store\settingsStore.js (Line 63:2 - Line 75:2)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn59" onclick="toggleCodeBlock('cloneGroup59', 'expandBtn59', 'collapseBtn59')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn59" onclick="toggleCodeBlock('cloneGroup59', 'expandBtn59', 'collapseBtn59')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup59"><code class="language-javascript text-sm text-gray-800">{
+        enabled: false,
+        chunk_size: 1000,
+        chunk_overlap: 100,
+        k: 4,
+        retrievalMode: 'vector',
+        topK: 3,
+        scoreThreshold: 0.7,
+        embedderModel: 'qwen3-embedding-0.6b',
+        vectorDbPath: '', // 留空，让后端使用标准用户数据目录
+        vectorDbType: 'chroma',
+        knowledgeBasePath: '', // 留空，让后端使用标准用户数据目录
+      };</code></pre></div><div class="py-4"><p class="text-gray-600">src\store\modelSettingStore.js (Line 228:9 - Line 238:13), src\store\modelSettingStore.js (Line 172:9 - Line 182:11)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn60" onclick="toggleCodeBlock('cloneGroup60', 'expandBtn60', 'collapseBtn60')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn60" onclick="toggleCodeBlock('cloneGroup60', 'expandBtn60', 'collapseBtn60')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup60"><code class="language-javascript text-sm text-gray-800">});
+        
+        // 重新加载模型列表以更新状态
+        await this.loadModels();
+        
+        // 通过事件总线通知模型已更新
+        eventBus.emit('modelUpdated');
+        
+        return true;
+      } catch (error) {
+        this.setError('更新模型启用状态失败'</code></pre></div><div class="py-4"><p class="text-gray-600">src\store\modelSettingStore.js (Line 264:12 - Line 274:11), src\store\modelSettingStore.js (Line 172:2 - Line 182:11)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn61" onclick="toggleCodeBlock('cloneGroup61', 'expandBtn61', 'collapseBtn61')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn61" onclick="toggleCodeBlock('cloneGroup61', 'expandBtn61', 'collapseBtn61')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup61"><code class="language-javascript text-sm text-gray-800">);
+        
+        // 重新加载模型列表以更新状态
+        await this.loadModels();
+        
+        // 通过事件总线通知模型已更新
+        eventBus.emit('modelUpdated');
+        
+        return true;
+      } catch (error) {
+        this.setError('添加模型版本失败'</code></pre></div><div class="py-4"><p class="text-gray-600">src\store\modelSettingStore.js (Line 289:2 - Line 297:13), src\store\modelSettingStore.js (Line 253:2 - Line 261:8)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn62" onclick="toggleCodeBlock('cloneGroup62', 'expandBtn62', 'collapseBtn62')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn62" onclick="toggleCodeBlock('cloneGroup62', 'expandBtn62', 'collapseBtn62')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup62"><code class="language-javascript text-sm text-gray-800">= {
+          custom_name: versionConfig.customName,
+          api_key: versionConfig.apiKey,
+          api_base_url: versionConfig.apiBaseUrl,
+          version_name: versionConfig.versionName,
+          streaming_config: versionConfig.streamingConfig
+        };
+        
+        // 调用API保存配置</code></pre></div><div class="py-4"><p class="text-gray-600">src\store\modelSettingStore.js (Line 298:12 - Line 308:11), src\store\modelSettingStore.js (Line 172:2 - Line 182:11)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn63" onclick="toggleCodeBlock('cloneGroup63', 'expandBtn63', 'collapseBtn63')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn63" onclick="toggleCodeBlock('cloneGroup63', 'expandBtn63', 'collapseBtn63')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup63"><code class="language-javascript text-sm text-gray-800">);
+        
+        // 重新加载模型列表以更新状态
+        await this.loadModels();
+        
+        // 通过事件总线通知模型已更新
+        eventBus.emit('modelUpdated');
+        
+        return true;
+      } catch (error) {
+        this.setError('更新模型版本失败'</code></pre></div><div class="py-4"><p class="text-gray-600">src\store\modelSettingStore.js (Line 341:12 - Line 349:14), src\store\modelSettingStore.js (Line 211:12 - Line 219:12)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn64" onclick="toggleCodeBlock('cloneGroup64', 'expandBtn64', 'collapseBtn64')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn64" onclick="toggleCodeBlock('cloneGroup64', 'expandBtn64', 'collapseBtn64')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup64"><code class="language-javascript text-sm text-gray-800">, error);
+        showNotification('删除失败: ' + (error.message || '未知错误'), 'error');
+        throw error;
+      } finally {
+        this.setLoading(false);
+      }
+    },
+
+    // 重置模型设置为默认值</code></pre></div><div class="py-4"><p class="text-gray-600">src\store\chatStore.js (Line 76:3 - Line 89:11), src\store\knowledgeGraphStore.js (Line 101:3 - Line 114:10)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn65" onclick="toggleCodeBlock('cloneGroup65', 'expandBtn65', 'collapseBtn65')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn65" onclick="toggleCodeBlock('cloneGroup65', 'expandBtn65', 'collapseBtn65')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup65"><code class="language-javascript text-sm text-gray-800">},
+
+  actions: {
+    // 设置错误信息
+    setError(error) {
+      this.error = error;
+    },
+
+    // 清空错误信息
+    clearError() {
+      this.error = null;
+    },
+
+    // 设置搜索关键词</code></pre></div><div class="py-4"><p class="text-gray-600">src\store\chatStore.js (Line 358:19 - Line 382:2), src\store\chatStore.js (Line 311:21 - Line 336:12)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn66" onclick="toggleCodeBlock('cloneGroup66', 'expandBtn66', 'collapseBtn66')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn66" onclick="toggleCodeBlock('cloneGroup66', 'expandBtn66', 'collapseBtn66')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup66"><code class="language-javascript text-sm text-gray-800">this.currentChat = { ...this.currentChat };
+                  
+                  // 如果用户当前没有查看该对话，设置未读标记并显示通知
+                  if (this.currentChatId !== currentChat.id) {
+                    this.chats = this.chats.map(c =&gt; 
+              c.id === currentChat.id ? { ...c, hasUnreadMessage: true } : c
+            );
+            // 获取通知显示时间设置
+            let displayTimeMs = 3000; // 默认3秒
+            const displayTimeSetting = settingsStore.notificationsConfig?.displayTime;
+            if (displayTimeSetting === '2秒') {
+              displayTimeMs = 2000;
+            } else if (displayTimeSetting === '5秒') {
+              displayTimeMs = 5000;
+            } else if (displayTimeSetting === '10秒') {
+              displayTimeMs = 10000;
+            }
+            // 显示新消息通知
+            showNotification(`新消息: ${currentChat.title}`, 'success', displayTimeMs, true);
+            // 播放未读消息通知声音
+            this.playNotificationSound();
+                  }
+                }
+              }
+            )</code></pre></div><div class="py-4"><p class="text-gray-600">src\store\chatStore.js (Line 393:13 - Line 399:19), src\store\chatStore.js (Line 258:19 - Line 264:26)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn67" onclick="toggleCodeBlock('cloneGroup67', 'expandBtn67', 'collapseBtn67')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn67" onclick="toggleCodeBlock('cloneGroup67', 'expandBtn67', 'collapseBtn67')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup67"><code class="language-javascript text-sm text-gray-800">const typingMessageIndex = currentChat.messages.findIndex(msg =&gt; msg &amp;&amp; msg.value &amp;&amp; msg.value.isTyping === true);
+            if (typingMessageIndex !== -1) {
+              // 移除typing消息
+              currentChat.messages.splice(typingMessageIndex, 1);
+            }
+            
+            // 添加错误消息，并使用ref包装</code></pre></div><div class="py-4"><p class="text-gray-600">src\store\chatStore.js (Line 425:11 - Line 432:19), src\store\chatStore.js (Line 257:19 - Line 264:26)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn68" onclick="toggleCodeBlock('cloneGroup68', 'expandBtn68', 'collapseBtn68')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn68" onclick="toggleCodeBlock('cloneGroup68', 'expandBtn68', 'collapseBtn68')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup68"><code class="language-javascript text-sm text-gray-800">// 更新之前添加的typing消息，替换为实际的AI回复
+          const typingMessageIndex = currentChat.messages.findIndex(msg =&gt; msg &amp;&amp; msg.value &amp;&amp; msg.value.isTyping === true);
+          if (typingMessageIndex !== -1) {
+            // 移除typing消息
+            currentChat.messages.splice(typingMessageIndex, 1);
+          }
+          
+          // 添加AI回复，并使用ref包装</code></pre></div><div class="py-4"><p class="text-gray-600">src\store\chatStore.js (Line 445:2 - Line 467:5), src\store\chatStore.js (Line 311:2 - Line 334:2)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn69" onclick="toggleCodeBlock('cloneGroup69', 'expandBtn69', 'collapseBtn69')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn69" onclick="toggleCodeBlock('cloneGroup69', 'expandBtn69', 'collapseBtn69')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup69"><code class="language-javascript text-sm text-gray-800">;
+            
+            // 如果用户当前没有查看该对话，设置未读标记并显示通知
+            if (this.currentChatId !== currentChat.id) {
+              this.chats = this.chats.map(c =&gt; 
+                c.id === currentChat.id ? { ...c, hasUnreadMessage: true } : c
+              );
+              // 获取通知显示时间设置
+              let displayTimeMs = 3000; // 默认3秒
+              const displayTimeSetting = settingsStore.notificationsConfig?.displayTime;
+              if (displayTimeSetting === '2秒') {
+                displayTimeMs = 2000;
+              } else if (displayTimeSetting === '5秒') {
+                displayTimeMs = 5000;
+              } else if (displayTimeSetting === '10秒') {
+                displayTimeMs = 10000;
+              }
+              // 显示新消息通知
+              showNotification(`新消息: ${currentChat.title}`, 'success', displayTimeMs, true);
+              // 播放未读消息通知声音
+              this.playNotificationSound();
+            }
+          } else</code></pre></div><div class="py-4"><p class="text-gray-600">src\store\chatStore.js (Line 484:10 - Line 505:8), src\store\chatStore.js (Line 389:12 - Line 411:2)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn70" onclick="toggleCodeBlock('cloneGroup70', 'expandBtn70', 'collapseBtn70')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn70" onclick="toggleCodeBlock('cloneGroup70', 'expandBtn70', 'collapseBtn70')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup70"><code class="language-javascript text-sm text-gray-800">, error);
+        this.setError(`发送消息失败: ${error.message || '未知错误'}`);
+
+        // 更新之前添加的typing消息，替换为错误消息
+        const typingMessageIndex = currentChat.messages.findIndex(msg =&gt; msg &amp;&amp; msg.value &amp;&amp; msg.value.isTyping === true);
+        if (typingMessageIndex !== -1) {
+          // 移除typing消息
+          currentChat.messages.splice(typingMessageIndex, 1);
+        }
+
+        // 添加错误消息，并使用ref包装
+        const errorMessageRef = ref({
+          id: (Date.now() + 2).toString(),
+          role: 'ai',
+          content: '',
+          timestamp: Date.now(),
+          error: `⚠️ 发送失败: ${error.message || '服务器连接错误'}`,
+          isTyping: false,
+        });
+
+        currentChat.messages.push(errorMessageRef);
+      } finally</code></pre></div><div class="py-4"><p class="text-gray-600">src\store\chatStore.js (Line 753:2 - Line 761:28), src\store\chatStore.js (Line 524:7 - Line 531:2)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn71" onclick="toggleCodeBlock('cloneGroup71', 'expandBtn71', 'collapseBtn71')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn71" onclick="toggleCodeBlock('cloneGroup71', 'expandBtn71', 'collapseBtn71')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup71"><code class="language-javascript text-sm text-gray-800">) {
+          if (this.chats.length &gt; 0) {
+            this.selectChat(this.chats[0].id);
+          } else {
+            this.currentChatId = null;
+          }
+        }
+
+        // 不再需要本地保存，所有数据已通过API同步到后端</code></pre></div><div class="py-4"><p class="text-gray-600">src\services\notificationUtils.js (Line 77:13 - Line 91:13), src\services\notificationUtils.js (Line 44:9 - Line 58:16)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn72" onclick="toggleCodeBlock('cloneGroup72', 'expandBtn72', 'collapseBtn72')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn72" onclick="toggleCodeBlock('cloneGroup72', 'expandBtn72', 'collapseBtn72')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup72"><code class="language-javascript text-sm text-gray-800">// 创建通知元素
+            const notification = document.createElement('div');
+            notification.className = `fixed bottom-4 right-4 px-4 py-2 rounded-lg shadow-lg z-50 transition-all duration-300 transform translate-y-0 opacity-100`;
+            
+            // 根据类型设置样式
+            if (type === 'success') {
+                notification.classList.add('bg-green-100', 'text-green-800', 'border', 'border-green-200');
+            } else {
+                notification.classList.add('bg-red-100', 'text-red-800', 'border', 'border-red-200');
+            }
+
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            // 默认时间后自动消失</code></pre></div><!-- Add more clone groups for .txt format as needed         // Add more clone groups for .txt format as needed--></div><a name="markdown-clones"></a><h2 class="text-2xl font-semibold text-gray-700 mb-4">markdown</h2><div class="divide-y divide-gray-200 border-b-2"><!-- Add more clone groups for .txt format as needed         // Add more clone groups for .txt format as needed--></div><a name="css-clones"></a><h2 class="text-2xl font-semibold text-gray-700 mb-4">css</h2><div class="divide-y divide-gray-200 border-b-2"><!-- Add more clone groups for .txt format as needed         // Add more clone groups for .txt format as needed--></div></section><!-- Add more sections for other formats and clone groups as needed--></main><footer class="bg-white shadow mt-8 py-4"><div class="container mx-auto px-4 text-center"><p class="text-sm text-gray-600">This report is generated by jscpd, an open-source copy/paste detector.</p><p class="text-sm text-gray-600">jscpd is licensed under the MIT License.</p><a class="text-blue-500 text-sm" href="https://github.com/kucherenko/jscpd" target="_blank" rel="noopener noreferrer">View jscpd on GitHub</a></div></footer><script src="js/prism.js"></script><script>function toggleCodeBlock(codeBlockId, expandBtnId, collapseBtnId) {
+  const codeBlock = document.getElementById(codeBlockId);
+  const expandBtn = document.getElementById(expandBtnId);
+  const collapseBtn = document.getElementById(collapseBtnId);
+
+  codeBlock.classList.toggle('hidden');
+  expandBtn.classList.toggle('hidden');
+  collapseBtn.classList.toggle('hidden');
+}</script></body></html>

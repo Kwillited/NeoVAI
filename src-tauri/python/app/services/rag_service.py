@@ -21,39 +21,18 @@ VECTOR_DB_PATH = os.path.join(RAG_DIR, 'vectorDb')  # 与其他地方保持一�
 # 确保目录存在
 os.makedirs(DATA_DIR, exist_ok=True)
 
-# 全局向量存储服务实例
-vector_store_service = None
-
-# 全局函数，供外部模块直接调用 - 保持API兼容性
-def set_rag_instance(instance):
-    """设置全局RAG实例 (兼容旧接口)"""
-    global vector_store_service
-    # 从旧实例中提取必要的配置信息
-    if instance:
-        # 创建新的向量存储服务实例
-        embedder_model = getattr(instance, 'embedder_model', 'all-MiniLM-L6-v2')
-        vector_db_path = getattr(instance, 'vector_db_path', VECTOR_DB_PATH)
-        vector_store_service = VectorStoreService(
-            vector_db_path=vector_db_path,
-            embedder_model=embedder_model
-        )
-
 # 获取向量存储服务实例
 def get_vector_store_service():
     """获取或创建向量存储服务实例"""
-    global vector_store_service
-    # 如果服务实例未初始化，创建一个默认实例
-    if vector_store_service is None:
-        try:
-            vector_store_service = VectorStoreService(
-                vector_db_path=VECTOR_DB_PATH,
-                embedder_model=config_manager.get('rag.embedder_model', 'all-MiniLM-L6-v2')
-            )
-            print(f"✅ 向量存储服务实例已成功创建")
-        except Exception as e:
-            print(f"❌ 创建向量存储服务实例失败: {str(e)}")
-            vector_store_service = None
-    return vector_store_service
+    # 直接使用 VectorStoreService 的单例模式
+    try:
+        return VectorStoreService.get_instance(
+            vector_db_path=VECTOR_DB_PATH,
+            embedder_model=config_manager.get('rag.embedder_model', 'all-MiniLM-L6-v2')
+        )
+    except Exception as e:
+        print(f"❌ 获取向量存储服务实例失败: {str(e)}")
+        return None
 
 class RAGService:
     """RAG服务类 - 封装所有RAG相关的业务逻辑"""

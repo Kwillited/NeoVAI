@@ -49,6 +49,13 @@ export default defineConfig(async () => ({
   build: {
     // 代码分割配置
     rollupOptions: {
+      // 外部化Tauri API模块，这些模块只在运行时可用
+      external: [
+        '@tauri-apps/api',
+        '@tauri-apps/api/invoke',
+        '@tauri-apps/api/core',
+        '@tauri-apps/api/tauri'
+      ],
       output: {
         // 手动代码分割配置
         manualChunks: (id) => {

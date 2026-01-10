@@ -1,15 +1,14 @@
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
 use std::env;
-use std::path::{Path, PathBuf};
+use std::fs;
+use std::path::Path;
 use std::process::Command;
+use std::time::SystemTime;
 // 添加编码转换支持
 use encoding::all::GBK;
 use encoding::{DecoderTrap, Encoding};
-
-#[tauri::command]
-fn greet(name: &str) -> String {
-    format!("Hello, {}! You've been greeted from Rust!", name)
-}
+// UUID生成
+use uuid::Uuid;
 
 #[tauri::command]
 fn execute_command(command: &str) -> Result<String, String> {
@@ -126,20 +125,13 @@ fn start_python_server() -> Result<String, String> {
     }
 }
 
-fn find_python_executable() -> Result<PathBuf, String> {
+fn start_python_process(script_path: &Path) -> Result<String, String> {
     // 直接使用系统Python
     println!("使用系统Python");
-    Ok(PathBuf::from("python"))
-}
-
-fn start_python_process(script_path: &Path) -> Result<String, String> {
-    // 查找系统Python可执行文件
-    let python_exe_path = find_python_executable()?;
-
     println!("使用系统Python启动脚本: {:?}", script_path);
 
     // 使用系统Python启动脚本
-    let result = Command::new(python_exe_path)
+    let result = Command::new("python")
         .arg(script_path)
         .spawn()
         .map_err(|e| format!("无法启动Python脚本: {}", e))?;
@@ -223,6 +215,71 @@ fn start_ollama_service() -> Result<String, String> {
     Ok(format!("Ollama服务已启动，进程ID: {}", result.id()))
 }
 
+#[tauri::command]
+fn create_knowledge_base(name: &str) -> Result<serde_json::Value, String> {
+    // 验证输入
+    let name = name.trim();
+    if name.is_empty() {
+        return Err("知识库名称不能为空".to_string());
+    }
+
+    // 获取当前可执行文件所在目录
+    let exe_path = env::current_exe().map_err(|e| format!("无法获取可执行文件路径: {}", e))?;
+    let exe_dir = exe_path.parent().ok_or("无法获取可执行文件所在目录")?;
+
+    // 确定知识库存储路径
+    let rag_files_path = exe_dir.join("resources").join("python").join("userData").join("rag").join("ragFiles");
+    
+    // 确保父目录存在
+    fs::create_dir_all(&rag_files_path).map_err(|e| format!("无法创建父目录: {}", e))?;
+
+    // 生成8位UUID
+    let uuid = Uuid::new_v4().to_string().replace("-", "").chars().take(8).collect::<String>();
+    
+    // 构建完整的文件夹路径
+    let folder_path = rag_files_path.join(name);
+    
+    // 检查文件夹是否已存在
+    if folder_path.exists() {
+        return Err(format!("文件夹'{}'已存在", name).to_string());
+    }
+
+    // 创建文件夹
+    fs::create_dir(&folder_path).map_err(|e| format!("无法创建文件夹: {}", e))?;
+    
+    // 创建标记文件
+    let marker_path = folder_path.join(".kb_marker.json");
+    
+    // 构建标记文件内容
+    let marker_content = serde_json::json!({
+        "id": uuid,
+        "name": name,
+        "created_at": SystemTime::now()
+            .duration_since(SystemTime::UNIX_EPOCH)
+            .map_err(|e| format!("无法获取系统时间: {}", e))?
+            .as_secs(),
+        "updated_at": SystemTime::now()
+            .duration_since(SystemTime::UNIX_EPOCH)
+            .map_err(|e| format!("无法获取系统时间: {}", e))?
+            .as_secs()
+    });
+    
+    // 写入标记文件
+    fs::write(
+        &marker_path,
+        serde_json::to_string_pretty(&marker_content)
+            .map_err(|e| format!("无法序列化标记文件内容: {}", e))?
+    ).map_err(|e| format!("无法写入标记文件: {}", e))?;
+    
+    // 返回结果
+    Ok(serde_json::json!({
+        "success": true,
+        "id": uuid,
+        "name": name,
+        "path": folder_path.to_str().ok_or("无法转换路径为字符串")?
+    }))
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -230,11 +287,12 @@ pub fn run() {
         .plugin(tauri_plugin_cli::init())
         .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![
-            greet,
+
             start_python_server,
             execute_command,
             check_ollama_service,
-            start_ollama_service
+            start_ollama_service,
+            create_knowledge_base
         ])
         .setup(|_| {
             // 应用启动时自动启动Python服务器

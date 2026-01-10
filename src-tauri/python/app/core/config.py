@@ -77,14 +77,6 @@ class ConfigManager:
         os.makedirs(user_data_dir, exist_ok=True)
         return user_data_dir
     
-    def _merge_config(self, base, update):
-        """递归合并配置字典"""
-        for key, value in update.items():
-            if isinstance(value, dict) and key in base and isinstance(base[key], dict):
-                self._merge_config(base[key], value)
-            else:
-                base[key] = value
-    
     def get(self, key_path, default=None):
         """获取配置值，支持点号分隔的路径"""
         keys = key_path.split('.')

@@ -2,7 +2,7 @@
 from flask import Blueprint, request, jsonify, current_app
 
 # 导入RAG服务层
-from app.services.rag_service import RAGService, set_rag_instance
+from app.services.rag_service import RAGService
 
 # 创建RAG API蓝图（前缀统一为 /api/rag）
 rag_bp = Blueprint('rag', __name__, url_prefix='/api/rag')

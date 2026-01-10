@@ -30,10 +30,31 @@ const props = defineProps({
 // 定义组件事件
 const emit = defineEmits(['node-click', 'node-hover', 'view-changed']);
 
+// 节流函数工具
+const throttle = (func, limit) => {
+  let inThrottle = false;
+  return function(...args) {
+    const context = this;
+    if (!inThrottle) {
+      func.apply(context, args);
+      inThrottle = true;
+      setTimeout(() => inThrottle = false, limit);
+    }
+  };
+};
+
 // Canvas相关引用和状态
 const knowledgeGraphCanvasRef = ref(null);
 const knowledgeGraphCanvasContext = ref(null);
+const offscreenCanvas = ref(null);
+const offscreenContext = ref(null);
 const animationFrameId = ref(null);
+
+// 帧率控制
+const targetFPS = ref(60); // 目标帧率
+const minFPS = ref(15); // 最小帧率
+const frameInterval = ref(1000 / targetFPS.value); // 每帧间隔时间（毫秒）
+const lastFrameTime = ref(0); // 上一帧时间戳
 
 // 知识图谱数据
 const knowledgeGraphNodes = ref([]);
@@ -83,6 +104,12 @@ const initKnowledgeGraphCanvas = () => {
   const container = canvas.parentElement;
   canvas.width = container.clientWidth;
   canvas.height = container.clientHeight;
+  
+  // 初始化离屏Canvas
+  offscreenCanvas.value = document.createElement('canvas');
+  offscreenCanvas.value.width = canvas.width;
+  offscreenCanvas.value.height = canvas.height;
+  offscreenContext.value = offscreenCanvas.value.getContext('2d');
   
   // 生成知识图谱数据
   generateKnowledgeGraphData();
@@ -183,11 +210,19 @@ const generateExampleKnowledgeGraphData = () => {
 
 // 添加鼠标事件监听器
 const addKnowledgeGraphMouseEventListeners = (canvas) => {
+  // 创建节流后的事件处理函数
+  const throttledMouseMove = throttle(handleKnowledgeGraphMouseMove, 16); // 约60fps
+  const throttledMouseWheel = throttle(handleKnowledgeGraphMouseWheel, 16); // 约60fps
+  
+  // 存储节流函数引用，以便后续移除
+  canvas._throttledMouseMove = throttledMouseMove;
+  canvas._throttledMouseWheel = throttledMouseWheel;
+  
   // 鼠标按下事件
   canvas.addEventListener('mousedown', handleKnowledgeGraphMouseDown);
   
-  // 鼠标移动事件
-  canvas.addEventListener('mousemove', handleKnowledgeGraphMouseMove);
+  // 鼠标移动事件（节流处理）
+  canvas.addEventListener('mousemove', throttledMouseMove);
   
   // 鼠标抬起事件
   canvas.addEventListener('mouseup', handleKnowledgeGraphMouseUp);
@@ -195,17 +230,32 @@ const addKnowledgeGraphMouseEventListeners = (canvas) => {
   // 鼠标离开事件
   canvas.addEventListener('mouseleave', handleKnowledgeGraphMouseLeave);
   
-  // 鼠标滚轮事件（用于缩放）
-  canvas.addEventListener('wheel', handleKnowledgeGraphMouseWheel);
+  // 鼠标滚轮事件（用于缩放，节流处理）
+  canvas.addEventListener('wheel', throttledMouseWheel);
 };
 
 // 移除鼠标事件监听器
 const removeKnowledgeGraphMouseEventListeners = (canvas) => {
   canvas.removeEventListener('mousedown', handleKnowledgeGraphMouseDown);
-  canvas.removeEventListener('mousemove', handleKnowledgeGraphMouseMove);
+  
+  // 移除节流后的鼠标移动事件
+  if (canvas._throttledMouseMove) {
+    canvas.removeEventListener('mousemove', canvas._throttledMouseMove);
+    delete canvas._throttledMouseMove;
+  } else {
+    canvas.removeEventListener('mousemove', handleKnowledgeGraphMouseMove);
+  }
+  
   canvas.removeEventListener('mouseup', handleKnowledgeGraphMouseUp);
   canvas.removeEventListener('mouseleave', handleKnowledgeGraphMouseLeave);
-  canvas.removeEventListener('wheel', handleKnowledgeGraphMouseWheel);
+  
+  // 移除节流后的鼠标滚轮事件
+  if (canvas._throttledMouseWheel) {
+    canvas.removeEventListener('wheel', canvas._throttledMouseWheel);
+    delete canvas._throttledMouseWheel;
+  } else {
+    canvas.removeEventListener('wheel', handleKnowledgeGraphMouseWheel);
+  }
 };
 
 // 获取鼠标在Canvas中的坐标
@@ -215,6 +265,26 @@ const getKnowledgeGraphMousePos = (canvas, event) => {
     x: event.clientX - rect.left,
     y: event.clientY - rect.top
   };
+};
+
+// 检查节点是否在可视区域内
+const isNodeInViewport = (node) => {
+  const canvas = knowledgeGraphCanvasRef.value;
+  if (!canvas) return true;
+  
+  // 将节点坐标转换为屏幕坐标
+  const screenX = node.x * scale.value + origin.value.x;
+  const screenY = node.y * scale.value + origin.value.y;
+  
+  // 考虑节点半径和一些边距，确保节点完全可见
+  const margin = Math.max(node.radius * scale.value, 50);
+  
+  return (
+    screenX + margin >= 0 &&
+    screenX - margin <= canvas.width &&
+    screenY + margin >= 0 &&
+    screenY - margin <= canvas.height
+  );
 };
 
 // 检查鼠标是否在节点内（考虑缩放和平移）
@@ -399,6 +469,10 @@ const cleanupKnowledgeGraphCanvas = () => {
   isPanning.value = false;
   panStart.value = { x: 0, y: 0 };
   
+  // 清理离屏Canvas
+  offscreenCanvas.value = null;
+  offscreenContext.value = null;
+  
   knowledgeGraphCanvasContext.value = null;
   hoveredNode.value = null;
   draggedNode.value = null;
@@ -407,11 +481,16 @@ const cleanupKnowledgeGraphCanvas = () => {
 
 // 绘制知识图谱节点
 const drawKnowledgeGraphNodes = () => {
-  const ctx = knowledgeGraphCanvasContext.value;
+  const ctx = offscreenContext.value;
   const canvas = knowledgeGraphCanvasRef.value;
   if (!ctx || !canvas) return;
   
-  knowledgeGraphNodes.value.forEach(node => {
+  // 只绘制可视区域内的节点，或拖拽/悬停状态的节点
+  const visibleNodes = knowledgeGraphNodes.value.filter(node => 
+    isNodeInViewport(node) || node === hoveredNode.value || node === draggedNode.value
+  );
+  
+  visibleNodes.forEach(node => {
     // 确定节点半径和样式
     let radius = node.radius;
     let strokeWidth = 2;
@@ -478,23 +557,33 @@ const drawKnowledgeGraphNodes = () => {
 
 // 绘制知识图谱连线
 const drawKnowledgeGraphLinks = () => {
-  const ctx = knowledgeGraphCanvasContext.value;
+  const ctx = offscreenContext.value;
   if (!ctx) return;
+  
+  // 只绘制连接可视区域内节点的连线
+  const visibleNodeIds = new Set(
+    knowledgeGraphNodes.value
+      .filter(node => isNodeInViewport(node) || node === hoveredNode.value || node === draggedNode.value)
+      .map(node => node.id)
+  );
   
   knowledgeGraphLinks.value.forEach(link => {
     const source = knowledgeGraphNodes.value[link.source];
     const target = knowledgeGraphNodes.value[link.target];
     
-    ctx.beginPath();
-    ctx.moveTo(source.x, source.y);
-    ctx.lineTo(target.x, target.y);
-    ctx.strokeStyle = '#95A5A6';
-    ctx.lineWidth = 1;
-    ctx.stroke();
+    // 只有当至少一个节点在可视区域内时才绘制连线
+    if (visibleNodeIds.has(source.id) || visibleNodeIds.has(target.id)) {
+      ctx.beginPath();
+      ctx.moveTo(source.x, source.y);
+      ctx.lineTo(target.x, target.y);
+      ctx.strokeStyle = '#95A5A6';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    }
   });
 };
 
-// 更新知识图谱节点位置（简单的力导向算法）
+// 更新知识图谱节点位置（优化的力导向算法）
 const updateKnowledgeGraphNodes = () => {
   const canvas = knowledgeGraphCanvasRef.value;
   if (!canvas) return;
@@ -503,23 +592,35 @@ const updateKnowledgeGraphNodes = () => {
   const springStrength = 0.00005; // 弹簧强度
   const repulsionStrength = 2000; // 排斥力强度
   const friction = 0.92; // 摩擦力
+  const maxRepulsionDistance = 300; // 最大排斥力计算距离，超过此距离不计算排斥力
   
   // 只对非拖拽节点应用力
   const nonDraggedNodes = knowledgeGraphNodes.value.filter(node => node !== draggedNode.value);
   
-  // 应用排斥力
-  for (let i = 0; i < nonDraggedNodes.length; i++) {
-    for (let j = i + 1; j < nonDraggedNodes.length; j++) {
-      const nodeA = nonDraggedNodes[i];
-      const nodeB = nonDraggedNodes[j];
+  // 分离可视节点和非可视节点
+  const visibleNodes = nonDraggedNodes.filter(node => isNodeInViewport(node));
+  const nonVisibleNodes = nonDraggedNodes.filter(node => !isNodeInViewport(node));
+  
+  // 应用排斥力 - 仅对可视节点和它们的邻居应用完整排斥力计算
+  // 1. 可视节点之间的排斥力
+  for (let i = 0; i < visibleNodes.length; i++) {
+    for (let j = i + 1; j < visibleNodes.length; j++) {
+      const nodeA = visibleNodes[i];
+      const nodeB = visibleNodes[j];
       
       const dx = nodeA.x - nodeB.x;
       const dy = nodeA.y - nodeB.y;
-      const distance = Math.sqrt(dx * dx + dy * dy);
+      const distanceSquared = dx * dx + dy * dy;
       
+      // 跳过距离太远的节点，减少计算量
+      if (distanceSquared > maxRepulsionDistance * maxRepulsionDistance) {
+        continue;
+      }
+      
+      const distance = Math.sqrt(distanceSquared);
       if (distance > 0) {
         // 使用库仑定律风格的排斥力
-        const force = repulsionStrength / (distance * distance);
+        const force = repulsionStrength / distanceSquared;
         const fx = (dx / distance) * force;
         const fy = (dy / distance) * force;
         
@@ -527,6 +628,32 @@ const updateKnowledgeGraphNodes = () => {
         nodeA.vy += fy;
         nodeB.vx -= fx;
         nodeB.vy -= fy;
+      }
+    }
+  }
+  
+  // 2. 可视节点与非可视节点之间的排斥力（简化计算，减少精度要求）
+  for (const visibleNode of visibleNodes) {
+    for (const nonVisibleNode of nonVisibleNodes) {
+      const dx = visibleNode.x - nonVisibleNode.x;
+      const dy = visibleNode.y - nonVisibleNode.y;
+      const distanceSquared = dx * dx + dy * dy;
+      
+      // 跳过距离太远的节点
+      if (distanceSquared > maxRepulsionDistance * maxRepulsionDistance) {
+        continue;
+      }
+      
+      const distance = Math.sqrt(distanceSquared);
+      if (distance > 0) {
+        // 使用简化的排斥力计算
+        const force = (repulsionStrength * 0.5) / distanceSquared; // 降低强度
+        const fx = (dx / distance) * force;
+        const fy = (dy / distance) * force;
+        
+        // 只对可视节点应用此排斥力，减少计算量
+        visibleNode.vx += fx;
+        visibleNode.vy += fy;
       }
     }
   }
@@ -544,62 +671,139 @@ const updateKnowledgeGraphNodes = () => {
     const dx = nodeA.x - nodeB.x;
     const dy = nodeA.y - nodeB.y;
     const distance = Math.sqrt(dx * dx + dy * dy);
-    const springForce = (distance - springLength) * springStrength;
     
-    const fx = (dx / distance) * springForce;
-    const fy = (dy / distance) * springForce;
-    
-    nodeA.vx -= fx;
-    nodeA.vy -= fy;
-    nodeB.vx += fx;
-    nodeB.vy += fy;
+    // 只对距离合理的节点应用弹簧力
+    if (distance > 0 && distance < springLength * 3) {
+      const springForce = (distance - springLength) * springStrength;
+      
+      const fx = (dx / distance) * springForce;
+      const fy = (dy / distance) * springForce;
+      
+      // 根据节点是否可见调整弹簧力强度
+      const nodeAvisible = isNodeInViewport(nodeA);
+      const nodeBvisible = isNodeInViewport(nodeB);
+      
+      if (nodeAvisible) {
+        nodeA.vx -= fx;
+        nodeA.vy -= fy;
+      }
+      
+      if (nodeBvisible) {
+        nodeB.vx += fx;
+        nodeB.vy += fy;
+      }
+    }
   });
   
   // 更新节点位置并应用摩擦力
+  // 只对可视节点应用完整更新，非可视节点只做简单更新
   nonDraggedNodes.forEach(node => {
-    node.vx *= friction;
-    node.vy *= friction;
+    const isVisible = isNodeInViewport(node);
     
-    node.x += node.vx;
-    node.y += node.vy;
-    
-    // 边界检查
-    node.x = Math.max(node.radius, Math.min(canvas.width - node.radius, node.x));
-    node.y = Math.max(node.radius, Math.min(canvas.height - node.radius, node.y));
+    // 可视节点应用完整更新
+    if (isVisible) {
+      node.vx *= friction;
+      node.vy *= friction;
+      
+      node.x += node.vx;
+      node.y += node.vy;
+      
+      // 边界检查 - 确保节点始终在可视区域内
+      // 计算世界坐标系下的可视区域边界
+      // 可视区域的左上角在世界坐标系中的位置
+      const viewLeft = -origin.value.x / scale.value;
+      const viewTop = -origin.value.y / scale.value;
+      // 可视区域的右下角在世界坐标系中的位置
+      const viewRight = viewLeft + canvas.width / scale.value;
+      const viewBottom = viewTop + canvas.height / scale.value;
+      
+      // 确保节点在可视区域内
+      node.x = Math.max(viewLeft + node.radius, Math.min(viewRight - node.radius, node.x));
+      node.y = Math.max(viewTop + node.radius, Math.min(viewBottom - node.radius, node.y));
+    } else {
+      // 非可视节点只做简单更新，降低计算量
+      node.vx *= (friction + 0.05); // 更强的摩擦力，减少不必要的运动
+      node.vy *= (friction + 0.05);
+      
+      node.x += node.vx * 0.5; // 降低更新幅度
+      node.y += node.vy * 0.5;
+      
+      // 非可视节点的边界检查 - 使用更宽松的边界
+      // 为非可视节点提供更大的移动空间，只做基本限制
+      // 计算世界坐标系下的画布尺寸
+      const worldWidth = canvas.width / scale.value;
+      const worldHeight = canvas.height / scale.value;
+      
+      // 允许节点在更大的范围内移动（当前可视区域的3倍）
+      const maxBound = 3;
+      node.x = Math.max(-worldWidth * maxBound, Math.min(worldWidth * maxBound, node.x));
+      node.y = Math.max(-worldHeight * maxBound, Math.min(worldHeight * maxBound, node.y));
+    }
   });
 };
 
 // 知识图谱动画循环
-const animateKnowledgeGraph = () => {
-  if (!knowledgeGraphCanvasContext.value || !knowledgeGraphCanvasRef.value) return;
+const animateKnowledgeGraph = (timestamp) => {
+  if (!knowledgeGraphCanvasContext.value || !knowledgeGraphCanvasRef.value || !offscreenContext.value) return;
   
   const ctx = knowledgeGraphCanvasContext.value;
   const canvas = knowledgeGraphCanvasRef.value;
-  if (!ctx || !canvas) return;
+  const offCtx = offscreenContext.value;
+  if (!ctx || !canvas || !offCtx) return;
   
-  // 清空Canvas
-  ctx.fillStyle = '#F8FAFC';
-  if (document.documentElement.classList.contains('dark')) {
-    ctx.fillStyle = '#1E293B';
+  // 计算时间差
+  const deltaTime = timestamp - lastFrameTime.value;
+  
+  // 如果时间差大于等于帧间隔，则执行渲染
+  if (deltaTime >= frameInterval.value) {
+    // 更新上一帧时间戳
+    lastFrameTime.value = timestamp;
+    
+    // 确保离屏Canvas尺寸与可视Canvas一致
+    if (offscreenCanvas.value.width !== canvas.width || offscreenCanvas.value.height !== canvas.height) {
+      offscreenCanvas.value.width = canvas.width;
+      offscreenCanvas.value.height = canvas.height;
+    }
+    
+    // 清空离屏Canvas
+    offCtx.fillStyle = '#F8FAFC';
+    if (document.documentElement.classList.contains('dark')) {
+      offCtx.fillStyle = '#1E293B';
+    }
+    offCtx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    // 应用缩放和平移变换到离屏Canvas
+    offCtx.save();
+    offCtx.translate(origin.value.x, origin.value.y);
+    offCtx.scale(scale.value, scale.value);
+    
+    // 更新节点位置
+    updateKnowledgeGraphNodes();
+    
+    // 绘制连线到离屏Canvas
+    drawKnowledgeGraphLinks();
+    
+    // 绘制节点到离屏Canvas
+    drawKnowledgeGraphNodes();
+    
+    // 恢复变换
+    offCtx.restore();
+    
+    // 将离屏Canvas的内容一次性绘制到可视Canvas上
+    ctx.drawImage(offscreenCanvas.value, 0, 0);
+    
+    // 动态调整帧率
+    const actualFPS = 1000 / deltaTime;
+    if (actualFPS < minFPS.value) {
+      // 如果实际帧率低于最小帧率，降低目标帧率
+      targetFPS.value = Math.max(minFPS.value, targetFPS.value - 5);
+      frameInterval.value = 1000 / targetFPS.value;
+    } else if (actualFPS > targetFPS.value + 10 && targetFPS.value < 60) {
+      // 如果实际帧率远高于目标帧率，提高目标帧率
+      targetFPS.value = Math.min(60, targetFPS.value + 5);
+      frameInterval.value = 1000 / targetFPS.value;
+    }
   }
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-  
-  // 应用缩放和平移变换
-  ctx.save();
-  ctx.translate(origin.value.x, origin.value.y);
-  ctx.scale(scale.value, scale.value);
-  
-  // 更新节点位置
-  updateKnowledgeGraphNodes();
-  
-  // 绘制连线
-  drawKnowledgeGraphLinks();
-  
-  // 绘制节点
-  drawKnowledgeGraphNodes();
-  
-  // 恢复变换
-  ctx.restore();
   
   // 请求下一帧动画
   animationFrameId.value = requestAnimationFrame(animateKnowledgeGraph);

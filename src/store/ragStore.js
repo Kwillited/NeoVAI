@@ -318,15 +318,27 @@ export const useRagStore = defineStore('rag', {
   // 创建知识库
   async createKnowledgeBase(knowledgeBaseName) {
     try {
-      // 调用后端API创建知识库
-      const response = await apiService.post('/api/rag/folders', {
-        name: knowledgeBaseName
-      });
+      let response;
+      
+      // 尝试使用Tauri invoke调用Rust函数
+      try {
+        // 动态导入invoke，避免在非Tauri环境中报错
+        const { invoke } = await import('@tauri-apps/api/core');
+        response = await invoke('create_knowledge_base', {
+          name: knowledgeBaseName
+        });
+      } catch (importError) {
+        // 如果导入失败，回退到使用Python API
+        console.warn('无法使用Tauri invoke，回退到Python API:', importError);
+        response = await apiService.post('/api/rag/folders', {
+          name: knowledgeBaseName
+        });
+      }
       
       // 通知事件总线知识库已创建
       eventBus.emit('knowledge-base-created', {
         id: response.id || null,
-        name: knowledgeBaseName,
+        name: response.name || knowledgeBaseName,
         path: response.path || `resources/python/userData/rag/ragFiles/${knowledgeBaseName}`
       });
       
@@ -336,7 +348,7 @@ export const useRagStore = defineStore('rag', {
       return {
         success: true,
         id: response.id || null,
-        name: knowledgeBaseName,
+        name: response.name || knowledgeBaseName,
         path: response.path || `resources/python/userData/rag/ragFiles/${knowledgeBaseName}`
       };
     } catch (error) {

@@ -49,16 +49,16 @@
 
 <script setup>
 import { onMounted, watch } from 'vue';
-import { useSettingsStore } from '../../store/settingsStore.js';
+import { useSettingsStore } from '../store/settingsStore.js';
 
 // 导入设置子组件
-import ActionButton from '../../components/common/ActionButton.vue';
-import GeneralSettings from '../../components/settings/GeneralSettings.vue';
-import ModelsSettings from '../../components/settings/ModelsSettings.vue';
-import NotificationsSettings from '../../components/settings/NotificationsSettings.vue';
-import AboutSettings from '../../components/settings/AboutSettings.vue';
-import RAGSettings from '../../components/settings/RAGSettings.vue';
-import McpSettings from '../../components/settings/McpSettings.vue';
+import ActionButton from '../components/common/ActionButton.vue';
+import GeneralSettings from '../components/settings/GeneralSettings.vue';
+import ModelsSettings from '../components/settings/ModelsSettings.vue';
+import NotificationsSettings from '../components/settings/NotificationsSettings.vue';
+import AboutSettings from '../components/settings/AboutSettings.vue';
+import RAGSettings from '../components/settings/RAGSettings.vue';
+import McpSettings from '../components/settings/McpSettings.vue';
 
 // 初始化store
 const settingsStore = useSettingsStore();

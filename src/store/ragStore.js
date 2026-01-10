@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { StorageManager, generateId, debounce } from './utils';
+import { generateId } from './utils';
 import { eventBus } from '../services/eventBus.js';
 import { apiService } from '../services/apiService.js';
 
@@ -383,6 +383,13 @@ export const useRagStore = defineStore('rag', {
       this.clearError();
 
       try {
+        // 首先根据fileId查找文件
+        const file = this.files.find(f => f.id === fileId);
+        if (!file) {
+          this.setError(`文件不存在: ${fileId}`);
+          return null;
+        }
+        
         // 调用后端API获取文件详情
         const response = await apiService.get(`/api/rag/documents/${fileId}`);
         // 确保正确处理响应格式

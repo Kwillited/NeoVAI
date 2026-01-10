@@ -163,7 +163,7 @@ export const useModelSettingStore = defineStore('modelSetting', {
         this.setError(null);
         
         // 调用后端API保存配置
-        const response = await apiService.post(`/api/models/${modelName}`, {
+        await apiService.post(`/api/models/${modelName}`, {
           custom_name: config.customName,
           api_key: config.apiKey,
           api_base_url: config.apiBaseUrl,
@@ -261,7 +261,7 @@ export const useModelSettingStore = defineStore('modelSetting', {
         console.log('发送的API请求数据:', JSON.stringify(modelConfig));
         
         // 调用后端API保存配置
-        const response = await apiService.post(`/api/models/${modelName}`, modelConfig);
+        await apiService.post(`/api/models/${modelName}`, modelConfig);
         
         // 重新加载模型列表以更新状态
         await this.loadModels();
@@ -295,7 +295,7 @@ export const useModelSettingStore = defineStore('modelSetting', {
         };
         
         // 调用API保存配置
-        const response = await apiService.post(`/api/models/${modelName}`, requestData);
+        await apiService.post(`/api/models/${modelName}`, requestData);
         
         // 重新加载模型列表以更新状态
         await this.loadModels();

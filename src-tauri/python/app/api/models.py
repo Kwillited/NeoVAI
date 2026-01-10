@@ -9,7 +9,7 @@ from app.services.model_service import ModelService
 model_bp = Blueprint('model', __name__, url_prefix='/api/models')
 
 # 获取图标目录的绝对路径
-ICONS_DIR = 'C:\\Users\\admin\\AppData\\Local\\NeoVAI\\NeoVAI\\icon'
+ICONS_DIR = 'C:\\Users\\admin\\AppData\\Local\\Chato\\Chato\\icon'
 
 # 获取所有模型供应商以及模型版本
 @model_bp.route('', methods=['GET'])

@@ -147,6 +147,82 @@ fn start_python_process(script_path: &Path) -> Result<String, String> {
     Ok(format!("Python服务器已启动，进程ID: {}", result.id()))
 }
 
+#[tauri::command]
+fn check_ollama_service() -> Result<serde_json::Value, String> {
+    // 首先检查Ollama是否安装
+    let ollama_check_output = Command::new("cmd")
+        .args(["/c", "where", "ollama"])
+        .output()
+        .map_err(|e| format!("检查Ollama安装状态失败: {}", e))?;
+
+    // 检查Ollama是否安装
+    if !ollama_check_output.status.success() {
+        // Ollama未安装
+        return Ok(serde_json::json!({
+            "installed": false,
+            "running": false,
+            "message": "Ollama未安装"
+        }));
+    }
+
+    // 检查Ollama服务是否正在运行
+    let service_check_output = Command::new("cmd")
+        .args(["/c", "curl", "-s", "http://localhost:11434/api/version"])
+        .output()
+        .map_err(|e| format!("检查Ollama服务状态失败: {}", e))?;
+
+    // 如果命令执行成功且有输出，说明服务正在运行
+    if service_check_output.status.success() && !service_check_output.stdout.is_empty() {
+        Ok(serde_json::json!({
+            "installed": true,
+            "running": true,
+            "message": "Ollama服务正在运行"
+        }))
+    } else {
+        Ok(serde_json::json!({
+            "installed": true,
+            "running": false,
+            "message": "Ollama已安装但服务未运行"
+        }))
+    }
+}
+
+#[tauri::command]
+fn start_ollama_service() -> Result<String, String> {
+    // 先检查Ollama是否安装
+    let ollama_check_output = Command::new("cmd")
+        .args(["/c", "where", "ollama"])
+        .output()
+        .map_err(|e| format!("检查Ollama安装状态失败: {}", e))?;
+
+    if !ollama_check_output.status.success() {
+        return Err("Ollama未安装，无法启动服务".to_string());
+    }
+
+    // 启动Ollama服务
+    // 使用更可靠的方式在后台启动，不显示窗口
+    #[cfg(windows)]
+    let result = {
+        use std::os::windows::process::CommandExt;
+        Command::new("ollama")
+            .arg("serve")
+            .creation_flags(0x08000000) // CREATE_NO_WINDOW
+            .spawn()
+            .map_err(|e| format!("启动Ollama服务失败: {}", e))?
+    };
+
+    #[cfg(not(windows))]
+    let result = {
+        // 在非Windows系统上，使用标准的spawn方式
+        Command::new("ollama")
+            .arg("serve")
+            .spawn()
+            .map_err(|e| format!("启动Ollama服务失败: {}", e))?
+    };
+
+    Ok(format!("Ollama服务已启动，进程ID: {}", result.id()))
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -156,7 +232,9 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             greet,
             start_python_server,
-            execute_command
+            execute_command,
+            check_ollama_service,
+            start_ollama_service
         ])
         .setup(|_| {
             // 应用启动时自动启动Python服务器

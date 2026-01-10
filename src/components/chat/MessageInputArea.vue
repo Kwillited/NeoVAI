@@ -1,4 +1,32 @@
 <template>
+  <!-- 自定义通知组件 -->
+  <div v-if="showNotification" class="notification-overlay fixed bottom-4 right-4 z-50">
+    <div class="notification-card bg-white dark:bg-dark-700 shadow-lg rounded-lg p-4 min-w-[300px] transition-all duration-300 ease-in-out transform translate-y-0 opacity-100">
+      <div class="flex items-start">
+        <div class="flex-shrink-0 mt-1">
+          <i v-if="notificationType === 'success'" class="fa-solid fa-check-circle text-green-500"></i>
+          <i v-else-if="notificationType === 'error'" class="fa-solid fa-exclamation-circle text-red-500"></i>
+          <i v-else-if="notificationType === 'info'" class="fa-solid fa-info-circle text-blue-500"></i>
+          <i v-else class="fa-solid fa-bell text-gray-500"></i>
+        </div>
+        <div class="ml-3 w-0 flex-1 pt-0.5">
+          <p class="text-sm font-medium text-gray-900 dark:text-white">{{ notificationTitle }}</p>
+          <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ notificationMessage }}</p>
+        </div>
+        <div class="ml-4 flex-shrink-0 flex">
+          <button @click="hideNotification" class="bg-white dark:bg-dark-700 rounded-md inline-flex text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+            <span class="sr-only">关闭</span>
+            <i class="fa-solid fa-times"></i>
+          </button>
+        </div>
+      </div>
+      <!-- 倒计时进度条 -->
+      <div class="mt-3 h-1 bg-gray-200 dark:bg-gray-600 rounded-full overflow-hidden">
+        <div class="notification-progress h-full bg-primary rounded-full transition-all duration-[2900ms] ease-linear" :style="{ width: '0%' }"></div>
+      </div>
+    </div>
+  </div>
+  
   <!-- 聊天输入区域 - 在切换到图谱视图时添加顶部padding -->
   <div id="MessageInputArea" class="border-t-0 pb-4 px-6 transition-colors duration-300 ease-in-out" :class="{ 'pt-4': activeView !== 'grid' }">
     <div class="relative w-full max-w-4xl mx-auto">
@@ -37,7 +65,7 @@
         >
           <textarea
             v-model="messageInput"
-            placeholder="Message Or UploadFile For NeoVAI..."
+            placeholder="Message Or UploadFile For Chato..."
             class="w-full resize-none border-none focus:ring-0 focus:outline-none text-base leading-relaxed placeholder-gray-400 dark:text-white dark:placeholder-gray-500 bg-transparent transition-all duration-300 ease-in-out"
             rows="2"
             @keydown.enter.exact.prevent="handleSendMessage"
@@ -157,7 +185,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
+import { ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue';
 import { StorageManager } from '../../store/utils.js';
 
 // 接收从父组件传递的视图状态
@@ -200,6 +228,14 @@ const hasActiveStreaming = ref(false);
 const isDeepThinking = ref(StorageManager.getItem(STORAGE_KEYS.DEEP_THINKING, false));
 // 联网搜索状态 - 从存储加载
 const isWebSearchEnabled = ref(StorageManager.getItem(STORAGE_KEYS.WEB_SEARCH, false));
+
+// 自定义通知组件状态
+const showNotification = ref(false);
+const notificationTitle = ref('');
+const notificationMessage = ref('');
+const notificationType = ref('info');
+let notificationTimer = null;
+let notificationProgressTimer = null;
 
 // 切换深度思考模式
 const toggleDeepThinking = () => {
@@ -351,12 +387,46 @@ const uploadedFiles = computed(() => chatStore.uploadedFiles);
 const emit = defineEmits(['sendMessage']);
 
 // 处理发送消息事件
-const handleSendMessage = () => {
+const handleSendMessage = async () => {
   if (messageInput.value.trim()) {
-    // 使用当前模型发送消息，并传递深度思考模式和联网搜索状态
-    emit('sendMessage', messageInput.value, currentModel.value, isDeepThinking.value, isWebSearchEnabled.value);
+    // 先保存当前需要发送的消息内容和模型
+    const messageToSend = messageInput.value;
+    const modelToUse = currentModel.value;
+    const deepThinking = isDeepThinking.value;
+    const webSearchEnabled = isWebSearchEnabled.value;
+    
+    // 立即发送消息，不等待Ollama服务检查
+    emit('sendMessage', messageToSend, modelToUse, deepThinking, webSearchEnabled);
     // 发送消息后立即检查是否有流式输出
     checkForActiveStreaming();
+    
+    // 如果是Ollama模型，在后台异步检查和启动服务
+    if (modelToUse.includes('Ollama')) {
+      // 使用setTimeout将检查操作放入事件队列，避免阻塞UI
+      setTimeout(async () => {
+        try {
+          // 动态导入Tauri API，避免在非Tauri环境中出错
+          const { invoke } = await import('@tauri-apps/api/core');
+          
+          // 检查Ollama服务状态
+          const ollamaStatus = await invoke('check_ollama_service');
+          
+          if (!ollamaStatus.installed) {
+            // Ollama未安装，显示提示
+            displayNotification('error', '提示', 'Ollama未安装，请先安装Ollama后再使用该模型', 3000);
+          } else if (!ollamaStatus.running) {
+            // 如果服务没有运行，启动它
+            await invoke('start_ollama_service');
+            // 显示服务正在启动的提示
+            displayNotification('info', '提示', 'Ollama服务正在启动，请稍候...', 3000);
+          }
+        } catch (error) {
+          console.error('Ollama服务管理失败:', error);
+          // 显示更具体的错误信息
+          displayNotification('error', '错误', `Ollama服务管理失败: ${error.message || error}`, 3000);
+        }
+      }, 0);
+    }
   }
 };
 
@@ -374,6 +444,52 @@ watch(
 const handleCancelStreaming = () => {
   chatStore.cancelStreaming();
   hasActiveStreaming.value = false;
+};
+
+// 显示通知
+const displayNotification = (type = 'info', title = '', message = '', duration = 3000) => {
+  // 清除之前的定时器
+  hideNotification();
+  
+  // 设置通知内容
+  notificationType.value = type;
+  notificationTitle.value = title;
+  notificationMessage.value = message;
+  
+  // 显示通知
+  showNotification.value = true;
+  
+  // 触发进度条动画
+  setTimeout(() => {
+    const progressBar = document.querySelector('.notification-progress');
+    if (progressBar) {
+      // 重置进度条
+      progressBar.style.width = '100%';
+      progressBar.style.transition = 'none';
+      
+      // 触发重排
+      void progressBar.offsetWidth;
+      
+      // 设置动画
+      progressBar.style.transition = `width ${duration - 100}ms ease-linear`;
+      progressBar.style.width = '0%';
+    }
+  }, 10);
+  
+  // 设置自动关闭定时器
+  notificationTimer = setTimeout(() => {
+    hideNotification();
+  }, duration);
+};
+
+// 隐藏通知
+const hideNotification = () => {
+  if (notificationTimer) {
+    clearTimeout(notificationTimer);
+    notificationTimer = null;
+  }
+  
+  showNotification.value = false;
 };
 
 // 检查是否有活动的流式输出

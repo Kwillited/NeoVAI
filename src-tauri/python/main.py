@@ -1,4 +1,4 @@
-"""NeoVAI应用入口"""
+"""Chato应用入口"""
 import os
 from app import create_app
 from app.core.config import ConfigManager

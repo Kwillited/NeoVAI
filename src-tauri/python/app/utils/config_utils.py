@@ -4,7 +4,7 @@ import json
 import sys
 
 
-def get_user_data_dir(app_name='NeoVAI', roaming=True):
+def get_user_data_dir(app_name='Chato', roaming=True):
     """
     获取用户数据目录，适配不同操作系统
     
@@ -29,7 +29,7 @@ def get_user_data_dir(app_name='NeoVAI', roaming=True):
         return os.path.join(base_dir, app_name)
 
 
-def get_app_config_dir(app_name='NeoVAI'):
+def get_app_config_dir(app_name='Chato'):
     """
     获取应用配置目录，适配不同操作系统
     
@@ -49,7 +49,7 @@ def get_app_config_dir(app_name='NeoVAI'):
         return os.path.join(config_dir, app_name)
 
 
-def get_app_cache_dir(app_name='NeoVAI'):
+def get_app_cache_dir(app_name='Chato'):
     """
     获取应用缓存目录，适配不同操作系统
     

@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "neovai",
+  "productName": "chato",
   "version": "0.1.0",
-  "identifier": "com.admin.neovai",
+  "identifier": "com.admin.chato",
   "build": {
     "beforeDevCommand": "npm run dev",
     "devUrl": "http://localhost:18450",
@@ -12,7 +12,7 @@
   "app": {
     "windows": [
       {
-          "title": "neovai",
+          "title": "chato",
           "width": 800,
           "height": 600,
           "center": true,
@@ -27,8 +27,8 @@
   },
   "plugins": {
     "cli": {
-      "description": "Command line interface for NeoVAI",
-      "longDescription": "Command line interface for controlling NeoVAI application",
+      "description": "Command line interface for Chato",
+      "longDescription": "Command line interface for controlling Chato application",
       "args": []
     }
   },

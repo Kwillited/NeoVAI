@@ -46,11 +46,11 @@
 <script setup>
 
 import PanelContent from '../panel/PanelContent.vue'; // 使用PanelContent复合组件
-import ChatContent from '../../views/displayArea/ChatContent.vue'; // 移动到views目录
-import SettingsContent from '../../views/displayArea/SettingsContent.vue'; // 移动到views目录
-import RagManagementContent from '../../views/displayArea/RagManagementContent.vue'; // 移动到views目录
-import KnowledgeGraphContent from '../../views/displayArea/KnowledgeGraphContent.vue'; // 新增视图组件
-import SendMessageContent from '../../views/displayArea/SendMessageContent.vue'; // 新增发送消息视图组件
+import ChatContent from '../../views/ChatContent.vue'; // 移动到views目录
+import SettingsContent from '../../views/SettingsContent.vue'; // 移动到views目录
+import RagManagementContent from '../../views/RagManagementContent.vue'; // 移动到views目录
+import KnowledgeGraphContent from '../../views/KnowledgeGraphContent.vue'; // 新增视图组件
+import SendMessageContent from '../../views/SendMessageContent.vue'; // 新增发送消息视图组件
 
 import RightPanel from '../panel/RightPanel.vue';
 import { useSettingsStore } from '../../store/settingsStore.js';

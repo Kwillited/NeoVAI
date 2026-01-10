@@ -1,6 +1,5 @@
 import { defineStore } from 'pinia';
-import { StorageManager, mergeSettings, debounce } from './utils';
-import { apiService } from '../services/apiService.js';
+import { StorageManager, mergeSettings } from './utils';
 
 
 // 存储键名常量
@@ -43,6 +42,8 @@ export const useSettingsStore = defineStore('settings', {
   state: () => ({
     // 当前激活的设置面板
     activePanel: 'history',
+    // 当前激活的内容视图
+    activeContent: 'sendMessage',
     // 当前激活的设置部分
     activeSection: 'general',
 
@@ -160,6 +161,11 @@ export const useSettingsStore = defineStore('settings', {
     // 切换左侧导航栏可见性
     toggleLeftNav() {
       this.leftNavVisible = !this.leftNavVisible;
+    },
+
+    // 设置当前激活的内容视图
+    setActiveContent(content) {
+      this.activeContent = content;
     },
 
     // 设置左侧导航栏宽度

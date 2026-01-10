@@ -6,13 +6,13 @@
       >
         <i class="fa-regular fa-comments text-primary text-3xl"></i>
       </div>
-      <h3 class="font-semibold text-xl">NeoVAI</h3>
+      <h3 class="font-semibold text-xl">Chato</h3>
       <div class="text-sm text-neutral mt-1">版本 v1.0.0</div>
     </div>
 
     <div class="card p-6 mb-6 depth-1 hover:depth-2 transition-all duration-300">
       <h4 class="font-medium mb-3">关于应用</h4>
-      <p class="text-sm text-gray-700">Neo新生代全栈AI应用平台，满足你所想、符合你所需</p>
+      <p class="text-sm text-gray-700">Chato新生代全栈AI应用平台，满足你所想、符合你所需</p>
     </div>
 
     <div class="space-y-3">
@@ -38,7 +38,7 @@
       </button>
 
       <a
-        href="https://github.com/Kwillited/NeoVAI"
+        href="https://github.com/Kwillited/Chato"
         target="_blank"
         rel="noopener noreferrer"
         class="w-full text-left p-3 rounded-lg text-primary hover:bg-primary/5 transition-colors flex items-center justify-between hover-scale"

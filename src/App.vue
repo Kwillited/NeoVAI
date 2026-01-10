@@ -13,7 +13,7 @@
 
       <!-- 3. 显示区域容器 -->
       <DisplayArea 
-        :active-content="activeContent" 
+        :active-content="settingsStore.activeContent" 
         :saved-right-panel-width="savedRightPanelWidth" 
         :is-initial-loading="isInitialLoading"
       />
@@ -43,8 +43,7 @@ const chatStore = useChatStore();
 const settingsStore = useSettingsStore();
 const modelSettingStore = useModelSettingStore();
 
-// 内容区域状态 - 初始值设为sendMessage，避免空白chatMainContent
-const activeContent = ref('sendMessage');
+// 内容区域状态现在由settingsStore管理
 
 // 添加右侧面板显示状态，并根据settingsStore初始化
 const isRightPanelVisible = ref(settingsStore.rightPanelVisible);
@@ -128,9 +127,9 @@ let startRightResizeFunction = null;
 
     console.log('AIClient应用已初始化，使用Pinia状态管理');
 
-    // 添加全局函数用于设置活动内容
+    // 添加全局函数用于设置活动内容（向后兼容）
     window.setActiveContent = (content) => {
-      activeContent.value = content;
+      settingsStore.setActiveContent(content);
     };
     
     // 添加全局函数用于切换侧边面板显示状态
@@ -170,12 +169,12 @@ let startRightResizeFunction = null;
       settingsStore.leftNavVisible = true;
       
       // 只有当前视图不是sendMessage时，才根据activePanel更新视图
-      if (activeContent.value !== 'sendMessage') {
+      if (settingsStore.activeContent !== 'sendMessage') {
         if (newPanel === 'settings') {
-          activeContent.value = 'settings';
+          settingsStore.setActiveContent('settings');
         } else {
           // 当面板不是settings时，切换回chat内容
-          activeContent.value = 'chat';
+          settingsStore.setActiveContent('chat');
         }
       }
     }

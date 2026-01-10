@@ -82,51 +82,14 @@
     <!-- 文件列表/网格容器 -->
     <div class="flex-1 overflow-y-auto p-4">
       
-      <!-- 网格视图 -->
-      <div v-if="settingsStore.systemSettings.viewMode === 'grid'" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        <div v-for="file in filteredFiles" :key="file.id || file.path" 
-             class="bg-transparent dark:bg-transparent rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow p-3 cursor-pointer flex flex-col items-center justify-center h-40 relative">
-          <!-- 文件图标 -->
-          <div class="text-primary text-4xl mb-2">
-            <i v-if="file.type === 'pdf'" class="fa-solid fa-file-pdf"></i>
-            <i v-else-if="file.type === 'docx' || file.type === 'doc'" class="fa-solid fa-file-word"></i>
-            <i v-else-if="file.type === 'xlsx' || file.type === 'xls'" class="fa-solid fa-file-excel"></i>
-            <i v-else-if="file.type === 'pptx' || file.type === 'ppt'" class="fa-solid fa-file-powerpoint"></i>
-            <i v-else-if="file.type === 'txt'" class="fa-solid fa-file-lines"></i>
-            <i v-else-if="file.type === 'md'" class="fa-solid fa-file-markdown"></i>
-            <i v-else class="fa-solid fa-file"></i>
-          </div>
-          <!-- 文件名 -->
-          <div class="text-sm font-medium text-center truncate w-full" :title="file.name">{{ file.name }}</div>
-          <!-- 文件大小 -->
-          <div class="text-xs text-gray-500 mt-1">{{ formatFileSize(file.size) }}</div>
-          <!-- 操作按钮 -->
-          <div class="absolute top-2 right-2 opacity-0 hover:opacity-100 transition-opacity">
-            <ActionButton 
-              icon="fa-trash" 
-              title="删除" 
-              @click.stop="handleDeleteFile(file.id)"
-              class="text-gray-500 hover:text-red-500 w-6 h-6 p-1"
-            />
-          </div>
-        </div>
-      </div>
-      
-      <!-- 列表视图 -->
-      <div v-else-if="settingsStore.systemSettings.viewMode === 'list'" class="bg-transparent dark:bg-transparent rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
-        <!-- 列表标题行 -->
-        <div class="grid grid-cols-12 gap-4 px-4 py-2 bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600 font-medium text-sm text-gray-600 dark:text-gray-300 rounded-t-lg">
-          <div class="col-span-6">名称</div>
-          <div class="col-span-2">类型</div>
-          <div class="col-span-2">大小</div>
-          <div class="col-span-2 text-right">操作</div>
-        </div>
-        <!-- 列表内容 -->
-        <div v-for="(file, index) in filteredFiles" :key="file.id || file.path" 
-             class="grid grid-cols-12 gap-4 px-4 py-3 border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors" 
-             :class="index === filteredFiles.length - 1 ? 'border-b-0 rounded-b-lg' : ''">
-          <div class="col-span-6 flex items-center space-x-2">
-            <div class="text-primary">
+      <!-- 文件列表视图 (div) -->
+      <div v-if="isSliderActive" class="w-full h-full">
+        <!-- 网格视图 -->
+        <div v-if="settingsStore.systemSettings.viewMode === 'grid'" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          <div v-for="file in filteredFiles" :key="file.id || file.path" 
+               class="bg-transparent dark:bg-transparent rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow p-3 cursor-pointer flex flex-col items-center justify-center h-40 relative">
+            <!-- 文件图标 -->
+            <div class="text-primary text-4xl mb-2">
               <i v-if="file.type === 'pdf'" class="fa-solid fa-file-pdf"></i>
               <i v-else-if="file.type === 'docx' || file.type === 'doc'" class="fa-solid fa-file-word"></i>
               <i v-else-if="file.type === 'xlsx' || file.type === 'xls'" class="fa-solid fa-file-excel"></i>
@@ -135,40 +98,92 @@
               <i v-else-if="file.type === 'md'" class="fa-solid fa-file-markdown"></i>
               <i v-else class="fa-solid fa-file"></i>
             </div>
-            <span class="truncate" :title="file.name">{{ file.name }}</span>
-          </div>
-          <div class="col-span-2 flex items-center">{{ file.type || 'unknown' }}</div>
-          <div class="col-span-2 flex items-center">{{ formatFileSize(file.size) }}</div>
-          <div class="col-span-2 flex items-center justify-end space-x-2">
-              <ActionButton 
-                icon="fa-eye" 
-                title="预览"
-                class="text-gray-500 hover:text-primary w-6 h-6 p-1"
-              />
+            <!-- 文件名 -->
+            <div class="text-sm font-medium text-center truncate w-full" :title="file.name">{{ file.name }}</div>
+            <!-- 文件大小 -->
+            <div class="text-xs text-gray-500 mt-1">{{ formatFileSize(file.size) }}</div>
+            <!-- 操作按钮 -->
+            <div class="absolute top-2 right-2 opacity-0 hover:opacity-100 transition-opacity">
               <ActionButton 
                 icon="fa-trash" 
                 title="删除" 
-                @click="handleDeleteFile(file.id)"
+                @click.stop="handleDeleteFile(file.id)"
                 class="text-gray-500 hover:text-red-500 w-6 h-6 p-1"
               />
             </div>
+          </div>
+        </div>
+        
+        <!-- 列表视图 -->
+        <div v-else-if="settingsStore.systemSettings.viewMode === 'list'" class="bg-transparent dark:bg-transparent rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+          <!-- 列表标题行 -->
+          <div class="grid grid-cols-12 gap-4 px-4 py-2 bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600 font-medium text-sm text-gray-600 dark:text-gray-300 rounded-t-lg">
+            <div class="col-span-6">名称</div>
+            <div class="col-span-2">类型</div>
+            <div class="col-span-2">大小</div>
+            <div class="col-span-2 text-right">操作</div>
+          </div>
+          <!-- 列表内容 -->
+          <div v-for="(file, index) in filteredFiles" :key="file.id || file.path" 
+               class="grid grid-cols-12 gap-4 px-4 py-3 border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors" 
+               :class="index === filteredFiles.length - 1 ? 'border-b-0 rounded-b-lg' : ''">
+            <div class="col-span-6 flex items-center space-x-2">
+              <div class="text-primary">
+                <i v-if="file.type === 'pdf'" class="fa-solid fa-file-pdf"></i>
+                <i v-else-if="file.type === 'docx' || file.type === 'doc'" class="fa-solid fa-file-word"></i>
+                <i v-else-if="file.type === 'xlsx' || file.type === 'xls'" class="fa-solid fa-file-excel"></i>
+                <i v-else-if="file.type === 'pptx' || file.type === 'ppt'" class="fa-solid fa-file-powerpoint"></i>
+                <i v-else-if="file.type === 'txt'" class="fa-solid fa-file-lines"></i>
+                <i v-else-if="file.type === 'md'" class="fa-solid fa-file-markdown"></i>
+                <i v-else class="fa-solid fa-file"></i>
+              </div>
+              <span class="truncate" :title="file.name">{{ file.name }}</span>
+            </div>
+            <div class="col-span-2 flex items-center">{{ file.type || 'unknown' }}</div>
+            <div class="col-span-2 flex items-center">{{ formatFileSize(file.size) }}</div>
+            <div class="col-span-2 flex items-center justify-end space-x-2">
+                <ActionButton 
+                  icon="fa-eye" 
+                  title="预览"
+                  class="text-gray-500 hover:text-primary w-6 h-6 p-1"
+                />
+                <ActionButton 
+                  icon="fa-trash" 
+                  title="删除" 
+                  @click="handleDeleteFile(file.id)"
+                  class="text-gray-500 hover:text-red-500 w-6 h-6 p-1"
+                />
+              </div>
+          </div>
+        </div>
+        
+        <!-- 空状态 -->
+        <div v-if="filteredFiles.length === 0 && !isLoading" class="flex flex-col items-center justify-center h-64 text-gray-500">
+          <i class="fa-solid fa-folder-open text-4xl mb-4"></i>
+          <p v-if="currentFolder">当前文件夹中暂无文件</p>
+          <p v-else-if="!selectedFolder">请选择左侧文件夹查看文件</p>
+          <p v-else>暂无文件</p>
+          <p v-if="!currentFolder && !selectedFolder" class="text-sm mt-2">选择文件夹后将显示其中的文件</p>
+          <p v-else-if="!currentFolder && selectedFolder" class="text-sm mt-2">点击上传按钮添加RAG文件</p>
+        </div>
+        
+        <!-- 加载状态 -->
+        <div v-if="isLoading" class="flex flex-col items-center justify-center h-64 text-gray-500">
+          <div class="w-10 h-10 border-4 border-gray-200 border-t-primary rounded-full animate-spin mb-4"></div>
+          <p>加载中...</p>
         </div>
       </div>
       
-      <!-- 空状态 -->
-      <div v-if="filteredFiles.length === 0 && !isLoading" class="flex flex-col items-center justify-center h-64 text-gray-500">
-        <i class="fa-solid fa-folder-open text-4xl mb-4"></i>
-        <p v-if="currentFolder">当前文件夹中暂无文件</p>
-        <p v-else-if="!selectedFolder">请选择左侧文件夹查看文件</p>
-        <p v-else>暂无文件</p>
-        <p v-if="!currentFolder && !selectedFolder" class="text-sm mt-2">选择文件夹后将显示其中的文件</p>
-        <p v-else-if="!currentFolder && selectedFolder" class="text-sm mt-2">点击上传按钮添加RAG文件</p>
-      </div>
-      
-      <!-- 加载状态 -->
-      <div v-if="isLoading" class="flex flex-col items-center justify-center h-64 text-gray-500">
-        <div class="w-10 h-10 border-4 border-gray-200 border-t-primary rounded-full animate-spin mb-4"></div>
-        <p>加载中...</p>
+      <!-- 知识图谱可视化视图 -->
+      <div v-else class="w-full h-full relative">
+        <KnowledgeGraphCanvas 
+          :nodes="knowledgeGraphNodes"
+          :links="knowledgeGraphLinks"
+          :visible="!isSliderActive"
+          @node-click="handleNodeClick"
+          @node-hover="handleNodeHover"
+          @view-changed="handleViewChanged"
+        />
       </div>
     </div>
   </div>
@@ -176,12 +191,13 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue';
-import { useSettingsStore } from '../../store/settingsStore.js';
-import { useRagStore } from '../../store/ragStore.js';
-import { useChatStore } from '../../store/chatStore.js';
-import { eventBus } from '../../services/eventBus.js';
-import { generateId } from '../../store/utils.js';
-import ActionButton from '../../components/common/ActionButton.vue';
+import { useSettingsStore } from '../store/settingsStore.js';
+import { useRagStore } from '../store/ragStore.js';
+import { useChatStore } from '../store/chatStore.js';
+import { eventBus } from '../services/eventBus.js';
+import { generateId } from '../store/utils.js';
+import ActionButton from '../components/common/ActionButton.vue';
+import KnowledgeGraphCanvas from '../components/knowledge-graph/KnowledgeGraphCanvas.vue';
 
 // 导入Tauri API用于文件操作
 // 移除不再需要的Tauri导入
@@ -258,10 +274,9 @@ const filteredFiles = computed(() => {
   return result;
 });
 
-// 切换滑动控件状态（不再控制视图模式）
+// 切换滑动控件状态（控制文件列表和知识图谱视图切换）
 const toggleSlider = () => {
   isSliderActive.value = !isSliderActive.value;
-  // 这里可以添加其他功能的实现
   console.log('滑动控件状态切换:', isSliderActive.value);
 };
 
@@ -269,6 +284,100 @@ const toggleSlider = () => {
 const handleSearch = () => {
   // 搜索逻辑已在computed中处理
 };
+
+// 将文件转换为知识图谱节点
+const knowledgeGraphNodes = computed(() => {
+  const nodes = [];
+  
+  // 为每个文件创建一个节点
+  filteredFiles.value.forEach((file, index) => {
+    const node = {
+      id: file.id || file.path || index,
+      name: file.name,
+      type: file.type,
+      radius: 20,
+      color: getFileColor(file.type)
+    };
+    nodes.push(node);
+  });
+  
+  // 增加更多随机测试节点
+  const testNodeCount = 15; // 增加15个测试节点
+  const fileTypes = ['pdf', 'docx', 'xlsx', 'pptx', 'txt', 'md'];
+  
+  for (let i = 0; i < testNodeCount; i++) {
+    const randomType = fileTypes[Math.floor(Math.random() * fileTypes.length)];
+    const node = {
+      id: `test-node-${i}`,
+      name: `Test-${i}.${randomType}`,
+      type: randomType,
+      radius: 20,
+      color: getFileColor(randomType)
+    };
+    nodes.push(node);
+  }
+  
+  return nodes;
+});
+
+// 生成知识图谱连线
+const knowledgeGraphLinks = computed(() => {
+  const links = [];
+  const nodeCount = knowledgeGraphNodes.value.length;
+  
+  // 生成随机连线
+  for (let i = 0; i < nodeCount; i++) {
+    for (let j = i + 1; j < nodeCount; j++) {
+      if (Math.random() < 0.15) { // 增加连线概率
+        links.push({
+          source: i,
+          target: j
+        });
+      }
+    }
+  }
+  
+  return links;
+});
+
+
+
+
+
+
+
+// 获取文件类型对应的颜色
+const getFileColor = (type) => {
+  const colorMap = {
+    'pdf': '#FF5733',
+    'docx': '#3366FF',
+    'doc': '#3366FF',
+    'xlsx': '#33FF57',
+    'xls': '#33FF57',
+    'pptx': '#FF33F5',
+    'ppt': '#FF33F5',
+    'txt': '#FFC300',
+    'md': '#8E44AD'
+  };
+  return colorMap[type] || '#95A5A6';
+};
+
+// 处理知识图谱节点点击事件
+const handleNodeClick = (node) => {
+  console.log('知识图谱节点被点击:', node);
+};
+
+// 处理知识图谱节点悬停事件
+const handleNodeHover = (node) => {
+  console.log('知识图谱节点悬停:', node);
+};
+
+// 处理知识图谱视图变化事件
+const handleViewChanged = (viewInfo) => {
+  console.log('知识图谱视图变化:', viewInfo);
+};
+
+
 
 // 刷新文件列表
 const refreshFiles = async () => {
@@ -370,21 +479,7 @@ const handleFolderSelected = (folder) => {
   }
 };
 
-// 监听本地存储中的文件夹选中状态变化
-const checkSelectedFolderFromStore = () => {
-  // 尝试从可能的全局状态或localStorage中获取选中的文件夹
-  const storedSelectedFolder = localStorage.getItem('ragSelectedFolder');
-  if (storedSelectedFolder) {
-    try {
-      const folder = JSON.parse(storedSelectedFolder);
-      selectedFolder.value = folder;
-      // 自动加载选中文件夹的内容
-      handleFolderClick(folder);
-    } catch (error) {
-      console.error('解析存储的选中文件夹失败:', error);
-    }
-  }
-};
+
 
 // 删除文件
 const handleDeleteFile = async (fileId) => {
@@ -501,21 +596,17 @@ const handleFolderClick = async (folder) => {
   }
 };
 
-// 返回上级文件夹
-const handleBackToParent = async () => {
-  currentFolder.value = '';
-  selectedFolder.value = null;
-  // 清除本地存储中的选中文件夹
-  localStorage.removeItem('ragSelectedFolder');
-  await refreshFiles();
-};
-
 // 处理视图切换事件
 const handleViewSwitch = (event) => {
   if (event.detail === 'grid') {
-    setViewMode('grid');
+    settingsStore.systemSettings.viewMode = 'grid';
   }
 };
+
+// 处理窗口大小变化
+
+
+
 
 // 组件挂载时加载文件并监听事件
 onMounted(() => {
@@ -561,6 +652,8 @@ onMounted(() => {
   
   // 监听可能的全局内容变化事件
   window.addEventListener('contentChanged', handleContentChanged);
+  
+  
 });
 
 // 组件卸载时取消监听
@@ -576,6 +669,10 @@ onUnmounted(() => {
   
   // 清除contentChanged事件监听
   window.removeEventListener('contentChanged', handleContentChanged);
+  
+  
+  
+  
 });
 
 // 处理内容变化事件的单独函数

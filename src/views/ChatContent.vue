@@ -24,11 +24,54 @@
         <div class="absolute left-1/2 transform -translate-x-1/2 flex items-center">
           <h2 class="text-lg font-bold text-gray-800 dark:text-white">{{ currentTitle }}</h2>
         </div>
-  
-      <!-- 按钮区域靠右对齐 -->
-      <div class="flex items-center space-x-4">
-        <!-- 视图切换滑块已移至TopNav.vue -->
-      </div>
+        
+        <!-- 右侧按钮组 -->
+        <div class="flex space-x-2">
+          <!-- 历史对话按钮（带下拉菜单） -->
+          <div class="relative hover-scale">
+            <ActionButton 
+              id="historyChat"
+              icon="clock-rotate-left"
+              title="历史对话"
+              @click.stop="toggleHistoryMenu"
+            />
+            
+            <!-- 历史对话下拉菜单 -->
+            <div 
+              v-if="showHistoryMenu"
+              class="absolute top-full mt-2 right-0 w-64 rounded-lg shadow-lg border z-50 dropdown-content flex flex-col py-2 bg-white border-gray-200 dark:bg-dark-800 dark:border-dark-700 max-h-96 overflow-y-auto"
+            >
+              <!-- 下拉菜单标题 -->
+              <div class="px-4 py-2 text-sm font-semibold text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-dark-700">
+                历史对话
+              </div>
+              
+              <!-- 历史对话列表 -->
+              <div v-if="chatStore.chats.length > 0" class="py-2">
+                <button 
+                  v-for="chat in chatStore.chatHistory" 
+                  :key="chat.id"
+                  class="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-dark-700 text-gray-700 dark:text-gray-300 transition-colors duration-200 flex items-start gap-2"
+                  @click="selectChatFromHistory(chat.id)"
+                >
+                  <i class="fa-solid fa-comments text-xs mt-1 flex-shrink-0 text-gray-400 dark:text-gray-500"></i>
+                  <div class="flex-1 min-w-0 flex items-center justify-between">
+                    <div class="font-medium truncate">{{ chat.title }}</div>
+                    <div class="text-xs text-gray-500 dark:text-gray-400 truncate ml-2 whitespace-nowrap">
+                      {{ formatDate(chat.updatedAt) }}
+                    </div>
+                  </div>
+                </button>
+              </div>
+              
+              <!-- 空状态 -->
+              <div v-else class="px-4 py-4 text-center text-sm text-gray-500 dark:text-gray-400 flex items-center justify-center gap-2">
+                <i class="fa-solid fa-inbox text-xl"></i>
+                暂无历史对话
+              </div>
+            </div>
+          </div>
+        </div>
     </div>
 
     <!-- 条件渲染聊天消息或知识图谱 -->
@@ -61,16 +104,16 @@
 </template>
 
 <script setup>
-import { ref, onMounted, nextTick, computed, watch } from 'vue';
-import { useChatStore } from '../../store/chatStore.js';
-import { useSettingsStore } from '../../store/settingsStore.js';
+import { ref, onMounted, onUnmounted, nextTick, computed, watch } from 'vue';
+import { useChatStore } from '../store/chatStore.js';
+import { useSettingsStore } from '../store/settingsStore.js';
 
 // 导入子组件
-import ChatMessagesContainer from '../../components/chat/ChatMessagesContainer.vue';
+import ChatMessagesContainer from '../components/chat/ChatMessagesContainer.vue';
 import KnowledgeGraphContent from './KnowledgeGraphContent.vue';
-import ScrollToBottomButton from '../../components/chat/ScrollToBottomButton.vue';
-import MessageInputArea from '../../components/chat/MessageInputArea.vue';
-import ActionButton from '../../components/common/ActionButton.vue';
+import ScrollToBottomButton from '../components/chat/ScrollToBottomButton.vue';
+import MessageInputArea from '../components/chat/MessageInputArea.vue';
+import ActionButton from '../components/common/ActionButton.vue';
 
 // 初始化stores
 const chatStore = useChatStore();
@@ -88,15 +131,10 @@ const isScrollToBottomVisible = ref(false);
     chatStore.currentChatId = null;
     
     // 清除所有对话的未读标记
-    chatStore.chats = chatStore.chats.map(chat => ({
-      ...chat,
-      hasUnreadMessage: false
-    }));
+    chatStore.resetUnreadStatus();
     
     // 切换到发送消息视图
-    if (window.setActiveContent) {
-      window.setActiveContent('sendMessage');
-    }
+    settingsStore.setActiveContent('sendMessage');
   };
 
 // 从store计算属性获取数据
@@ -104,19 +142,85 @@ const currentTitle = computed(() => {
   return chatStore.currentChat?.title || '当前无对话';
 });
 
+// 历史对话菜单状态
+const showHistoryMenu = ref(false);
+
+
+
+// 切换历史对话下拉菜单显示状态
+const toggleHistoryMenu = () => {
+  showHistoryMenu.value = !showHistoryMenu.value;
+};
+
+// 从历史对话下拉菜单中选择对话
+const selectChatFromHistory = (chatId) => {
+  // 关闭下拉菜单
+  showHistoryMenu.value = false;
+  
+  // 选择对话
+  chatStore.selectChat(chatId);
+  
+  // 如果当前内容不是聊天视图，切换到聊天视图
+  settingsStore.setActiveContent('chat');
+};
+
+// 格式化日期显示
+const formatDate = (timestamp) => {
+  const date = new Date(timestamp);
+  const now = new Date();
+  const diff = now - date;
+  
+  // 小于1小时，显示几分钟前
+  if (diff < 3600000) {
+    const minutes = Math.floor(diff / 60000);
+    return `${minutes}分钟前`;
+  }
+  // 小于24小时，显示几小时前
+  else if (diff < 86400000) {
+    const hours = Math.floor(diff / 3600000);
+    return `${hours}小时前`;
+  }
+  // 今年内，显示月日
+  else if (date.getFullYear() === now.getFullYear()) {
+    return `${date.getMonth() + 1}月${date.getDate()}日`;
+  }
+  // 其他情况，显示年月日
+  else {
+    return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`;
+  }
+};
+
+// 点击外部区域关闭菜单
+const closeMenusOnClickOutside = (event) => {
+  const menuButtons = document.querySelectorAll('.relative.hover-scale');
+  
+  let clickedInsideMenu = false;
+  menuButtons.forEach(button => {
+    if (button.contains(event.target)) {
+      clickedInsideMenu = true;
+    }
+  });
+  
+  if (!clickedInsideMenu) {
+    showHistoryMenu.value = false;
+  }
+};
+
+// 添加点击外部事件监听
+onMounted(() => {
+  document.addEventListener('click', closeMenusOnClickOutside);
+});
+
+// 移除事件监听
+onUnmounted(() => {
+  document.removeEventListener('click', closeMenusOnClickOutside);
+});
+
 // 处理隐藏菜单按钮点击事件
 const handleSideMenuToggle = () => {
   // 只使用store提供的方法切换左侧导航栏的可见性
   // DOM操作逻辑移至App.vue中统一管理
   settingsStore.toggleLeftNav();
-};
-
-// 处理RAG管理视图切换
-const handleRagManagementClick = () => {
-  // 直接更新activeContent状态以显示RagManagementContent
-  if (window.setActiveContent) {
-    window.setActiveContent('ragManagement');
-  }
 };
 
 // 处理发送消息事件
@@ -162,20 +266,24 @@ watch(
 
 // 监听最后一条消息内容变化，用于长文本实时渲染时的自动滚动
 watch(
-  () => {
-    const messages = chatStore.currentChatMessages;
-    if (messages.length > 0) {
-      const lastMessage = messages[messages.length - 1];
-      // 考虑消息是ref包装的情况
-      const messageData = lastMessage?.value || lastMessage;
-      // 返回最后一条消息的内容和是否在打字中，添加时间戳以确保每次变化都能被检测到
-      return `${messageData.content || ''}-${messageData.isTyping || false}-${messageData.lastUpdate || Date.now()}`;
+  [
+    () => {
+      const messages = chatStore.currentChatMessages;
+      if (messages.length > 0) {
+        const lastMessage = messages[messages.length - 1];
+        const messageData = lastMessage?.value || lastMessage;
+        return {
+          content: messageData.content || '',
+          isTyping: messageData.isTyping || false,
+          lastUpdate: messageData.lastUpdate || Date.now()
+        };
+      }
+      return { content: '', isTyping: false, lastUpdate: Date.now() };
     }
-    return '';
-  },
+  ],
   (newValue, oldValue) => {
     // 只有当内容确实发生变化时才滚动
-    if (newValue !== oldValue && settingsStore.systemSettings.autoScroll && !isScrollToBottomVisible.value) {
+    if (JSON.stringify(newValue) !== JSON.stringify(oldValue) && settingsStore.systemSettings.autoScroll && !isScrollToBottomVisible.value) {
       nextTick(() => {
         safeScrollToBottom();
       });

@@ -1,4 +1,4 @@
-"""NeoVAI 工具函数模块"""
+"""Chato 工具函数模块"""
 
 # 文件操作工具
 from .file_utils import (

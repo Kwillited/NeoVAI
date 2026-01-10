@@ -1,4 +1,4 @@
-"""NeoVAI应用主包"""
+"""Chato应用主包"""
 
 # Flask应用实例
 def create_app():

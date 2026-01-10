@@ -1,14 +1,30 @@
-# Tauri + Vue 3
+# Chato - AI对话智能体
 
-This template should help get you started developing with Tauri + Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+Chato 是一个基于 Tauri 2 和 Vue 3 开发的跨平台桌面应用，专注于提供强大的 AI 对话智能体功能，集成了 MCP（模型控制面板）和企业级 RAG（检索增强生成）能力，为用户提供高效、智能的对话体验和知识管理解决方案。
 
 ## Recommended IDE Setup
 
 - [VS Code](https://code.visualstudio.com/) + [Vue - Official](https://marketplace.visualstudio.com/items?itemName=Vue.volar) + [Tauri](https://marketplace.visualstudio.com/items?itemName=tauri-apps.tauri-vscode) + [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer)
 
-# NeoVAI - Tauri 2 + Vue 3 项目
+## 核心功能
 
-这是一个基于 Tauri 2 和 Vue 3 的跨平台桌面应用项目模板。Tauri 提供了轻量级、安全的桌面应用框架，结合 Vue 3 的响应式特性，可快速构建高性能的桌面应用程序。
+### AI对话智能体
+- 提供流畅的自然语言对话体验
+- 支持多轮对话和上下文理解
+- 可定制对话风格和行为
+
+### MCP（模型控制面板）
+- 集中管理多种AI模型
+- 支持模型切换和参数调整
+- 实时监控模型性能和资源使用
+- 提供模型部署和管理工具
+
+### 企业级RAG（检索增强生成）
+- 支持多种文档格式导入（PDF、Word、Markdown等）
+- 高效的向量检索和知识库管理
+- 可定制的检索策略和阈值调整
+- 支持多知识库并行检索
+- 企业级数据安全和隐私保护
 
 ## 环境要求
 
@@ -155,16 +171,10 @@ npm run tauri -- --help
 3. pip install -r src-tauri/resources/python/requirements.txt
 4. deactivate
 
-## Recommended IDE Setup
-
-- [VS Code](https://code.visualstudio.com/) + [Vue - Official](https://marketplace.visualstudio.com/items?itemName=Vue.volar) + [Tauri](https://marketplace.visualstudio.com/items?itemName=tauri-apps.tauri-vscode) + [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer)
-
 ## 学习资源
 
 - [Tauri 官方文档](https://tauri.app/)
 - [Vue 3 官方文档](https://v3.vuejs.org/)
 - [Rust 官方文档](https://www.rust-lang.org/learn)
-
-##
-
-- 修改了panelContainer容器和mainContent的外边框设置（1px灰色边框）和边框阴影（shadow-md），
+- [LangChain 文档](https://python.langchain.com/) - 用于RAG功能开发
+- [Hugging Face](https://huggingface.co/) - AI模型资源

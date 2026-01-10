@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
-import { apiService, handleStreamingResponse } from '../services/apiService';
-import { StorageManager, generateId, debounce, formatDateTime } from './utils';
+import { apiService } from '../services/apiService';
+import { generateId } from './utils';
 import { useSettingsStore } from './settingsStore.js';
 import { useModelSettingStore } from './modelSettingStore.js';
 import { showNotification } from '../services/notificationUtils.js';
@@ -92,10 +92,9 @@ export const useChatStore = defineStore('chat', {
     },
 
     // 创建新对话（调用API）
-    async createNewChat(model = 'GPT-4') {
+    async createNewChat() {
       try {
         // 先取消当前会话的选中状态，实现更流畅的过渡效果
-        const previousChatId = this.currentChatId;
         this.currentChatId = null;
         
         // 添加短暂延迟，让样式有时间过渡
@@ -663,7 +662,7 @@ export const useChatStore = defineStore('chat', {
             // 确保content字段存在
             content: messageData.content || '',
             // 确保model字段存在
-            model: messageData.model || chat.model || 'NeoVAI',
+            model: messageData.model || chat.model || 'Chato',
           };
         });
 
@@ -717,6 +716,14 @@ export const useChatStore = defineStore('chat', {
 
         // 不再需要本地保存，所有数据已通过API同步到后端
       }
+    },
+
+    // 重置所有对话的未读状态
+    resetUnreadStatus() {
+      this.chats = this.chats.map(chat => ({
+        ...chat,
+        hasUnreadMessage: false
+      }));
     },
 
     // 批量删除对话（调用API）
@@ -778,23 +785,23 @@ export const useChatStore = defineStore('chat', {
     },
     
     // 播放未读消息通知声音
-    playNotificationSound() {
-      try {
-        const settingsStore = useSettingsStore();
-        const notificationsConfig = settingsStore.currentNotificationsConfig;
-        
-        // 检查是否启用了通知声音
-        if (notificationsConfig && notificationsConfig.sound) {
-          // 使用项目中已有的通知音频文件
-          const audio = new Audio('/src/assets/notice.mp3');
-          // 播放声音，并捕获可能的错误
-          audio.play().catch(err => {
-            console.warn('播放通知声音失败:', err);
-          });
-        }
-      } catch (error) {
-        console.error('处理通知声音时出错:', error);
-      }
-    },
+playNotificationSound() {
+  try {
+    const settingsStore = useSettingsStore();
+    const notificationsConfig = settingsStore.currentNotificationsConfig;
+    
+    // 检查是否启用了通知声音，并且在浏览器环境中
+    if (notificationsConfig && notificationsConfig.sound && typeof window !== 'undefined' && typeof window.Audio !== 'undefined') {
+      // 使用项目中已有的通知音频文件
+      const audio = new window.Audio('/src/assets/notice.mp3');
+      // 播放声音，并捕获可能的错误
+      audio.play().catch(err => {
+        console.warn('播放通知声音失败:', err);
+      });
+    }
+  } catch (error) {
+    console.error('处理通知声音时出错:', error);
+  }
+},
   },
 });

@@ -95,14 +95,7 @@
             >
               <i class="fa-solid fa-columns text-sm"></i>
             </button>
-            <div class="my-1 w-8 border-t border-gray-200 dark:border-dark-700"></div>
-            <button 
-              class="w-10 h-10 rounded-full flex items-center justify-center transition-colors hover:bg-gray-100 text-gray-500 dark:hover:bg-dark-700 dark:text-gray-300"
-              @click="handlePluginClick"
-              title="插件"
-            >
-              <i class="fa-solid fa-puzzle-piece text-sm"></i>
-            </button>
+
           </div>
         </div>
         
@@ -249,12 +242,7 @@ const handleModelParamsClick = () => {
   showToolMenu.value = false;
 };
 
-// 处理插件按钮点击事件
-const handlePluginClick = () => {
-  settingsStore.setActivePanel('plugins');
-  // 关闭工具菜单
-  showToolMenu.value = false;
-};
+
 
 // 处理命令行窗口点击
 const handleCliCommand = () => {

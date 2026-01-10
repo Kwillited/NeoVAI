@@ -1,6 +1,6 @@
 <template>
-  <!-- 3D知识图谱容器 -->
-  <div id="knowledge-graph" class="absolute inset-0 bg-gradient-universe"></div>
+  <!-- 3D上下文可视化容器 -->
+  <div id="context-visualization" class="absolute inset-0 bg-gradient-universe"></div>
 </template>
 
 <script setup>
@@ -11,19 +11,13 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 // 从父组件注入属性和方法
-const selectedNode = inject('selectedNode');
-const relatedNodes = inject('relatedNodes');
 const nodeMaterials = inject('nodeMaterials');
 const settings = inject('settings');
 const starsConfig = inject('starsConfig');
-const hiddenNodes = inject('hiddenNodes');
 const showNodeDetails = inject('showNodeDetails');
-const updateLinksVisibility = inject('updateLinksVisibility');
-const focusOnNode = inject('focusOnNode');
-const toggleNodeVisibility = inject('toggleNodeVisibility');
 const starsRef = inject('starsRef');
 const containerRef = inject('knowledgeGraphContainer');
-const graphData = inject('graphData');
+const contextData = inject('graphData');
 
 // 响应式状态
 const animationFrameId = ref(null);
@@ -35,13 +29,13 @@ const getContainer = () => {
 };
 
 // 全局变量，避免Vue响应式代理与Three.js冲突
-let nodeObjects = [];
-let nodes = [];
+let contextNodeObjects = [];
+let contextNodes = [];
 
 
 
-// 初始化3D场景
-const initScene = () => {
+// 初始化3D上下文可视化场景
+const initContextScene = () => {
   const container = getContainer();
   if (!container) return () => {};
   
@@ -50,11 +44,11 @@ const initScene = () => {
   const camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 2000);
   
   // 设置相机位置，使其能够看到节点
-  camera.position.z =680;
+  camera.position.z = 680;
   
   // 保存全局引用，以便在其他函数中访问
-  window.graphScene = scene;
-  window.graphCamera = camera;
+  window.contextScene = scene;
+  window.contextCamera = camera;
   
   // 创建渲染器
   const renderer = new THREE.WebGLRenderer({
@@ -69,29 +63,29 @@ const initScene = () => {
   renderer.toneMappingExposure = 1;
   renderer.setClearColor(0x1a202c, 1);
   
-  const graphContainer = document.getElementById('knowledge-graph');
-  if (graphContainer) {
-    graphContainer.appendChild(renderer.domElement);
+  const contextContainer = document.getElementById('context-visualization');
+  if (contextContainer) {
+    contextContainer.appendChild(renderer.domElement);
   }
 
   // 添加星空背景
-  const stars = createStars(scene, settings);
+  const stars = createContextStars(scene, settings);
   starsRef.value = stars;
 
   // 创建节点和连线
-  const links = [];
-  const linkObjects = [];
-  nodeObjects = []; // 清空之前的节点对象
-  nodes = []; // 清空之前的节点数据
+  const contextLinks = [];
+  const contextLinkObjects = [];
+  contextNodeObjects = []; // 清空之前的节点对象
+  contextNodes = []; // 清空之前的节点数据
 
-  // 创建节点
-  graphData.nodes.forEach(node => {
+  // 创建上下文节点
+  contextData.nodes.forEach(node => {
     const geometry = new THREE.SphereGeometry(node.size / 2, 32, 32);
     const material = nodeMaterials.value[(node.group - 1) % nodeMaterials.value.length];
     const mesh = new THREE.Mesh(geometry, material);
     
     // 添加userData以存储节点ID
-    mesh.userData = { nodeId: node.id };
+    mesh.userData = { contextId: node.id };
     
     // 初始位置给一些随机性，避免所有节点完全重叠
     const radius = 300;
@@ -142,30 +136,30 @@ const initScene = () => {
       glowMesh.raycast = () => {};
       mesh.add(glowMesh);
       
-      nodeObjects.push(mesh);
-      nodes.push({ ...node, mesh });
+      contextNodeObjects.push(mesh);
+      contextNodes.push({ ...node, mesh });
     });
     
     // 使用改进的力导向布局算法优化节点位置
-    const applyForceLayout = () => {
+    const applyContextLayout = () => {
       const iterations = 30; // 迭代次数
       const springForce = 0.02; // 增加弹簧力系数
       const repulsionForce = 5000; // 调整排斥力系数
       const damping = 0.85; // 调整阻尼系数
       
       // 初始化速度
-        const velocities = new Array(nodes.length).fill().map(() => new THREE.Vector3());
+        const velocities = new Array(contextNodes.length).fill().map(() => new THREE.Vector3());
         
         // 计算节点之间的力
         for (let iter = 0; iter < iterations; iter++) {
           // 重置力
-          const forces = new Array(nodes.length).fill().map(() => new THREE.Vector3());
+          const forces = new Array(contextNodes.length).fill().map(() => new THREE.Vector3());
           
           // 计算排斥力 - 对所有节点对都应用排斥力
-          for (let i = 0; i < nodes.length; i++) {
-            for (let j = i + 1; j < nodes.length; j++) {
-              const nodeA = nodes[i].mesh.position;
-              const nodeB = nodes[j].mesh.position;
+          for (let i = 0; i < contextNodes.length; i++) {
+            for (let j = i + 1; j < contextNodes.length; j++) {
+              const nodeA = contextNodes[i].mesh.position;
+              const nodeB = contextNodes[j].mesh.position;
             const direction = new THREE.Vector3().subVectors(nodeB, nodeA);
             const distance = direction.length();
             
@@ -189,14 +183,14 @@ const initScene = () => {
           }
         }
         
-        // 计算吸引力（基于连接关系）
-          graphData.links.forEach(link => {
-            const sourceIndex = nodes.findIndex(n => n.id === link.source);
-            const targetIndex = nodes.findIndex(n => n.id === link.target);
+        // 计算吸引力（基于上下文关系）
+          contextData.links.forEach(link => {
+            const sourceIndex = contextNodes.findIndex(n => n.id === link.source);
+            const targetIndex = contextNodes.findIndex(n => n.id === link.target);
             
             if (sourceIndex !== -1 && targetIndex !== -1) {
-              const nodeA = nodes[sourceIndex].mesh.position;
-              const nodeB = nodes[targetIndex].mesh.position;
+              const nodeA = contextNodes[sourceIndex].mesh.position;
+              const nodeB = contextNodes[targetIndex].mesh.position;
             const direction = new THREE.Vector3().subVectors(nodeB, nodeA);
             const distance = direction.length();
             const targetDistance = 120; // 目标连接距离
@@ -210,36 +204,36 @@ const initScene = () => {
         });
         
         // 应用力和更新位置
-          for (let i = 0; i < nodes.length; i++) {
+          for (let i = 0; i < contextNodes.length; i++) {
             // 应用力
             velocities[i].add(forces[i]);
             // 应用阻尼
             velocities[i].multiplyScalar(damping);
             // 更新位置
-            nodes[i].mesh.position.add(velocities[i]);
+            contextNodes[i].mesh.position.add(velocities[i]);
             
             // 限制在球形空间内
             const maxRadius = 450;
-            const distance = nodes[i].mesh.position.length();
+            const distance = contextNodes[i].mesh.position.length();
             if (distance > maxRadius) {
-              nodes[i].mesh.position.normalize().multiplyScalar(maxRadius);
+              contextNodes[i].mesh.position.normalize().multiplyScalar(maxRadius);
             }
           }
       }
     };
     
-    // 应用力导向布局
-    applyForceLayout();
+    // 应用上下文布局
+    applyContextLayout();
     
     // 将节点添加到场景
-    nodeObjects.forEach(mesh => {
+    contextNodeObjects.forEach(mesh => {
       scene.add(mesh);
     });
     
-    // 创建连线
-    graphData.links.forEach(link => {
-      const source = nodes.find(n => n.id === link.source);
-      const target = nodes.find(n => n.id === link.target);
+    // 创建上下文关系连线
+    contextData.links.forEach(link => {
+      const source = contextNodes.find(n => n.id === link.source);
+      const target = contextNodes.find(n => n.id === link.target);
       
       if (source && target) {
         const geometry = new THREE.BufferGeometry().setFromPoints([
@@ -256,10 +250,10 @@ const initScene = () => {
         
         const line = new THREE.Line(geometry, material);
         // 添加userData以存储连线信息
-        line.userData = { link: { ...link } };
+        line.userData = { contextLink: { ...link } };
         scene.add(line);
-        linkObjects.push(line);
-        links.push({ ...link, line });
+        contextLinkObjects.push(line);
+        contextLinks.push({ ...link, line });
       }
     });
 
@@ -284,8 +278,6 @@ const initScene = () => {
     const pointLight2 = new THREE.PointLight(0x8b5cf6, 0.5, 500);
     pointLight2.position.set(-100, -100, -100);
     scene.add(pointLight2);
-
-
 
     // 控制器
     const controls = new OrbitControls(camera, renderer.domElement);
@@ -350,14 +342,14 @@ const initScene = () => {
           mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
           
           raycaster.setFromCamera(mouse, camera);
-          const intersects = raycaster.intersectObjects(nodeObjects);
+          const intersects = raycaster.intersectObjects(contextNodeObjects);
           
           if (intersects.length > 0) {
             const clickedObject = intersects[0].object;
-            const nodeId = nodes.findIndex(n => n.mesh === clickedObject);
+            const nodeId = contextNodes.findIndex(n => n.mesh === clickedObject);
             
             if (nodeId !== -1) {
-              showNodeDetails(nodes[nodeId]);
+              showNodeDetails(contextNodes[nodeId]);
             }
           }
         }
@@ -367,16 +359,16 @@ const initScene = () => {
     window.addEventListener('click', onMouseClick);
 
     // 动画循环
-    const animate = () => {
-      animationFrameId.value = requestAnimationFrame(animate);
+    const animateContext = () => {
+      animationFrameId.value = requestAnimationFrame(animateContext);
       
-      // 更新连线位置
-      links.forEach((link, index) => {
-        const source = nodes.find(n => n.id === link.source);
-        const target = nodes.find(n => n.id === link.target);
+      // 更新上下文连线位置
+      contextLinks.forEach((link, index) => {
+        const source = contextNodes.find(n => n.id === link.source);
+        const target = contextNodes.find(n => n.id === link.target);
         
         if (source && target) {
-          linkObjects[index].geometry.setFromPoints([
+          contextLinkObjects[index].geometry.setFromPoints([
             source.mesh.position.clone(),
             target.mesh.position.clone()
           ]);
@@ -399,7 +391,7 @@ const initScene = () => {
       renderer.render(scene, camera);
     };
 
-    animate();
+    animateContext();
 
     // 返回清理函数
     return () => {
@@ -415,23 +407,23 @@ const initScene = () => {
       cancelAnimationFrame(animationFrameId.value);
       
       // 清理Three.js资源
-      nodeObjects.forEach(obj => scene.remove(obj));
-      linkObjects.forEach(obj => scene.remove(obj));
+      contextNodeObjects.forEach(obj => scene.remove(obj));
+      contextLinkObjects.forEach(obj => scene.remove(obj));
       scene.remove(stars, ambientLight, directionalLight1, directionalLight2, pointLight1, pointLight2);
       
-      // 正确获取graphContainer元素并移除renderer
+      // 正确获取contextContainer元素并移除renderer
       const parentElement = renderer.domElement.parentNode;
-      const graphContainer = document.getElementById('knowledge-graph');
-      if (parentElement && parentElement === graphContainer) {
-        graphContainer.removeChild(renderer.domElement);
+      const contextContainer = document.getElementById('context-visualization');
+      if (parentElement && parentElement === contextContainer) {
+        contextContainer.removeChild(renderer.domElement);
       }
       
       renderer.dispose();
     };
 };
 
-// 创建星空背景
-const createStars = (scene, config) => {
+// 创建上下文可视化背景星空
+const createContextStars = (scene, config) => {
   // 如果已经存在星空，先移除
   if (starsRef.value && scene) {
     scene.remove(starsRef.value);
@@ -467,13 +459,13 @@ const createStars = (scene, config) => {
   return stars;
 };
 
-// 提供createStars函数给父组件使用
-provide('createStars', createStars);
+// 提供createContextStars函数给父组件使用
+provide('createContextStars', createContextStars);
 
 // 组件挂载时初始化
 let cleanup = null;
 onMounted(() => {
-  cleanup = initScene();
+  cleanup = initContextScene();
 });
 
 // 组件卸载时清理
@@ -483,7 +475,18 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
+#context-visualization {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
 .bg-gradient-universe {
   background: radial-gradient(circle at center, #0f172a 0%, #020617 100%);
+}
+
+/* 为Three.js渲染的canvas添加圆角 */
+#context-visualization canvas {
+  border-radius: 12px;
+  display: block;
 }
 </style>

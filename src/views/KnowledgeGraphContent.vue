@@ -1,5 +1,5 @@
 <template>
-  <!-- 知识图谱主容器 - 调整样式使其与ChatMessagesContainer风格一致 -->
+  <!-- 上下文可视化主容器 - 调整样式使其与ChatMessagesContainer风格一致 -->
   <div ref="knowledgeGraphContainer" class="relative flex-1 w-full bg-gradient-subtle text-light overflow-hidden font-inter scrollbar-thin">
     <!-- 左侧设置面板组件 -->
     <KnowledgeGraphSettingsPanel
@@ -20,10 +20,10 @@
       <KnowledgeGraphNavigation 
         :selectedNode="selectedNode" 
         @settingsClick="toggleSettingsPanel" 
-        @menuClick="selectedNode ? closeModal() : showNodeDetails(knowledgeGraphStore.graphData.nodes[0])" 
+        @menuClick="selectedNode ? closeModal() : showNodeDetails(contextStore.graphData.nodes[0])" 
       />
       
-      <!-- 3D知识图谱渲染组件 -->
+      <!-- 3D上下文可视化渲染组件 -->
       <KnowledgeGraphRenderer />
       
       <!-- 右侧信息面板组件 -->
@@ -40,23 +40,23 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, reactive, provide, inject } from 'vue';
+import { ref, onMounted, onUnmounted, reactive, provide } from 'vue';
 
 // 导入本地存储管理工具
-import { StorageManager } from '../../store/utils.js';
+import { StorageManager } from '../store/utils.js';
 
-// 引入知识图谱相关组件
+// 引入上下文可视化相关组件
 import KnowledgeGraphNavigation from './knowledgeGraph/KnowledgeGraphNavigation.vue';
 import KnowledgeGraphSettingsPanel from './knowledgeGraph/KnowledgeGraphSettingsPanel.vue';
 import KnowledgeGraphNodeInfoPanel from './knowledgeGraph/KnowledgeGraphNodeInfoPanel.vue';
-import KnowledgeGraphInfoPanel from './knowledgeGraph/KnowledgeGraphInfoPanel.vue';
+
 import KnowledgeGraphRenderer from './knowledgeGraph/KnowledgeGraphRenderer.vue';
 
 // 引入 Three.js 库（仅用于材质定义）
 import * as THREE from 'three';
 
-// 导入知识图谱store
-import { useKnowledgeGraphStore } from '../../store/knowledgeGraphStore.js';
+// 导入上下文存储
+import { useKnowledgeGraphStore } from '../store/knowledgeGraphStore.js';
 
 // 创建星空背景函数
 const createStars = (scene, config) => {
@@ -95,8 +95,8 @@ const createStars = (scene, config) => {
   return stars;
 };
 
-// 初始化知识图谱store
-const knowledgeGraphStore = useKnowledgeGraphStore();
+// 初始化上下文存储
+const contextStore = useKnowledgeGraphStore();
 
 // 响应式状态
 const selectedNode = ref(null);
@@ -111,7 +111,7 @@ const hiddenNodes = ref(new Set()); // 用于跟踪隐藏的节点
 const starsRef = ref(null); // 用于跟踪星空粒子系统
 
 // 存储键名常量
-const STORAGE_KEY = 'knowledgeGraphBackgroundSettings';
+const STORAGE_KEY = 'contextVisualizationBackgroundSettings';
 
 const defaultSettings = {
   particleCount: 2000,
@@ -132,11 +132,7 @@ const starsConfig = reactive({
   rotationSpeed: settings.rotationSpeed
 });
 
-// 获取节点颜色
-const getNodeColor = (group) => {
-  if (!nodeMaterials.value.length) return '#6366f1';
-  return nodeMaterials.value[(group - 1) % nodeMaterials.value.length].color.getStyle();
-};
+
 
 // 关闭模态框 - 恢复节点材质，与text2.vue保持一致
 const closeModal = () => {
@@ -149,12 +145,12 @@ const showNodeDetails = (node) => {
   selectedNode.value = node;
   
   // 找到相关节点
-  const relatedNodeIds = knowledgeGraphStore.graphData.links
+  const relatedNodeIds = contextStore.graphData.links
     .filter(link => link.source === node.id || link.target === node.id)
     .map(link => link.source === node.id ? link.target : link.source);
   
   relatedNodes.value = relatedNodeIds
-    .map(id => knowledgeGraphStore.graphData.nodes.find(n => n.id === id))
+    .map(id => contextStore.graphData.nodes.find(n => n.id === id))
     .filter(Boolean);
 };
 
@@ -364,7 +360,7 @@ const focusOnNode = (nodeId) => {
   
   // 在组件重构后，相机控制逻辑已移至KnowledgeGraphRenderer组件
   // 此函数现在主要用于触发数据更新
-  const node = graphData.nodes.find(n => n.id === nodeId);
+  const node = contextStore.graphData.nodes.find(n => n.id === nodeId);
   if (node) {
     showNodeDetails(node);
   }
@@ -408,12 +404,12 @@ provide('starsConfig', starsConfig);
 provide('hiddenNodes', hiddenNodes);
 provide('knowledgeGraphContainer', knowledgeGraphContainer);
 provide('starsRef', starsRef);
-provide('graphData', knowledgeGraphStore.graphData);
+provide('graphData', contextStore.graphData);
 provide('showNodeDetails', showNodeDetails);
 provide('updateLinksVisibility', updateLinksVisibility);
 provide('focusOnNode', focusOnNode);
 provide('toggleNodeVisibility', toggleNodeVisibility);
-provide('graphData', knowledgeGraphStore.graphData);
+provide('graphData', contextStore.graphData);
 
 // 组件挂载时初始化
 onMounted(() => {

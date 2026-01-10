@@ -12,7 +12,7 @@
         
         <div class="relative group">
           <!-- 模型名称 -->
-          <div v-if="!isUserMessage" class="text-xs text-gray-500 dark:text-gray-400 mb-1 ml-1">{{ messageValue.model || 'NeoVAI' }}</div>
+          <div v-if="!isUserMessage" class="text-xs text-gray-500 dark:text-gray-400 mb-1 ml-1">{{ messageValue.model || 'Chato' }}</div>
           
           <!-- 消息内容气泡 - 添加了禁止触发滚动条的样式 -->
           <div :class="isUserMessage 

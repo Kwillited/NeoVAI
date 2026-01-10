@@ -107,7 +107,7 @@ async function requestWithRetry(config, retryLimit = 2, delay = 500) {
         await new Promise((resolve) => setTimeout(resolve, waitTime));
       }
 
-      return await api(config);
+      return await api.request(config);
     } catch (error) {
       // 只对特定错误进行重试
       if (!isRetryableError(error)) {

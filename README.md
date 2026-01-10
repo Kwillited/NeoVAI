@@ -40,16 +40,11 @@ Chato 是一个基于 Tauri 2 和 Vue 3 开发的跨平台桌面应用，专注�
 ### 安装依赖
 
 ```bash
+# 安装前端依赖
 npm install
 
-## 前端依赖
-npm install pinia
-npm install highlight.js应替换vue-highlightjs
-npm install three
-npm install axios
-
-## 后端依赖
-pip install -r src-tauri/resources/python/requirements.txt
+# 安装后端Python依赖
+pip install -r src-tauri/python/requirements.txt
 ```
 
 ## 图标库
@@ -121,16 +116,21 @@ npx tauri build
 ├── src/                 # Vue 前端代码
 │   ├── App.vue          # 主应用组件
 │   ├── main.js          # 应用入口文件
-│   └── assets/          # 静态资源
+│   ├── components/      # Vue 组件
+│   ├── router/          # 路由配置
+│   ├── services/        # 服务层
+│   ├── store/           # Pinia 状态管理
+│   ├── static/          # 静态资源（CSS、JavaScript、字体等）
+│   └── views/           # 页面组件
 ├── src-tauri/           # Tauri 后端代码
 │   ├── src/             # Rust 源代码
+│   ├── python/          # Python 后端代码
+│   │   ├── app/         # Python 应用代码
+│   │   ├── scripts/     # Python 脚本
+│   │   ├── main.py      # Python 应用入口
+│   │   └── requirements.txt # Python 依赖配置
 │   ├── Cargo.toml       # Rust 依赖配置
 │   └── tauri.conf.json  # Tauri 应用配置
-├── src-tauri/python/  # Python 后端代码
-│   ├── app/             # Python 应用代码
-│   ├── main.py          # Python 应用入口
-│   └── requirements.txt # Python 依赖配置
-├── public/              # 静态资源文件夹
 ├── index.html           # HTML 入口文件
 └── package.json         # npm 项目配置
 ```

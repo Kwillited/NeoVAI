@@ -39,13 +39,16 @@
             <span v-if="!isUserMessage">{{ formatTime(messageValue.timestamp || messageValue.time) }}</span>
             <div class="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
               <!-- 编辑按钮 - 仅对用户消息显示 -->
-              <button v-if="isUserMessage && !messageValue.isTyping" class="edit-btn text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 p-2 rounded-full transition-all duration-200" @click="startEditMessage" title="编辑消息">
-                <i class="fa-solid fa-pen text-sm"></i>
-              </button>
-              <!-- 复制按钮 -->
-              <button class="copy-btn text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 p-2 rounded-full transition-all duration-200" @click="copyMessageContent" title="复制消息内容">
-                <i class="fa-solid fa-copy text-sm"></i>
-              </button>
+              <Tooltip v-if="isUserMessage && !messageValue.isTyping" content="编辑消息">
+                <button class="edit-btn text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 p-2 rounded-full transition-all duration-200" @click="startEditMessage">
+                  <i class="fa-solid fa-pen"></i>
+                </button>
+              </Tooltip>
+              <Tooltip content="复制消息内容">
+                <button class="copy-btn text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 p-2 rounded-full transition-all duration-200" @click="copyMessageContent">
+                  <i class="fa-solid fa-copy"></i>
+                </button>
+              </Tooltip>
             </div>
           </div>
         </div>
@@ -76,6 +79,7 @@
 
 <script setup>
 import { computed } from 'vue'
+import Tooltip from '../common/Tooltip.vue'
 
 const props = defineProps({
   message: {

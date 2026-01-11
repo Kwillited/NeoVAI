@@ -1,15 +1,17 @@
 <template>
-  <button
-    :class="['btn-secondary w-8 h-8 p-1.5 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-dark-700 rounded-full text-neutral dark:text-gray-300 transition-all duration-300', $attrs.class]"
-    :title="title"
-    @click="handleClick"
-  >
-    <i :class="['fa-solid', icon.startsWith('fa-') ? icon : 'fa-' + icon]"></i>
-  </button>
+  <Tooltip :content="title">
+    <button
+      :class="['btn-secondary w-8 h-8 p-1.5 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-dark-700 rounded-full text-neutral dark:text-gray-300 transition-all duration-300', $attrs.class]"
+      @click="handleClick"
+    >
+      <i :class="['fa-solid', icon.startsWith('fa-') ? icon : 'fa-' + icon]"></i>
+    </button>
+  </Tooltip>
 </template>
 
 <script setup>
 import { defineComponent } from 'vue';
+import Tooltip from './Tooltip.vue';
 
 // 定义组件属性
 const props = defineProps({
@@ -37,6 +39,9 @@ const handleClick = (event) => {
 
 defineComponent({
   name: 'ActionButton',
+  components: {
+    Tooltip
+  },
   props,
   emits: ['click']
 });

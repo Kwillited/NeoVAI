@@ -4,9 +4,15 @@
     <div class="flex items-center gap-6" data-tauri-drag-region>
       <!-- Mac风格窗口控制按钮 -->
        <div class="flex gap-2.5 mr-4">
-          <button class="w-3 h-3 rounded-full bg-red-500 hover:bg-red-600 transition-colors duration-200" title="关闭" @click="handleClose"></button>
-          <button class="w-3 h-3 rounded-full bg-yellow-500 hover:bg-yellow-600 transition-colors duration-200" title="最小化" @click="handleMinimize"></button>
-          <button class="w-3 h-3 rounded-full bg-green-500 hover:bg-green-600 transition-colors duration-200" title="最大化" @click="handleMaximize"></button>
+          <Tooltip content="关闭">
+            <button class="w-3 h-3 rounded-full bg-red-500 hover:bg-red-600 transition-colors duration-200" @click="handleClose"></button>
+          </Tooltip>
+          <Tooltip content="最小化">
+            <button class="w-3 h-3 rounded-full bg-yellow-500 hover:bg-yellow-600 transition-colors duration-200" @click="handleMinimize"></button>
+          </Tooltip>
+          <Tooltip content="最大化">
+            <button class="w-3 h-3 rounded-full bg-green-500 hover:bg-green-600 transition-colors duration-200" @click="handleMaximize"></button>
+          </Tooltip>
         </div>
       <!-- NeoVAI标题已删除 -->
     </div>
@@ -118,45 +124,52 @@
         </div>
         
         <!-- 主题切换按钮 -->
-        <button class="btn-secondary w-4 h-4 p-0 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-dark-700 rounded-full text-neutral dark:text-gray-300 transition-all duration-300" title="切换主题" @click="handleToggleTheme">
-          <i :class="['fa-regular', settingsStore.systemSettings.darkMode ? 'fa-sun' : 'fa-moon', 'text-sm']"></i>
-        </button>
+        <Tooltip content="切换主题">
+          <button class="btn-secondary w-4 h-4 p-0 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-dark-700 rounded-full text-neutral dark:text-gray-300 transition-all duration-300" @click="handleToggleTheme">
+            <i :class="['fa-regular', settingsStore.systemSettings.darkMode ? 'fa-sun' : 'fa-moon', 'text-sm']"></i>
+          </button>
+        </Tooltip>
         
 
-        <button class="btn-secondary w-4 h-4 p-0 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-dark-700 rounded-full text-neutral dark:text-gray-300 transition-all duration-300" title="系统设置" @click="handleSystemSettingsClick">
-          <i class="fa-solid fa-gear text-sm"></i>
-        </button>
+        <Tooltip content="系统设置">
+          <button class="btn-secondary w-4 h-4 p-0 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-dark-700 rounded-full text-neutral dark:text-gray-300 transition-all duration-300" @click="handleSystemSettingsClick">
+            <i class="fa-solid fa-gear text-sm"></i>
+          </button>
+        </Tooltip>
         
         <!-- 用户按钮带下拉菜单 -->
         <div class="relative hover-scale">
-          <button 
-            class="btn-secondary w-4 h-4 p-0 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-dark-700 rounded-full text-neutral dark:text-gray-300 transition-all duration-300"
-            title="用户"
-            @click.stop="toggleUserMenu"
-          >
-            <i class="fa-solid fa-user-circle text-base" @click.stop="toggleUserMenu"></i>
-          </button>
+          <Tooltip content="用户">
+            <button 
+              class="btn-secondary w-4 h-4 p-0 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-dark-700 rounded-full text-neutral dark:text-gray-300 transition-all duration-300"
+              @click.stop="toggleUserMenu"
+            >
+              <i class="fa-solid fa-user-circle text-base" @click.stop="toggleUserMenu"></i>
+            </button>
+          </Tooltip>
           
           <!-- 用户功能下拉菜单 -->
           <div 
             v-if="showUserMenu"
             class="absolute top-full mt-2 left-1/2 transform -translate-x-1/2 w-14 rounded-lg shadow-lg border z-50 dropdown-content flex flex-col items-center py-2 bg-white border-gray-200 dark:bg-dark-800 dark:border-dark-700"
           >
-            <button 
-              class="w-10 h-10 rounded-full flex items-center justify-center transition-colors hover:bg-gray-100 text-gray-500 dark:hover:bg-dark-700 dark:text-gray-300"
-              @click="handleSwitchAccount"
-              title="切换账户"
-            >
-              <i class="fa-solid fa-exchange"></i>
-            </button>
+            <Tooltip content="切换账户">
+              <button 
+                class="w-10 h-10 rounded-full flex items-center justify-center transition-colors hover:bg-gray-100 text-gray-500 dark:hover:bg-dark-700 dark:text-gray-300"
+                @click="handleSwitchAccount"
+              >
+                <i class="fa-solid fa-exchange"></i>
+              </button>
+            </Tooltip>
             <div class="my-1 w-8 border-t border-gray-200 dark:border-dark-700"></div>
-            <button 
-              class="w-10 h-10 rounded-full flex items-center justify-center transition-colors text-red-500"
-              @click="handleLogout"
-              title="退出账号"
-            >
-              <i class="fa-solid fa-right-from-bracket"></i>
-            </button>
+            <Tooltip content="退出账号">
+              <button 
+                class="w-10 h-10 rounded-full flex items-center justify-center transition-colors text-red-500"
+                @click="handleLogout"
+              >
+                <i class="fa-solid fa-arrow-right-from-bracket"></i>
+              </button>
+            </Tooltip>
           </div>
         </div>
       
@@ -175,6 +188,7 @@ import { useSettingsStore } from '../../store/settingsStore.js';
 import { useChatStore } from '../../store/chatStore.js';
 import { Window } from '@tauri-apps/api/window';
 import CommandLine from '../../components/common/CommandLine.vue';
+import Tooltip from '../../components/common/Tooltip.vue';
 
 // 使用全局store管理视图状态
 const chatStore = useChatStore();

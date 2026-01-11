@@ -334,9 +334,15 @@ const showTooltip = (tooltipId, event) => {
   // 计算弹窗位置
   if (event) {
     const rect = event.target.getBoundingClientRect();
+    // 获取触发元素的中心点垂直位置
+    const triggerCenterY = rect.top + rect.height / 2;
+    
     tooltipStyle.value = {
-      top: `${rect.bottom + 8}px`,
-      left: `${rect.left}px`
+      // 让tooltip顶部对齐触发元素中心点，实现垂直居中
+      top: `${triggerCenterY}px`,
+      left: `${rect.left}px`,
+      // 添加transform使tooltip自身垂直居中
+      transform: 'translateY(-50%)'
     };
   }
 };

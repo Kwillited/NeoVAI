@@ -83,17 +83,18 @@
         <div class="flex items-center justify-between px-3 py-2 gap-2">
           <div class="flex items-center gap-3">
             <!-- 上传文件按钮 -->
-            <button
-                class="btn-secondary w-8 h-8 flex items-center justify-center rounded-lg transition-all duration-300 ease-in-out"
-                :class="{ 
-                    'text-gray-500 dark:text-gray-300 bg-gray-50 dark:bg-dark-700 hover:bg-gray-100 dark:hover:bg-dark-600 hover:text-primary': uploadedFiles.length === 0, 
-                    'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/40': uploadedFiles.length > 0 
-                  }"
-              @click="triggerFileUpload"
-              title="上传文件"
-            >
-              <i class="fa-solid fa-paperclip"></i>
-            </button>
+            <Tooltip content="上传文件">
+              <button
+                  class="btn-secondary w-8 h-8 flex items-center justify-center rounded-lg transition-all duration-300 ease-in-out"
+                  :class="{ 
+                      'text-gray-500 dark:text-gray-300 bg-gray-50 dark:bg-dark-700 hover:bg-gray-100 dark:hover:bg-dark-600 hover:text-primary': uploadedFiles.length === 0, 
+                      'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/40': uploadedFiles.length > 0 
+                    }"
+                @click="triggerFileUpload"
+              >
+                <i class="fa-solid fa-paperclip"></i>
+              </button>
+            </Tooltip>
             <!-- 隐藏的文件输入 -->
             <input
               ref="fileInput"
@@ -104,42 +105,45 @@
               accept=".txt,.pdf,.doc,.docx,.md,.jpg,.jpeg,.png,.gif,.csv,.xlsx,.pptx"
             >
             <!-- 深度思考切换按钮 -->
-            <button
-              class="btn-secondary flex items-center justify-center w-8 h-8 rounded-lg transition-all duration-300 ease-in-out"
-              :class="{ 
-                  'text-gray-500 dark:text-gray-300 bg-gray-50 dark:bg-dark-700 hover:bg-gray-100 dark:hover:bg-dark-600 hover:text-primary': !isDeepThinking, 
-                  'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/40': isDeepThinking 
-                }"
-              @click="toggleDeepThinking"
-              title="深度思考模式"
-            >
-              <i class="fa-solid fa-lightbulb"></i>
-            </button>
-            <!-- 联网搜索切换按钮 -->
-            <button
-              class="btn-secondary flex items-center justify-center w-8 h-8 rounded-lg transition-all duration-300 ease-in-out"
-              :class="{ 
-                  'text-gray-500 dark:text-gray-300 bg-gray-50 dark:bg-dark-700 hover:bg-gray-100 dark:hover:bg-dark-600 hover:text-primary': !isWebSearchEnabled, 
-                  'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/40': isWebSearchEnabled 
-                }"
-              @click="toggleWebSearch"
-              title="联网搜索"
-            >
-              <i class="fa-solid fa-globe"></i>
-            </button>
-            <div class="relative">
+            <Tooltip content="深度思考模式">
               <button
-                class="h-8 flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-dark-700 px-3 rounded-lg transition-all duration-300 ease-in-out"
-                :class="{
-                  'btn-secondary hover:bg-gray-100 hover:text-primary cursor-pointer': availableModels.length > 1,
-                  'cursor-default opacity-70': availableModels.length <= 1
-                }"
-                @click="toggleModelDropdown"
-                :title="availableModels.length > 1 ? '选择AI模型' : '只有一个可用模型'"
+                class="btn-secondary flex items-center justify-center w-8 h-8 rounded-lg transition-all duration-300 ease-in-out"
+                :class="{ 
+                    'text-gray-500 dark:text-gray-300 bg-gray-50 dark:bg-dark-700 hover:bg-gray-100 dark:hover:bg-dark-600 hover:text-primary': !isDeepThinking, 
+                    'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/40': isDeepThinking 
+                  }"
+                @click="toggleDeepThinking"
               >
-                <span>{{ currentModelDisplayName }}</span>
-                <i v-if="availableModels.length > 1" class="fa-solid fa-chevron-down text-xs text-neutral"></i>
+                <i class="fa-solid fa-lightbulb"></i>
               </button>
+            </Tooltip>
+            <!-- 联网搜索切换按钮 -->
+            <Tooltip content="联网搜索">
+              <button
+                class="btn-secondary flex items-center justify-center w-8 h-8 rounded-lg transition-all duration-300 ease-in-out"
+                :class="{ 
+                    'text-gray-500 dark:text-gray-300 bg-gray-50 dark:bg-dark-700 hover:bg-gray-100 dark:hover:bg-dark-600 hover:text-primary': !isWebSearchEnabled, 
+                    'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/40': isWebSearchEnabled 
+                  }"
+                @click="toggleWebSearch"
+              >
+                <i class="fa-solid fa-globe"></i>
+              </button>
+            </Tooltip>
+            <div class="relative">
+              <Tooltip :content="availableModels.length > 1 ? '选择AI模型' : '只有一个可用模型'">
+                <button
+                  class="h-8 flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-dark-700 px-3 rounded-lg transition-all duration-300 ease-in-out"
+                  :class="{
+                    'btn-secondary hover:bg-gray-100 hover:text-primary cursor-pointer': availableModels.length > 1,
+                    'cursor-default opacity-70': availableModels.length <= 1
+                  }"
+                  @click="toggleModelDropdown"
+                >
+                  <span>{{ currentModelDisplayName }}</span>
+                  <i v-if="availableModels.length > 1" class="fa-solid fa-chevron-down text-xs text-neutral"></i>
+                </button>
+              </Tooltip>
               <div
                 ref="modelDropdown"
                 class="dropdown dropdown-content absolute left-0 bottom-full mb-2 w-48 bg-white z-50 depth-2"
@@ -167,14 +171,14 @@
           >
             <i class="fa-solid fa-arrow-up"></i>
           </button>
-          <button
-            v-else
-            class="w-8 h-8 flex items-center justify-center text-white bg-red-500 hover:bg-red-600 rounded-full transition-all duration-300 ease-in-out hover-scale"
-            @click="handleCancelStreaming"
-            title="终止输出"
-          >
-            <i class="fa-solid fa-stop"></i>
-          </button>
+          <Tooltip v-else content="终止输出">
+            <button
+              class="w-8 h-8 flex items-center justify-center text-white bg-red-500 hover:bg-red-600 rounded-full transition-all duration-300 ease-in-out hover-scale"
+              @click="handleCancelStreaming"
+            >
+              <i class="fa-solid fa-stop"></i>
+            </button>
+          </Tooltip>
         </div>
       </div>
       <div v-if="showShortcutHint" class="text-center text-xs text-gray-400 dark:text-gray-500 mt-[18px] transition-opacity duration-300">
@@ -187,6 +191,7 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue';
 import { StorageManager } from '../../store/utils.js';
+import Tooltip from '../common/Tooltip.vue';
 
 // 接收从父组件传递的视图状态
 const props = defineProps({

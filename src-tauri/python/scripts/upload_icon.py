@@ -10,7 +10,7 @@ from app.core.config import config_manager
 def get_db_path():
     """获取数据库路径"""
     user_data_dir = config_manager.get_user_data_dir()
-    return os.path.join(user_data_dir, 'config', 'neovai.db')
+    return os.path.join(user_data_dir, 'config', 'chato.db')
 
 # 上传图标到数据库
 def upload_icon(model_name, icon_path):

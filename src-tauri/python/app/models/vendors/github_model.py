@@ -25,7 +25,7 @@ class GitHubModel(BaseModel):
             api_key=api_key,
             base_url=api_url,
             temperature=0.7,  # 默认温度，会在调用时被覆盖
-            timeout=60
+            timeout=180  # 超时设置
         )
 
     def chat(self, messages: List[Dict[str, str]], temperature: float, stream: bool = False) -> Dict[str, Any]:

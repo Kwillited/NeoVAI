@@ -9,7 +9,7 @@ class OllamaModel(BaseModel):
     def _initialize_llm(self) -> None:
         """初始化langchain的Ollama LLM实例"""
         # 检查多个可能的版本名称字段，解决'name'错误问题
-        selected_version = self.version_config.get('version_name')
+        selected_version = self.version_config.get('version_name') or self.version_config.get('custom_name') or self.version_config.get('name')
         base_url = self.version_config.get('api_base_url', self.version_config.get('base_url', 'http://localhost:11434'))
         
         # 创建ChatOllama实例
@@ -17,13 +17,12 @@ class OllamaModel(BaseModel):
             model=selected_version,
             base_url=base_url,
             temperature=0.7,  # 默认温度，会在调用时被覆盖
-            timeout=60  # 超时设置
+            timeout=180,  # 超时设置
+            think_thought=True
         )
 
     def chat(self, messages: List[Dict[str, str]], temperature: float, stream: bool = False) -> Dict[str, Any]:
         """非流式调用Ollama API (使用langchain)"""
-        # 打印接收的原始messages
-        # print(f"[Ollama Model] 接收的原始messages: {messages}")
         
         # 转换消息格式
         langchain_messages = self._convert_to_langchain_messages(messages)
@@ -43,8 +42,6 @@ class OllamaModel(BaseModel):
 
     def chat_stream(self, messages: List[Dict[str, str]], temperature: float) -> Generator[str, None, None]:
         """流式调用Ollama API (使用langchain)"""
-        # 打印接收的原始messages
-        # print(f"[Ollama Model] 接收的原始messages: {messages}")
         
         # 转换消息格式
         langchain_messages = self._convert_to_langchain_messages(messages)

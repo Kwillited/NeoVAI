@@ -14,6 +14,18 @@
           <!-- 模型名称 -->
           <div v-if="!isUserMessage" class="text-xs text-gray-500 dark:text-gray-400 mb-1 ml-1">{{ messageValue.model || 'Chato' }}</div>
           
+          <!-- 思考内容 -->
+          <div v-if="!isUserMessage && messageValue.thinking" class="relative mb-2">
+            <div class="bg-gray-50 dark:bg-dark-bg-quaternary rounded-2xl rounded-tl-none px-5 py-3 shadow-sm dark:border dark:border-dark-border overflow-hidden">
+              <div class="flex items-start gap-3">
+                <svg class="w-4 h-4 text-gray-400 dark:text-gray-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707-.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                </svg>
+                <div class="text-sm text-gray-600 dark:text-gray-300 leading-relaxed" v-html="formatThinkingContent(messageValue.thinking)"></div>
+              </div>
+            </div>
+          </div>
+          
           <!-- 消息内容气泡 - 添加了禁止触发滚动条的样式 -->
           <div :class="isUserMessage 
             ? 'bg-primary/20 text-gray-800 rounded-2xl px-5 py-3 shadow-lg overflow-hidden' 
@@ -172,6 +184,14 @@ const formattedContent = computed(() => {
     return contentToParse.replace(/\n/g, '<br>');
   }
 })
+
+// 格式化思考内容
+const formatThinkingContent = (thinking) => {
+  if (!thinking) return ''
+  
+  // 简单的换行处理
+  return thinking.replace(/\n/g, '<br>')
+}
 
 // 用于触发更新的key值
 const updateKey = computed(() => {

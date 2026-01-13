@@ -108,19 +108,17 @@
         <!-- 分隔栏 -->
         <div class="h-4 w-px bg-gray-200 dark:bg-dark-700 mx-1"></div>
         
-        <!-- 视图切换滑块 -->
-        <div class="toggle-wrapper transition-all duration-300" 
-          :class="{ 'is-active': chatStore.activeView === 'grid' }"
-          @click="toggleView"
-          :aria-label="`切换到${chatStore.activeView === 'grid' ? '对话' : '图谱'}视图`"
-          style="width: 48px; height: 24px; display: flex; align-items: center; justify-content: center;">
-          <div class="toggle-slider" :class="{ 'is-active': chatStore.activeView === 'grid' }" style="width: 20px; height: 20px;"></div>
-          <span class="toggle-label grid-label" style="width: 24px; height: 24px; display: flex; align-items: center; justify-content: center;">
-              <i class="fa-solid fa-project-diagram text-sm"></i>
-            </span>
-            <span class="toggle-label list-label" style="width: 24px; height: 24px; display: flex; align-items: center; justify-content: center;">
-              <i class="fa-solid fa-comments text-sm"></i>
-          </span>
+        <!-- 视图切换按钮 -->
+        <div class="flex items-center justify-center">
+          <Tooltip :content="`切换到${chatStore.activeView === 'grid' ? '对话' : '图谱'}视图`">
+            <button 
+              class="btn-secondary w-4 h-4 p-0 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-dark-700 rounded-full text-neutral dark:text-gray-300 transition-all duration-300"
+              @click="toggleView"
+              :aria-label="`切换到${chatStore.activeView === 'grid' ? '对话' : '图谱'}视图`"
+            >
+              <i :class="['fa-solid', chatStore.activeView === 'grid' ? 'fa-comments' : 'fa-project-diagram', 'text-sm']"></i>
+            </button>
+          </Tooltip>
         </div>
         
         <!-- 主题切换按钮 -->
@@ -139,14 +137,12 @@
         
         <!-- 用户按钮带下拉菜单 -->
         <div class="relative hover-scale">
-          <Tooltip content="用户">
             <button 
               class="btn-secondary w-4 h-4 p-0 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-dark-700 rounded-full text-neutral dark:text-gray-300 transition-all duration-300"
               @click.stop="toggleUserMenu"
             >
               <i class="fa-solid fa-user-circle text-base" @click.stop="toggleUserMenu"></i>
             </button>
-          </Tooltip>
           
           <!-- 用户功能下拉菜单 -->
           <div 
@@ -364,97 +360,7 @@ onUnmounted(() => {
 
 <style scoped>
 
-/* 视图切换滑块样式 */
-.toggle-wrapper {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  background-color: #f0f2f5;
-  border-radius: 12px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  user-select: none;
-}
 
-.toggle-wrapper:hover {
-  background-color: #e4e6eb;
-}
-
-.toggle-wrapper.is-active {
-  background-color: #f0f2f5;
-}
-
-.toggle-slider {
-  position: absolute;
-  top: 2px;
-  left: 2px;
-  background-color: #fff;
-  border-radius: 50%;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.toggle-slider.is-active {
-    transform: translateX(24px);
-  }
-
-.toggle-label {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #65676b;
-  transition: color 0.3s ease;
-}
-
-.toggle-wrapper.is-active .list-label {
-  color: #fff;
-}
-
-.toggle-wrapper:not(.is-active) .grid-label {
-  color: #fff;
-}
-
-.toggle-wrapper.is-active .grid-label {
-  color: #65676b;
-}
-
-.toggle-wrapper:not(.is-active) .list-label {
-  color: #65676b;
-}
-
-/* 动画效果增强 */
-.toggle-wrapper:active .toggle-slider {
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-}
-
-/* 适配暗色模式 */
-  .dark .toggle-wrapper {
-    background-color: #3a3b3c;
-  }
-  
-  .dark .toggle-wrapper:hover {
-    background-color: #4a4b4c;
-  }
-  
-  .dark .toggle-wrapper.is-active {
-    background-color: #3a3b3c;
-  }
-  
-  .dark .toggle-label {
-    color: #b0b3b8;
-  }
-  
-  .dark .toggle-wrapper.is-active .list-label,
-  .dark .toggle-wrapper:not(.is-active) .grid-label {
-    color: #fff;
-  }
-  
-  .dark .toggle-wrapper.is-active .grid-label,
-  .dark .toggle-wrapper:not(.is-active) .list-label {
-    color: #b0b3b8;
-  }
 
 /* 下拉菜单动画 */
 .dropdown-content {

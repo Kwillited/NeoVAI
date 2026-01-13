@@ -20,8 +20,8 @@ for key, value in config_manager._config.items():
 def get_db_connection():
     """获取数据库连接（为每个线程创建独立连接）"""
     user_data_dir = ensure_data_dir()
-    db_path = os.path.join(user_data_dir, 'config', 'neovai.db')
-    
+    # 将数据库文件名从neovai.db改为chato.db
+    db_path = os.path.join(user_data_dir, 'config', 'chato.db')
     # 创建新的数据库连接
     conn = sqlite3.connect(db_path)
     # 启用外键约束
@@ -42,7 +42,8 @@ def ensure_data_dir():
 def init_db():
     """初始化SQLite数据库，创建表结构"""
     user_data_dir = ensure_data_dir()
-    db_path = os.path.join(user_data_dir, 'config', 'neovai.db')
+    # 将数据库文件名从neovai.db改为chato.db
+    db_path = os.path.join(user_data_dir, 'config', 'chato.db')
     
     # 确保config目录存在
     os.makedirs(os.path.dirname(db_path), exist_ok=True)
@@ -101,7 +102,8 @@ def init_db():
         id TEXT PRIMARY KEY,
         chat_id TEXT NOT NULL,
         role TEXT NOT NULL,
-        content TEXT NOT NULL,
+        actual_content TEXT NOT NULL,
+        thinking TEXT,
         created_at TEXT NOT NULL,
         model TEXT,
         FOREIGN KEY (chat_id) REFERENCES chats (id) ON DELETE CASCADE
@@ -156,14 +158,16 @@ def load_chats_from_db():
             for msg_row in messages:
                 msg_id = msg_row[0]
                 role = msg_row[2] if len(msg_row) > 2 else 'user'
-                content = msg_row[3] if len(msg_row) > 3 else ''
-                msg_created_at = msg_row[4] if len(msg_row) > 4 else datetime.now().isoformat()
-                model = msg_row[5] if len(msg_row) > 5 else None
+                actual_content = msg_row[3] if len(msg_row) > 3 else ''
+                thinking = msg_row[4] if len(msg_row) > 4 else None
+                msg_created_at = msg_row[5] if len(msg_row) > 5 else datetime.now().isoformat()
+                model = msg_row[6] if len(msg_row) > 6 else None
                 
                 message_list.append({
                     'id': msg_id,
                     'role': role,
-                    'content': content,
+                    'content': actual_content,
+                    'thinking': thinking,
                     'createdAt': msg_created_at,
                     'model': model
                 })
@@ -542,12 +546,14 @@ def save_chats_to_db():
                 msg_id = msg['id']
                 role = msg['role']
                 content = msg['content']
+                thinking = msg.get('thinking', None)
                 msg_created_at = msg['createdAt']
+                model = msg.get('model', None)
                 
                 cursor.execute('''
-                INSERT INTO messages (id, chat_id, role, content, created_at)
-                VALUES (?, ?, ?, ?, ?)
-                ''', (msg_id, chat_id, role, content, msg_created_at))
+                INSERT INTO messages (id, chat_id, role, actual_content, thinking, created_at, model)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+                ''', (msg_id, chat_id, role, content, thinking, msg_created_at, model))
         
         conn.commit()
         conn.close()

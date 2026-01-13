@@ -244,13 +244,14 @@ class ChatService(BaseService):
             return True
     
     @staticmethod
-    def get_chat_context(chat_id, max_messages=10):
+    def get_chat_context(chat_id, max_messages=10, deep_thinking=False):
         """
         获取对话上下文历史
         
         参数:
             chat_id: 对话ID
             max_messages: 最大获取的消息数量，默认10条
+            deep_thinking: 是否启用深度思考，启用时保留think标签
             
         返回:
             格式化的上下文消息列表，或者None（如果对话不存在）
@@ -274,27 +275,28 @@ class ChatService(BaseService):
             if 'role' in msg and 'content' in msg:
                 # 原始内容
                 original_content = msg['content']
-                # 剔除content中的think标签内容
+                # 剔除content中的think标签内容，仅当未启用深度思考时
                 content = original_content
                 
-                # 定义可能的think标签格式
-                think_tag_pairs = [
-                    ('<think>', '</think>'),  # 尖括号格式
-                    ('[think]', '[/think]'),  # 方括号格式
-                ]
-                
-                # 对每种标签格式进行过滤
-                for opening_tag, closing_tag in think_tag_pairs:
-                    while opening_tag in content:
-                        start = content.find(opening_tag)
-                        if start != -1:
-                            # 从start + len(opening_tag)的位置开始查找结束标签
-                            end = content.find(closing_tag, start + len(opening_tag))
-                            if end != -1:
-                                # 保留开始标签前的内容和结束标签后的内容
-                                content = content[:start] + content[end + len(closing_tag):]
-                            else:
-                                break
+                if not deep_thinking:
+                    # 定义可能的think标签格式
+                    think_tag_pairs = [
+                        ('<think>', '</think>'),  # 尖括号格式
+                        ('[think]', '[/think]'),  # 方括号格式
+                    ]
+                    
+                    # 对每种标签格式进行过滤
+                    for opening_tag, closing_tag in think_tag_pairs:
+                        while opening_tag in content:
+                            start = content.find(opening_tag)
+                            if start != -1:
+                                # 从start + len(opening_tag)的位置开始查找结束标签
+                                end = content.find(closing_tag, start + len(opening_tag))
+                                if end != -1:
+                                    # 保留开始标签前的内容和结束标签后的内容
+                                    content = content[:start] + content[end + len(closing_tag):]
+                                else:
+                                    break
                 
                 # 去除多余的空白字符
                 content = content.strip()
@@ -308,7 +310,7 @@ class ChatService(BaseService):
 
     @staticmethod
     def get_rag_enhanced_prompt(question, rag_config=None):
-        """RAG增强提示"""
+        """RAG增强提示 - 使用LangChain RAG服务"""
         # 如果提供了rag_config参数，使用它，否则从数据库设置中获取
         if rag_config and isinstance(rag_config, dict):
             rag_settings = rag_config
@@ -318,27 +320,10 @@ class ChatService(BaseService):
         if not rag_settings.get('enabled', False):
             return question
         try:
-            # 使用VectorStoreService
-            from app.services.vector_store_service import VectorStoreService
-            vector_service = VectorStoreService.get_instance()
-            if vector_service:
-                # 获取RAG设置，处理前端可能使用的不同键名
-                # 将前端的topK映射到后端的top_k
-                top_k = rag_settings.get('topK', rag_settings.get('top_k', 3))
-                score_threshold = rag_settings.get('score_threshold', 0.7)
-                
-                # 执行向量搜索
-                result = vector_service.search_documents(question, k=top_k, score_threshold=score_threshold)
-                
-                # 构造增强提示
-                if result:
-                    context = "\n".join([f"参考文档{i+1}：{doc.page_content[:200]}..." 
-                                        for i, doc in enumerate(result)])
-                    if context:
-                        return f"参考文档：{context}\n问题：{question}"
-                return question
-            print("VectorStoreService实例未初始化，跳过RAG增强")
-            return question
+            # 使用新的LangChain RAG服务
+            from app.services.langchain_rag_service import LangChainRAGService
+            rag_service = LangChainRAGService.get_instance()
+            return rag_service.get_enhanced_prompt(question, rag_settings)
         except Exception as e:
             print(f"RAG调用失败: {str(e)}")
             # 确保即使RAG失败，原始问题也能正常返回
@@ -388,16 +373,16 @@ class ChatService(BaseService):
         
         参数:
             model: 模型对象
-            version_id: 模型版本ID
+            version_id: 模型版本名称或自定义名称
             
         返回:
             版本配置字典
         """
         # 尝试从模型对象中获取版本配置
         if 'versions' in model and isinstance(model['versions'], list):
-            # 查找匹配的版本
+            # 查找匹配的版本，支持version_name和custom_name
             for version in model['versions']:
-                if version.get('id') == version_id:
+                if version.get('version_name') == version_id or version.get('custom_name') == version_id:
                     return version
         # 如果没有找到匹配的版本或模型没有versions字段，返回默认配置
         return {
@@ -446,15 +431,15 @@ class ChatService(BaseService):
             
             # 保存用户消息到数据库
             cursor.execute('''
-            INSERT OR REPLACE INTO messages (id, chat_id, role, content, created_at, model)
-            VALUES (?, ?, ?, ?, ?, ?)
-            ''', (user_message['id'], chat['id'], user_message['role'], user_message['content'], user_message['createdAt'], user_message.get('model')))
+            INSERT OR REPLACE INTO messages (id, chat_id, role, actual_content, thinking, created_at, model)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+            ''', (user_message['id'], chat['id'], user_message['role'], user_message['content'], None, user_message['createdAt'], user_message.get('model')))
             
             # 保存AI消息到数据库
             cursor.execute('''
-            INSERT OR REPLACE INTO messages (id, chat_id, role, content, created_at, model)
-            VALUES (?, ?, ?, ?, ?, ?)
-            ''', (ai_message['id'], chat['id'], ai_message['role'], ai_message['content'], ai_message['createdAt'], ai_message.get('model')))
+            INSERT OR REPLACE INTO messages (id, chat_id, role, actual_content, thinking, created_at, model)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+            ''', (ai_message['id'], chat['id'], ai_message['role'], ai_message['content'], ai_message.get('thinking'), ai_message['createdAt'], ai_message.get('model')))
             
             # 更新对话信息
             cursor.execute('''
@@ -468,19 +453,20 @@ class ChatService(BaseService):
             print(f"❌ 更新对话失败: {str(e)}")
 
     @staticmethod
-    def _prepare_messages_for_model(chat_id, enhanced_question):
+    def _prepare_messages_for_model(chat_id, enhanced_question, deep_thinking=False):
         """
         准备发送给模型的消息格式
         
         参数:
             chat_id: 对话ID
             enhanced_question: 增强后的问题
+            deep_thinking: 是否启用深度思考
         
         返回:
             格式化的消息列表
         """
         # 获取对话上下文历史
-        context_messages = ChatService.get_chat_context(chat_id)
+        context_messages = ChatService.get_chat_context(chat_id, deep_thinking=deep_thinking)
         
         # 准备消息格式，如果有上下文则使用上下文，否则使用当前问题
         if context_messages and len(context_messages) > 0:
@@ -541,12 +527,12 @@ class ChatService(BaseService):
 
     @staticmethod
     def handle_streaming_response(chat, message_text, user_message, now,
-                                 enhanced_question, parsed_model_name, parsed_version_name, model_params, model_display_name):
+                                 enhanced_question, parsed_model_name, parsed_version_name, model_params, model_display_name, deep_thinking=False):
         """处理流式响应"""
         def generate():
             try:
                 # 准备消息格式
-                messages = ChatService._prepare_messages_for_model(chat['id'], enhanced_question)
+                messages = ChatService._prepare_messages_for_model(chat['id'], enhanced_question, deep_thinking)
                 
                 # 获取temperature参数
                 temperature = model_params.get('temperature', 0.7)
@@ -592,8 +578,22 @@ class ChatService(BaseService):
                         }
                         yield f'data: {json.dumps(response_data, ensure_ascii=False)}\n\n'
                 
+                # 处理think标签，分离思考内容和实际内容
+                import re
+                think_pattern = re.compile(r'\s*<think>([\s\S]*?)</think>\s*', re.IGNORECASE)
+                match = think_pattern.match(full_reply)
+                
+                thinking_content = None
+                actual_content = full_reply
+                
+                if match:
+                    thinking_content = match.group(1)
+                    actual_content = think_pattern.sub('', full_reply).strip()
+                
                 # 创建AI回复，确保包含完整的模型和版本信息
-                ai_message = ChatService.create_ai_message(now, full_reply, model_display_name)
+                ai_message = ChatService.create_ai_message(now, actual_content, model_display_name)
+                # 添加思考内容到AI消息
+                ai_message['thinking'] = thinking_content
                 
                 # 更新对话并保存
                 ChatService.update_chat_and_save(chat, message_text, user_message, ai_message, now)
@@ -617,7 +617,7 @@ class ChatService(BaseService):
 
     @staticmethod
     def handle_regular_response(chat, message_text, user_message, now,
-                              enhanced_question, parsed_model_name, parsed_version_name, model_params, model_display_name):
+                              enhanced_question, parsed_model_name, parsed_version_name, model_params, model_display_name, deep_thinking=False):
         """处理普通响应"""
         try:
             # 使用通用验证函数验证模型
@@ -626,7 +626,7 @@ class ChatService(BaseService):
                 return error_response, error_code
 
             # 准备消息格式
-            messages = ChatService._prepare_messages_for_model(chat['id'], enhanced_question)
+            messages = ChatService._prepare_messages_for_model(chat['id'], enhanced_question, deep_thinking)
             
             # 获取temperature参数
             temperature = model_params.get('temperature', 0.7)
@@ -645,8 +645,22 @@ class ChatService(BaseService):
             print(f'调用模型失败: {str(e)}')
             return {'error': f'调用模型失败: {str(e)}'}, 500
         
+        # 处理think标签，分离思考内容和实际内容
+        import re
+        think_pattern = re.compile(r'\s*<think>([\s\S]*?)</think>\s*', re.IGNORECASE)
+        match = think_pattern.match(ai_reply)
+        
+        thinking_content = None
+        actual_content = ai_reply
+        
+        if match:
+            thinking_content = match.group(1)
+            actual_content = think_pattern.sub('', ai_reply).strip()
+        
         # 创建AI回复，确保包含完整的模型和版本信息
-        ai_message = ChatService.create_ai_message(now, ai_reply, model_display_name)
+        ai_message = ChatService.create_ai_message(now, actual_content, model_display_name)
+        # 添加思考内容到AI消息
+        ai_message['thinking'] = thinking_content
         
         # 更新对话并保存
         ChatService.update_chat_and_save(chat, message_text, user_message, ai_message, now)
@@ -672,6 +686,7 @@ class ChatService(BaseService):
         model_params = data.get('modelParams', {})
         rag_config = data.get('ragConfig', {})
         stream = data.get('stream', False)
+        deep_thinking = data.get('deepThinking', False)
         
         # 查找匹配ID的对话
         chat = ChatService.get_chat(chat_id)
@@ -705,11 +720,11 @@ class ChatService(BaseService):
             # 流式响应处理
             return ChatService.handle_streaming_response(
                 chat, message_text, user_message, now,
-                enhanced_question, parsed_model_name, parsed_version_name, model_params, model_display_name
+                enhanced_question, parsed_model_name, parsed_version_name, model_params, model_display_name, deep_thinking
             )
         else:
             # 普通响应处理
             return ChatService.handle_regular_response(
                 chat, message_text, user_message, now,
-                enhanced_question, parsed_model_name, parsed_version_name, model_params, model_display_name
+                enhanced_question, parsed_model_name, parsed_version_name, model_params, model_display_name, deep_thinking
             )

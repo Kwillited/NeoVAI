@@ -611,7 +611,7 @@ class RAGService:
     
     @staticmethod
     def reload_documents():
-        """重新加载文档到向量库"""
+        """重新加载文档到向量库 - 使用LangChain DirectoryLoader优化"""
         try:
             # 获取向量存储服务实例
             vector_service = get_vector_store_service()
@@ -622,39 +622,34 @@ class RAGService:
             # 先清空向量库
             vector_service.clear_vector_store()
             
+            # 使用新的load_directory方法加载所有文档
+            directory_docs = DocumentLoader.load_directory(DATA_DIR)
+            
             # 加载、分割和向量化所有文档
             loaded_chunks = 0
-            processed_files = 0
+            processed_files = len(directory_docs)
             failed_files = 0
             
-            # 递归遍历所有文件
-            for root, _, files in os.walk(DATA_DIR):
-                for file in files:
-                    if file.startswith('.') or file == 'Thumbs.db':
-                        continue
-                    
-                    file_path = os.path.join(root, file)
-                    processed_files += 1
-                    
-                    try:
-                        # 1. 加载文档
-                        document_info = DocumentLoader.load_document(file_path)
-                        if 'documents' in document_info and document_info['documents']:
-                            # 2. 分割文档
-                            chunk_info = {'chunk_size': 1000, 'chunk_overlap': 200}
-                            split_result = RAGService._split_document(document_info['documents'], chunk_info)
-                            
-                            if split_result['success']:
-                                # 3. 向量化并添加到向量库
-                                success = vector_service.add_documents(split_result['split_documents'])
-                                if success:
-                                    loaded_chunks += split_result['split_documents_count']
-                                else:
-                                    failed_files += 1
-                                    print(f"⚠️  向量化文件 {file} 失败")
-                    except Exception as file_error:
-                        failed_files += 1
-                        print(f"❌ 处理文件 {file} 时出错: {file_error}")
+            for doc_info in directory_docs:
+                try:
+                    if 'documents' in doc_info and doc_info['documents']:
+                        # 分割文档
+                        chunk_info = {'chunk_size': 1000, 'chunk_overlap': 200}
+                        split_result = RAGService._split_document(doc_info['documents'], chunk_info)
+                        
+                        if split_result['success']:
+                            # 向量化并添加到向量库
+                            success = vector_service.add_documents(split_result['split_documents'])
+                            if success:
+                                loaded_chunks += split_result['split_documents_count']
+                            else:
+                                failed_files += 1
+                                file_name = os.path.basename(doc_info['file_path'])
+                                print(f"⚠️  向量化文件 {file_name} 失败")
+                except Exception as file_error:
+                    failed_files += 1
+                    file_name = os.path.basename(doc_info['file_path'])
+                    print(f"❌ 处理文件 {file_name} 时出错: {file_error}")
             
             # 输出统计信息
             print(f"✅ 重新加载文档完成:")

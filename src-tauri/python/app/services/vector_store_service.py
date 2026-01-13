@@ -387,13 +387,15 @@ class VectorStoreService:
             del self._query_cache[oldest_key]
             logger.debug(f"缓存大小超过限制，移除最旧项: {oldest_key[:50]}...")
     
-    def search_documents(self, query: str, k: int = 5, score_threshold: Optional[float] = None) -> List[Any]:
-        """搜索相关文档
+    def search_documents(self, query: str, k: int = 5, score_threshold: Optional[float] = None, search_type: str = "similarity", fetch_k: int = 20) -> List[Any]:
+        """搜索相关文档 - 支持多种搜索类型
 
         Args:
             query: 查询文本
             k: 返回结果数量
             score_threshold: 相似度分数阈值，低于该阈值的结果将被过滤
+            search_type: 搜索类型，可选值：similarity, mmr, similarity_score_threshold
+            fetch_k: 用于MMR搜索的候选文档数量
             
         Returns:
             list: 相关文档列表
@@ -401,15 +403,26 @@ class VectorStoreService:
         import time
         
         try:
-            logger.info(f"Starting search for query: '{query[:50]}...' with k={k}, score_threshold={score_threshold}")
+            # 触发搜索开始回调
+            from app.utils.callback_manager import trigger_callback
+            trigger_callback('search_start', 
+                           query=query[:50] + "..." if len(query) > 50 else query,
+                           k=k,
+                           score_threshold=score_threshold,
+                           search_type=search_type)
+            
+            logger.info(f"Starting search for query: '{query[:50]}...' with k={k}, score_threshold={score_threshold}, search_type={search_type}, fetch_k={fetch_k}")
             
             # 检查向量存储初始化
             if not self.vector_store:
                 logger.error("搜索失败：向量存储未初始化")
+                trigger_callback('error', 
+                               event='search',
+                               error="向量存储未初始化")
                 return []
             
-            # 构建缓存键：包含查询、k值和分数阈值
-            cache_key = f"{query}:{k}:{score_threshold}"
+            # 构建缓存键：包含所有搜索参数
+            cache_key = f"{query}:{k}:{score_threshold}:{search_type}:{fetch_k}"
             current_time = time.time()
             
             # 检查缓存
@@ -418,32 +431,59 @@ class VectorStoreService:
                 # 检查缓存是否过期
                 if current_time - cache_time < self._CACHE_TTL:
                     logger.debug(f"查询缓存命中: {query[:50]}...")
+                    trigger_callback('search_end', 
+                                   query=query[:50] + "..." if len(query) > 50 else query,
+                                   result_count=len(cached_result),
+                                   cache_hit=True)
                     return cached_result
                 else:
                     # 缓存过期，移除
                     del self._query_cache[cache_key]
                     logger.debug(f"查询缓存过期: {query[:50]}...")
             
-            # 根据是否设置了分数阈值选择不同的搜索方法
-            if score_threshold is not None:
-                # 执行带分数的相似性搜索
+            result = []
+            
+            # 根据搜索类型执行不同的搜索方法
+            if search_type == "mmr":
+                # 使用最大边缘相关性搜索
+                logger.info(f"执行MMR搜索，k={k}, fetch_k={fetch_k}")
+                result = self.vector_store.max_marginal_relevance_search(
+                    query=query,
+                    k=k,
+                    fetch_k=fetch_k
+                )
+            elif search_type == "similarity_score_threshold" and score_threshold is not None:
+                # 使用带分数阈值的相似性搜索
+                logger.info(f"执行带分数阈值的相似性搜索，k={k}, 分数阈值={score_threshold}")
+                result = self.vector_store.similarity_search_with_score(
+                    query=query,
+                    k=k,
+                    score_threshold=score_threshold
+                )
+                # 只保留文档，不保留分数
+                result = [doc for doc, _ in result]
+            elif score_threshold is not None:
+                # 执行带分数的相似性搜索并手动过滤
                 logger.info(f"执行带分数的相似性搜索，k={k}, 分数阈值={score_threshold}")
                 results_with_scores = self.vector_store.similarity_search_with_score(query, k=k)
                 
                 # 过滤结果
-                filtered_results = []
+                result = []
                 for doc, score in results_with_scores:
                     if score <= score_threshold:
-                        filtered_results.append(doc)
-                
-                logger.info(f"搜索完成，找到 {len(filtered_results)} 个相关文档（分数阈值: {score_threshold}）")
-                result = filtered_results
+                        result.append(doc)
             else:
                 # 执行普通相似性搜索
                 logger.info(f"执行普通相似性搜索，k={k}")
-                results = self.vector_store.similarity_search(query, k=k)
-                logger.info(f"搜索完成，找到 {len(results)} 个相关文档")
-                result = results
+                result = self.vector_store.similarity_search(query, k=k)
+            
+            logger.info(f"搜索完成，找到 {len(result)} 个相关文档")
+            
+            # 触发搜索结束回调
+            trigger_callback('search_end', 
+                           query=query[:50] + "..." if len(query) > 50 else query,
+                           result_count=len(result),
+                           cache_hit=False)
             
             # 更新缓存
             self._update_cache(cache_key, result, current_time)
@@ -454,4 +494,11 @@ class VectorStoreService:
             logger.error(f"错误类型: {type(e).__name__}")
             import traceback
             logger.error(f"错误堆栈: {traceback.format_exc()}")
+            
+            # 触发错误回调
+            from app.utils.callback_manager import trigger_callback
+            trigger_callback('error', 
+                           event='search',
+                           error=str(e))
+            
             return []

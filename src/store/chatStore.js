@@ -142,7 +142,7 @@ export const useChatStore = defineStore('chat', {
     },
 
     // 发送消息（使用API服务）
-    async sendMessage(content, model) {
+    async sendMessage(content, model, deepThinking = false, webSearchEnabled = false) {
       if (!content.trim()) return;
       if (!model) {
         this.setError('请先选择一个AI模型');
@@ -235,19 +235,21 @@ export const useChatStore = defineStore('chat', {
         const shouldUseStreaming = systemStreamingEnabled && modelStreamingEnabled;
         
         if (shouldUseStreaming) {
-          // 使用流式消息发送
-          let aiMessage = null;
-          
-          try {
-            await apiService.chat.sendStreamingMessage(
-              currentChat.id,         // chatId
-              content.trim(),         // message
-              this.uploadedFiles,     // files
-              {
-                model: formattedModel, // 确保使用name-version.version_name格式的模型名称
-                modelParams: modelStore.currentModelParams,  // 模型参数
-                ragConfig: settingsStore.ragConfig       // RAG配置
-              },
+        // 使用流式消息发送
+        let aiMessage = null;
+        
+        try {
+          await apiService.chat.sendStreamingMessage(
+            currentChat.id,         // chatId
+            content.trim(),         // message
+            this.uploadedFiles,     // files
+            {
+              model: formattedModel, // 确保使用name-version.version_name格式的模型名称
+              modelParams: modelStore.currentModelParams,  // 模型参数
+              ragConfig: settingsStore.ragConfig,       // RAG配置
+              deepThinking: deepThinking, // 使用传递的深度思考参数
+              webSearchEnabled: webSearchEnabled // 使用传递的联网搜索参数
+            },
               // 处理接收到的消息
               (data) => {
                 console.log('处理流式消息数据块:', data); // 添加日志追踪
@@ -417,7 +419,9 @@ export const useChatStore = defineStore('chat', {
               model: formattedModel, // 确保使用name-version.version_name格式的模型名称
               stream: false,  // 非流式输出
               modelParams: modelStore.currentModelParams,  // 模型参数
-              ragConfig: settingsStore.ragConfig       // RAG配置
+              ragConfig: settingsStore.ragConfig,       // RAG配置
+              deepThinking: deepThinking, // 使用传递的深度思考参数
+              webSearchEnabled: webSearchEnabled // 使用传递的联网搜索参数
             }
           );
           

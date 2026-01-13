@@ -23,7 +23,7 @@ class AnthropicModel(BaseModel):
             model=selected_version,
             api_key=api_key,
             temperature=0.7,
-            timeout=60
+            timeout=180
         )
     
     def chat(self, messages: List[Dict[str, str]], temperature: float, stream: bool = False) -> Dict[str, Any]:

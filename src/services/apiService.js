@@ -249,7 +249,7 @@ export const apiService = {
     },
     
     sendMessage: async (chatId, message, files, options = {}) => {
-      const { model = 'GPT-4', stream = false, modelParams = {}, ragConfig = {} } = options;
+      const { model = 'GPT-4', stream = false, modelParams = {}, ragConfig = {}, deepThinking = false } = options;
       
       // 使用合并后的单个端点，通过stream参数控制响应类型
       const endpoint = `/api/chats/${chatId}/messages`;
@@ -263,14 +263,15 @@ export const apiService = {
           modelParams,
           ragConfig,
           files,
-          stream // 传递stream参数给后端
+          stream, // 传递stream参数给后端
+          deepThinking // 传递deepThinking参数给后端
         },
       });
     },
     
     // 发送流式消息
     sendStreamingMessage: async (chatId, message, files, options = {}, onMessage, onError, onComplete) => {
-      const { model = 'GPT-4', modelParams = {}, ragConfig = {} } = options;
+      const { model = 'GPT-4', modelParams = {}, ragConfig = {}, deepThinking = false } = options;
       
       const url = `/api/chats/${chatId}/messages`;
       const data = {
@@ -279,7 +280,8 @@ export const apiService = {
         model,
         modelParams,
         ragConfig,
-        stream: true  // 传递stream参数给后端
+        stream: true,  // 传递stream参数给后端
+        deepThinking // 传递deepThinking参数给后端
       };
       
       // 创建一个Promise来包装流式请求

@@ -2,7 +2,9 @@
 import os
 import time
 from typing import List, Dict, Any
-from langchain_community.document_loaders import TextLoader, PyPDFLoader, Docx2txtLoader
+from langchain_community.document_loaders import (
+    TextLoader, PyPDFLoader, Docx2txtLoader, DirectoryLoader
+)
 
 class DocumentLoader:
     """文档加载器类 - 处理各种格式文档的加载"""
@@ -15,7 +17,7 @@ class DocumentLoader:
         'docx': Docx2txtLoader
     }
     
-    # 文档缓存，格式: {file_path: (mtime, document_info)}
+    # 文档缓存，格式: {file_path: (mtime, document_info)}  
     _cache = {}
     # 缓存过期时间（秒）
     _CACHE_EXPIRY = 300  # 5分钟
@@ -87,6 +89,50 @@ class DocumentLoader:
             DocumentLoader._cache[file_path] = (current_mtime, document_info, time.time())
         
         return document_info
+    
+    @staticmethod
+    def load_directory(directory_path: str, recursive: bool = True) -> List[Dict[str, Any]]:
+        """使用LangChain DirectoryLoader加载整个目录的文档
+        
+        Args:
+            directory_path: 目录路径
+            recursive: 是否递归加载子目录
+            
+        Returns:
+            List[Dict]: 包含所有文档信息的字典列表
+        """
+        print(f"📁 开始加载目录: {directory_path}")
+        
+        # 创建目录加载器
+        loader = DirectoryLoader(
+            path=directory_path,
+            glob="**/*.{txt,pdf,doc,docx}" if recursive else "*.{txt,pdf,doc,docx}",
+            show_progress=True
+        )
+        
+        # 加载所有文档
+        documents = loader.load()
+        print(f"✅ 目录加载完成，共加载 {len(documents)} 个文档")
+        
+        # 转换为统一的文档信息格式
+        result = []
+        for i, doc in enumerate(documents):
+            file_path = doc.metadata.get('source', f"file_{i}")
+            file_extension = os.path.splitext(file_path)[1].lower().lstrip('.') if '.' in file_path else ''
+            
+            document_info = {
+                'total_docs': 1,
+                'page_count': 1,
+                'file_path': file_path,
+                'file_extension': file_extension,
+                'first_page_content_length': len(doc.page_content),
+                'metadata': doc.metadata,
+                'documents': [doc]
+            }
+            
+            result.append(document_info)
+        
+        return result
     
     @staticmethod
     def clear_cache() -> None:

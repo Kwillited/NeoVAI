@@ -11,7 +11,7 @@ from app.core.data_manager import load_data, save_data, db
 def get_db_path():
     """获取数据库路径"""
     user_data_dir = config_manager.get_user_data_dir()
-    return os.path.join(user_data_dir, 'config', 'neovai.db')
+    return os.path.join(user_data_dir, 'config', 'chato.db')
 
 # 测试设置数据的SQLite存储功能
 def test_settings_sqlite():

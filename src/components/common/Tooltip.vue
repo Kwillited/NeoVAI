@@ -72,41 +72,36 @@ const calculatePosition = () => {
       visibility: 'hidden'
     };
     
-    // 根据placement计算位置，确保垂直居中
+    // 根据placement计算位置，直接计算准确位置，不使用transform居中
     switch (props.placement) {
       case 'top':
         style.top = `${Math.max(0, wrapperRect.top - tooltipRect.height - 8)}px`;
-        style.left = `${Math.max(0, wrapperRect.left + wrapperRect.width / 2)}px`;
-        style.transform = 'translateX(-50%)';
+        style.left = `${Math.max(0, wrapperRect.left + wrapperRect.width / 2 - tooltipRect.width / 2)}px`;
+        // 初始transform用于动画，后续由CSS动画控制
+        style.transform = 'translateY(0)';
         break;
       case 'bottom':
         style.top = `${Math.max(0, wrapperRect.bottom + 8)}px`;
-        style.left = `${Math.max(0, wrapperRect.left + wrapperRect.width / 2)}px`;
-        style.transform = 'translateX(-50%)';
+        style.left = `${Math.max(0, wrapperRect.left + wrapperRect.width / 2 - tooltipRect.width / 2)}px`;
+        style.transform = 'translateY(0)';
         break;
       case 'left':
-        style.top = `${Math.max(0, wrapperRect.top + wrapperRect.height / 2)}px`;
+        style.top = `${Math.max(0, wrapperRect.top + wrapperRect.height / 2 - tooltipRect.height / 2)}px`;
         style.left = `${Math.max(0, wrapperRect.left - tooltipRect.width - 8)}px`;
-        style.transform = 'translateY(-50%)';
+        style.transform = 'translateX(0)';
         break;
       case 'right':
-        style.top = `${Math.max(0, wrapperRect.top + wrapperRect.height / 2)}px`;
+        style.top = `${Math.max(0, wrapperRect.top + wrapperRect.height / 2 - tooltipRect.height / 2)}px`;
         style.left = `${Math.max(0, wrapperRect.right + 8)}px`;
-        style.transform = 'translateY(-50%)';
+        style.transform = 'translateX(0)';
         break;
       default:
         break;
     }
     
-    // 先设置样式，然后延迟显示，避免位置计算过程中出现闪烁
+    // 移除visibility控制，直接应用样式
+    style.visibility = 'visible';
     tooltipStyle.value = style;
-    
-    // 确保样式应用后再显示
-    setTimeout(() => {
-      if (tooltipStyle.value) {
-        tooltipStyle.value.visibility = 'visible';
-      }
-    }, 0);
   } catch (error) {
     console.error('Tooltip position calculation error:', error);
   }
@@ -114,12 +109,11 @@ const calculatePosition = () => {
 
 // 显示tooltip
 const showTooltip = () => {
-  show.value = true;
-  // 确保tooltip完全渲染后再计算位置
-  // 使用setTimeout确保DOM已经更新，解决首次渲染尺寸计算不准确的问题
-  setTimeout(() => {
+  // 先计算位置，再显示tooltip，确保首次显示就在正确位置
+  nextTick(() => {
     calculatePosition();
-  }, 50);
+    show.value = true;
+  });
 };
 
 // 隐藏tooltip
@@ -204,80 +198,17 @@ onUnmounted(() => {
 @keyframes tooltipFadeIn {
   from {
     opacity: 0;
-    visibility: hidden;
   }
   to {
     opacity: 1;
-    visibility: visible;
   }
 }
 
-/* 针对不同位置的tooltip添加位置微调动画 */
-.tooltip-top {
-  animation: tooltipFadeInTop 0.2s ease-in-out forwards;
-}
-
-.tooltip-bottom {
-  animation: tooltipFadeInBottom 0.2s ease-in-out forwards;
-}
-
-.tooltip-left {
-  animation: tooltipFadeInLeft 0.2s ease-in-out forwards;
-}
-
+/* 移除位置位移动画，只使用基础的透明度动画，确保首次和后续悬停位置一致 */
+.tooltip-top,
+.tooltip-bottom,
+.tooltip-left,
 .tooltip-right {
-  animation: tooltipFadeInRight 0.2s ease-in-out forwards;
-}
-
-@keyframes tooltipFadeInTop {
-  from {
-    opacity: 0;
-    visibility: hidden;
-    margin-bottom: 5px;
-  }
-  to {
-    opacity: 1;
-    visibility: visible;
-    margin-bottom: 0;
-  }
-}
-
-@keyframes tooltipFadeInBottom {
-  from {
-    opacity: 0;
-    visibility: hidden;
-    margin-top: 5px;
-  }
-  to {
-    opacity: 1;
-    visibility: visible;
-    margin-top: 0;
-  }
-}
-
-@keyframes tooltipFadeInLeft {
-  from {
-    opacity: 0;
-    visibility: hidden;
-    margin-right: 5px;
-  }
-  to {
-    opacity: 1;
-    visibility: visible;
-    margin-right: 0;
-  }
-}
-
-@keyframes tooltipFadeInRight {
-  from {
-    opacity: 0;
-    visibility: hidden;
-    margin-left: 5px;
-  }
-  to {
-    opacity: 1;
-    visibility: visible;
-    margin-left: 0;
-  }
+  animation: tooltipFadeIn 0.2s ease-in-out forwards;
 }
 </style>

@@ -7,9 +7,6 @@
     <!-- 设置选项面板 -->
     <SettingsPanel v-if="activePanel === 'settings'" />
 
-    <!-- 模型参数设置面板 -->
-    <ModelParamsPanel v-if="activePanel === 'modelParams'" />
-
     <!-- RAG配置面板 -->
     <RagPanel v-if="activePanel === 'rag'" />
 
@@ -24,7 +21,6 @@
 // 导入各个面板组件
 import HistoryPanel from './HistoryPanel.vue';
 import SettingsPanel from './SettingsPanel.vue';
-import ModelParamsPanel from './ModelParamsPanel.vue';
 import RagPanel from './RagPanel.vue';
 import McpPanel from './McpPanel.vue';
 

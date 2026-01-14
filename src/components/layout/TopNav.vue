@@ -88,14 +88,6 @@
             <div class="my-1 w-8 border-t border-gray-200 dark:border-dark-700"></div>
             <button 
               class="w-10 h-10 rounded-full flex items-center justify-center transition-colors hover:bg-gray-100 text-gray-500 dark:hover:bg-dark-700 dark:text-gray-300"
-              @click="handleModelParamsClick"
-              title="模型参数"
-            >
-              <i class="fa-solid fa-sliders text-sm"></i>
-            </button>
-            <div class="my-1 w-8 border-t border-gray-200 dark:border-dark-700"></div>
-            <button 
-              class="w-10 h-10 rounded-full flex items-center justify-center transition-colors hover:bg-gray-100 text-gray-500 dark:hover:bg-dark-700 dark:text-gray-300"
               @click="toggleViewPanel"
               title="视图"
             >
@@ -244,15 +236,6 @@ const handleSystemSettingsClick = () => {
 const handleToggleTheme = () => {
   settingsStore.toggleDarkMode();
 };
-
-// 处理模型参数按钮点击事件
-const handleModelParamsClick = () => {
-  settingsStore.setActivePanel('modelParams');
-  // 关闭工具菜单
-  showToolMenu.value = false;
-};
-
-
 
 // 处理命令行窗口点击
 const handleCliCommand = () => {

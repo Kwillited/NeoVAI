@@ -353,6 +353,19 @@
                 <i class="fa-solid fa-lightbulb"></i>
               </button>
             </Tooltip>
+            <!-- 知识库按钮 - 恢复切换功能 -->
+            <Tooltip content="知识库">
+              <button
+                class="btn-secondary flex items-center justify-center w-8 h-8 rounded-lg transition-all duration-300 ease-in-out"
+                :class="{ 
+                    'text-gray-500 dark:text-gray-300 bg-gray-50 dark:bg-dark-700 hover:bg-gray-100 dark:hover:bg-dark-600 hover:text-primary': settingsStore.activePanel !== 'rag', 
+                    'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/40': settingsStore.activePanel === 'rag' 
+                  }"
+                @click="toggleKnowledgeBase"
+              >
+                <i class="fa-solid fa-database"></i>
+              </button>
+            </Tooltip>
             <!-- 联网搜索切换按钮 -->
             <Tooltip content="联网搜索">
               <button
@@ -472,6 +485,8 @@ const hasActiveStreaming = ref(false);
 const isDeepThinking = ref(StorageManager.getItem(STORAGE_KEYS.DEEP_THINKING, false));
 // 联网搜索状态 - 从存储加载
 const isWebSearchEnabled = ref(StorageManager.getItem(STORAGE_KEYS.WEB_SEARCH, false));
+// RAG模式状态 - 从settingsStore获取
+const isRagMode = computed(() => settingsStore.activePanel === 'rag');
 
 // 智能体相关状态
 const currentAgent = ref('default');
@@ -892,6 +907,23 @@ const hideTooltip = (tooltipId) => {
 // 处理MCP服务点击事件
 const handleMcpService = () => {
   settingsStore.setActivePanel('mcp');
+};
+
+// 切换知识库状态
+const toggleKnowledgeBase = () => {
+  if (settingsStore.activePanel === 'rag') {
+    // 如果当前是知识库模式，切换回聊天模式
+    settingsStore.setActivePanel('history');
+    
+    // 主显示区：如果没有聊天消息，显示sendMessage视图，否则显示chat视图
+    if (window.setActiveContent) {
+      const hasMessages = chatStore.currentChatMessages && chatStore.currentChatMessages.length > 0;
+      window.setActiveContent(hasMessages ? 'chat' : 'sendMessage');
+    }
+  } else {
+    // 如果当前不是知识库模式，切换到知识库模式
+    settingsStore.setActivePanel('rag');
+  }
 };
 
 // 点击外部关闭下拉菜单

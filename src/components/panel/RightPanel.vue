@@ -6,8 +6,13 @@
     :style="{ width: settingsStore.rightPanelVisible ? savedWidth : '0px', display: settingsStore.rightPanelVisible ? 'block' : 'none', flexShrink: 0 }"
   >
     <!-- 右侧面板标题 -->
-    <div class="panel-header p-3 flex justify-between items-center">
-      <h2 class="text-lg font-bold text-dark dark:text-white">上下文工程</h2>
+    <div class="panel-header p-3 flex items-center justify-between gap-2">
+      <h2 class="text-lg font-bold text-dark dark:text-white flex-1">上下文工程</h2>
+      <ActionButton
+        :icon="chatStore.activeView === 'grid' ? 'fa-sitemap' : 'fa-comments'"
+        :title="`切换到${chatStore.activeView === 'grid' ? '上下文工程可视化' : '对话'}视图`"
+        @click="toggleView"
+      />
       <ActionButton
         icon="fa-times"
         title="关闭面板"
@@ -239,6 +244,11 @@ const applyContextChanges = () => {
   // 这里可以添加应用上下文调整的逻辑
   // 例如：更新上下文配置、发送到后端等
   showNotification('上下文调整已应用', 'success');
+};
+
+// 切换视图模式
+const toggleView = () => {
+  chatStore.activeView = chatStore.activeView === 'grid' ? 'list' : 'grid';
 };
 
 // 监听当前聊天变化，重置选择状态

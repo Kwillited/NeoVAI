@@ -3,7 +3,7 @@
     id="rightPanel" 
     class="h-full flex-shrink-0 z-40 overflow-hidden mr-0 max-w-[370px]"
     :class="{ 'transition-all duration-300': !isInitialLoading }"
-    :style="{ width: settingsStore.rightPanelVisible ? savedWidth : '0px', display: settingsStore.rightPanelVisible ? 'block' : 'none', flexShrink: 0 }"
+    :style="{ width: settingsStore.rightPanelVisible ? settingsStore.rightPanelWidth : '0px', display: settingsStore.rightPanelVisible ? 'block' : 'none', flexShrink: 0 }"
   >
     <!-- 右侧面板标题 -->
     <div class="panel-header p-3 flex items-center justify-between gap-2">
@@ -120,14 +120,10 @@ import { useModelSettingStore } from '../../store/modelSettingStore.js';
 import { useChatStore } from '../../store/chatStore.js';
 import ActionButton from '../common/ActionButton.vue';
 import { showNotification } from '../../services/notificationUtils.js';
-import { ref, computed, watch } from 'vue';
+import { ref, watch } from 'vue';
 
 // 定义props
 const props = defineProps({
-  savedWidth: {
-    type: String,
-    default: '200px'
-  },
   isInitialLoading: {
     type: Boolean,
     default: true

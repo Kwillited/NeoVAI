@@ -103,195 +103,181 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import { ref, computed } from 'vue';
 import { useModelSettingStore } from '../../store/modelSettingStore.js';
 import { eventBus } from '../../services/eventBus.js';
 import { showNotification } from '../../services/notificationUtils.js';
 
-export default {
-  name: 'ModelVersionForm',
-  setup() {
-    // 初始化store
-    const modelStore = useModelSettingStore();
-    
-    // 表单数据
-    const isEditMode = ref(false);
-    const versionId = ref('');
-    const modelName = ref('');
-    const modelVersion = ref('');
-    const modelCustomName = ref('');
-    const apiKey = ref('');
-    const apiBaseUrl = ref('');
-    const streamingConfig = ref(false);
-    
-    // 判断是否为Ollama模型
-    const isOllama = computed(() => {
-      return modelName.value && modelName.value.toLowerCase() === 'ollama';
-    });
-    
-    // 错误状态对象
-    const errors = ref({
-        modelName: '',
-        modelVersion: '',
-        apiKey: '',
-        apiBaseUrl: ''
-      });
+// 定义组件名称
+defineOptions({
+  name: 'ModelVersionForm'
+});
 
-    // 模态框引用
-    const modelVersionModal = ref(null);
+// 初始化store
+const modelStore = useModelSettingStore();
 
-    // 显示模态框（添加模式）
-    const showAddModal = (modelNameValue) => {
-      isEditMode.value = false;
-      versionId.value = '';
-      modelName.value = modelNameValue || '';
-      modelVersion.value = '';
-      modelCustomName.value = '';
-      apiKey.value = '';
-      apiBaseUrl.value = '';
-      streamingConfig.value = false;
-      clearErrors();
-      
-      if (modelVersionModal.value) {
-        modelVersionModal.value.classList.remove('hidden');
-      }
+// 表单数据
+const isEditMode = ref(false);
+const versionId = ref('');
+const modelName = ref('');
+const modelVersion = ref('');
+const modelCustomName = ref('');
+const apiKey = ref('');
+const apiBaseUrl = ref('');
+const streamingConfig = ref(false);
+
+// 判断是否为Ollama模型
+const isOllama = computed(() => {
+  return modelName.value && modelName.value.toLowerCase() === 'ollama';
+});
+
+// 错误状态对象
+const errors = ref({
+    modelName: '',
+    modelVersion: '',
+    apiKey: '',
+    apiBaseUrl: ''
+  });
+
+// 模态框引用
+const modelVersionModal = ref(null);
+
+// 显示模态框（添加模式）
+const showAddModal = (modelNameValue) => {
+  isEditMode.value = false;
+  versionId.value = '';
+  modelName.value = modelNameValue || '';
+  modelVersion.value = '';
+  modelCustomName.value = '';
+  apiKey.value = '';
+  apiBaseUrl.value = '';
+  streamingConfig.value = false;
+  clearErrors();
+  
+  if (modelVersionModal.value) {
+    modelVersionModal.value.classList.remove('hidden');
+  }
+};
+
+// 显示模态框（编辑模式）
+const showEditModal = (data) => {
+  isEditMode.value = true;
+  populateFormData(data);
+  clearErrors();
+  
+  if (modelVersionModal.value) {
+    modelVersionModal.value.classList.remove('hidden');
+  }
+};
+
+// 隐藏模态框
+const hideModal = () => {
+  if (modelVersionModal.value) {
+    modelVersionModal.value.classList.add('hidden');
+  }
+};
+
+// 清除错误信息
+const clearErrors = () => {
+  errors.value.modelName = '';
+  errors.value.modelVersion = '';
+  errors.value.apiKey = '';
+  errors.value.apiBaseUrl = '';
+};
+
+// 处理表单提交
+const handleSubmit = async () => {
+  try {
+    // 清除之前的错误
+    clearErrors();
+    
+    // 表单验证
+    let hasError = false;
+    
+    if (!modelName.value) {
+      errors.value.modelName = '模型名称不能为空';
+      hasError = true;
+    }
+    
+    if (!modelVersion.value) {
+      errors.value.modelVersion = '请输入模型版本';
+      hasError = true;
+    }
+    
+    if (!isOllama.value && !apiKey.value.trim()) {
+      errors.value.apiKey = '请输入API密钥';
+      hasError = true;
+    }
+    
+    if (!apiBaseUrl.value.trim()) {
+      errors.value.apiBaseUrl = '请输入API基础URL';
+      hasError = true;
+    }
+    
+    if (hasError) {
+      return;
+    }
+
+    // 构建请求数据
+    const versionConfig = {
+      customName: modelCustomName.value,
+      apiKey: apiKey.value,
+      apiBaseUrl: apiBaseUrl.value,
+      versionName: modelVersion.value,
+      streamingConfig: streamingConfig.value
     };
 
-    // 显示模态框（编辑模式）
-    const showEditModal = (data) => {
-      isEditMode.value = true;
-      populateFormData(data);
-      clearErrors();
-      
-      if (modelVersionModal.value) {
-        modelVersionModal.value.classList.remove('hidden');
-      }
-    };
+    if (isEditMode.value) {
+      // 使用modelStore更新模型版本
+      await modelStore.updateModelVersion(modelName.value, modelVersion.value, versionConfig);
+    } else {
+      // 使用modelStore添加模型版本
+      await modelStore.addModelVersion(modelName.value, versionConfig);
+    }
+
+    // 显示成功提示
+    showNotification('模型版本配置已保存', 'success');
+    
+    // 清除错误
+    clearErrors();
 
     // 隐藏模态框
-    const hideModal = () => {
-      if (modelVersionModal.value) {
-        modelVersionModal.value.classList.add('hidden');
-      }
-    };
+    hideModal();
 
-    // 清除错误信息
-    const clearErrors = () => {
-      errors.value.modelName = '';
-      errors.value.modelVersion = '';
-      errors.value.apiKey = '';
-      errors.value.apiBaseUrl = '';
-    };
-    
-    // 处理表单提交
-    const handleSubmit = async () => {
-      try {
-        // 清除之前的错误
-        clearErrors();
-        
-        // 表单验证
-        let hasError = false;
-        
-        if (!modelName.value) {
-          errors.value.modelName = '模型名称不能为空';
-          hasError = true;
-        }
-        
-        if (!modelVersion.value) {
-          errors.value.modelVersion = '请输入模型版本';
-          hasError = true;
-        }
-        
-        if (!isOllama.value && !apiKey.value.trim()) {
-          errors.value.apiKey = '请输入API密钥';
-          hasError = true;
-        }
-        
-        if (!apiBaseUrl.value.trim()) {
-          errors.value.apiBaseUrl = '请输入API基础URL';
-          hasError = true;
-        }
-        
-        if (hasError) {
-          return;
-        }
-
-        // 构建请求数据
-        const versionConfig = {
-          customName: modelCustomName.value,
-          apiKey: apiKey.value,
-          apiBaseUrl: apiBaseUrl.value,
-          versionName: modelVersion.value,
-          streamingConfig: streamingConfig.value
-        };
-
-        if (isEditMode.value) {
-          // 使用modelStore更新模型版本
-          await modelStore.updateModelVersion(modelName.value, modelVersion.value, versionConfig);
-        } else {
-          // 使用modelStore添加模型版本
-          await modelStore.addModelVersion(modelName.value, versionConfig);
-        }
-
-        // 显示成功提示
-        showNotification('模型版本配置已保存', 'success');
-        
-        // 清除错误
-        clearErrors();
-
-        // 隐藏模态框
-        hideModal();
-
-        // 通过事件总线通知模型已更新
-        eventBus.emit('modelUpdated');
-      } catch (error) {
-        console.error('保存模型版本配置失败:', error);
-        showNotification(`保存失败: ${error.message || '未知错误'}`, 'error');
-      }
-    };
-
-    // 填充表单数据
-    const populateFormData = (data) => {
-      versionId.value = data.id || '';
-      modelName.value = data.modelName || '';
-      // 处理modelVersion可能是对象的情况
-      if (typeof data.modelVersion === 'object' && data.modelVersion !== null) {
-        // 只显示name属性
-        modelVersion.value = data.modelVersion.version_name;
-      } else {
-        modelVersion.value = data.modelVersion || '';
-      }
-      modelCustomName.value = data.customName || '';
-      apiKey.value = data.apiKey || '';
-      apiBaseUrl.value = data.apiBaseUrl || 'https://api.openai.com';
-      streamingConfig.value = data.streaming || false;
-    };
-
-    // 暴露给父组件的方法
-    return {
-      // 状态
-      modelName,
-      modelVersion,
-      modelCustomName,
-      apiKey,
-      apiBaseUrl,
-      streamingConfig,
-      errors,
-      isEditMode,
-      versionId,
-      isOllama,
-      // 模态框引用
-      modelVersionModal,
-      // 方法
-      showAddModal,
-      showEditModal,
-      hideModal,
-      handleSubmit,
-      populateFormData
-    };
-  },
+    // 通过事件总线通知模型已更新
+    eventBus.emit('modelUpdated');
+  } catch (error) {
+    console.error('保存模型版本配置失败:', error);
+    showNotification(`保存失败: ${error.message || '未知错误'}`, 'error');
+  }
 };
+
+// 填充表单数据
+const populateFormData = (data) => {
+  versionId.value = data.id || '';
+  modelName.value = data.modelName || '';
+  // 处理modelVersion可能是对象的情况
+  if (typeof data.modelVersion === 'object' && data.modelVersion !== null) {
+    // 只显示name属性
+    modelVersion.value = data.modelVersion.version_name;
+  } else {
+    modelVersion.value = data.modelVersion || '';
+  }
+  modelCustomName.value = data.customName || '';
+  apiKey.value = data.apiKey || '';
+  apiBaseUrl.value = data.apiBaseUrl || 'https://api.openai.com';
+  streamingConfig.value = data.streaming || false;
+};
+
+// 暴露方法给父组件
+defineExpose({
+  showAddModal,
+  showEditModal,
+  hideModal,
+  handleSubmit,
+  populateFormData
+});
 </script>
 
 <style scoped>

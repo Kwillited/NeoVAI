@@ -54,112 +54,119 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import { ref, nextTick, onMounted, onUnmounted, watch } from 'vue';
 import { invoke } from '@tauri-apps/api/core';
 
-export default {
-  name: 'CommandLine',
-  props: {
-    visible: {
-      type: Boolean,
-      default: false
+// 定义组件名称
+defineOptions({
+  name: 'CommandLine'
+});
+
+// 定义组件属性
+const props = defineProps({
+  visible: {
+    type: Boolean,
+    default: false
+  }
+});
+
+// 定义组件事件
+const emit = defineEmits(['close']);
+
+// 组件状态
+const outputContainer = ref(null);
+const commandInput = ref(null);
+const currentCommand = ref('');
+const commandHistory = ref([]);
+const historyIndex = ref(-1);
+const historyBuffer = ref('');
+const showCursor = ref(true);
+const prompt = ref('> ');
+const isMaximized = ref(false);
+const currentPath = ref('');
+
+// 光标闪烁效果
+let cursorInterval;
+
+// 命令执行函数
+const executeCommand = async () => {
+  const command = currentCommand.value.trim();
+  if (!command) return;
+
+  // 添加到历史记录
+  commandHistory.value.push({ command, response: null });
+  
+  // 保存到历史缓冲区
+  const historyBufferCopy = [...historyBuffer.value];
+  historyBufferCopy.push(command);
+  historyBuffer.value = historyBufferCopy;
+  
+  // 清空当前命令
+  const executedCommand = command;
+  currentCommand.value = '';
+  historyIndex.value = -1;
+
+  // 滚动到底部
+  await nextTick();
+  if (outputContainer.value) {
+    outputContainer.value.scrollTop = outputContainer.value.scrollHeight;
+  }
+
+  // 执行命令并获取响应
+  let response = '';
+  try {
+    response = await handleCommand(executedCommand);
+  } catch (error) {
+    response = `错误: ${error.message}`;
+  }
+
+  // 更新响应
+  const lastEntry = commandHistory.value[commandHistory.value.length - 1];
+  lastEntry.response = response;
+
+  // 再次滚动到底部
+  await nextTick();
+  if (outputContainer.value) {
+    outputContainer.value.scrollTop = outputContainer.value.scrollHeight;
+  }
+};
+
+// 获取当前工作路径
+const getCurrentPath = async () => {
+  try {
+    const path = await invoke('execute_command', { command: 'cd' });
+    // 清理路径输出，Windows系统的cd命令输出格式为"当前目录为: X:\path"
+    if (path.includes('当前目录为:')) {
+      currentPath.value = path.split('当前目录为:')[1].trim();
+    } else {
+      currentPath.value = path.trim();
     }
-  },
-  emits: ['close'],
-  setup(props, { emit }) {
-    const outputContainer = ref(null);
-    const commandInput = ref(null);
-    const currentCommand = ref('');
-    const commandHistory = ref([]);
-    const historyIndex = ref(-1);
-    const historyBuffer = ref('');
-    const showCursor = ref(true);
-    const prompt = ref('> ');
-    const isMaximized = ref(false);
-    const currentPath = ref('');
+  } catch {
+    currentPath.value = 'C:'; // 默认路径
+  }
+};
 
-    // 光标闪烁效果
-    let cursorInterval;
-
-    // 命令执行函数
-    const executeCommand = async () => {
-      const command = currentCommand.value.trim();
-      if (!command) return;
-
-      // 添加到历史记录
-      commandHistory.value.push({ command, response: null });
-      
-      // 保存到历史缓冲区
-      const historyBufferCopy = [...historyBuffer.value];
-      historyBufferCopy.push(command);
-      historyBuffer.value = historyBufferCopy;
-      
-      // 清空当前命令
-      const executedCommand = command;
-      currentCommand.value = '';
-      historyIndex.value = -1;
-
-      // 滚动到底部
-      await nextTick();
-      if (outputContainer.value) {
-        outputContainer.value.scrollTop = outputContainer.value.scrollHeight;
-      }
-
-      // 执行命令并获取响应
-      let response = '';
-      try {
-        response = await handleCommand(executedCommand);
-      } catch (error) {
-        response = `错误: ${error.message}`;
-      }
-
-      // 更新响应
-      const lastEntry = commandHistory.value[commandHistory.value.length - 1];
-      lastEntry.response = response;
-
-      // 再次滚动到底部
-      await nextTick();
-      if (outputContainer.value) {
-        outputContainer.value.scrollTop = outputContainer.value.scrollHeight;
-      }
-    };
-
-    // 获取当前工作路径
-    const getCurrentPath = async () => {
-      try {
-        const path = await invoke('execute_command', { command: 'cd' });
-        // 清理路径输出，Windows系统的cd命令输出格式为"当前目录为: X:\\path"
-        if (path.includes('当前目录为:')) {
-          currentPath.value = path.split('当前目录为:')[1].trim();
-        } else {
-          currentPath.value = path.trim();
-        }
-      } catch {
-        currentPath.value = 'C:'; // 默认路径
-      }
-    };
-
-    // 命令处理函数
-    const handleCommand = async (command) => {
-      const [cmd, ...args] = command.split(' ');
-      
-      // 检查是否是cd命令，如果是则特殊处理
-      if (cmd.toLowerCase() === 'cd') {
-        try {
-          const newPath = args.join(' ');
-          await invoke('execute_command', { command: `cd ${newPath}` });
-          // 更新当前路径
-          await getCurrentPath();
-          return `已切换到: ${currentPath.value}`;
-        } catch (error) {
-          return `切换目录失败: ${error.message}`;
-        }
-      }
-      
-      switch (cmd.toLowerCase()) {
-        case 'help':
-          return `
+// 命令处理函数
+const handleCommand = async (command) => {
+  const [cmd, ...args] = command.split(' ');
+  
+  // 检查是否是cd命令，如果是则特殊处理
+  if (cmd.toLowerCase() === 'cd') {
+    try {
+      const newPath = args.join(' ');
+      await invoke('execute_command', { command: `cd ${newPath}` });
+      // 更新当前路径
+      await getCurrentPath();
+      return `已切换到: ${currentPath.value}`;
+    } catch (error) {
+      return `切换目录失败: ${error.message}`;
+    }
+  }
+  
+  switch (cmd.toLowerCase()) {
+    case 'help':
+      return `
 可用命令列表:
   help              - 显示此帮助信息
   clear             - 清除命令行历史
@@ -169,128 +176,111 @@ export default {
   version           - 显示Chato版本信息
           `;
           
-        case 'clear':
-          commandHistory.value = [];
-          return '命令历史已清除';
+    case 'clear':
+      commandHistory.value = [];
+      return '命令历史已清除';
           
-        case 'exit':
-          handleClose();
-          return '正在关闭命令行...';
+    case 'exit':
+      handleClose();
+      return '正在关闭命令行...';
           
-        case 'list-models':
-          try {
-            // 这里可以从modelSettingStore获取模型列表
-            return '可用模型: OpenAI GPT-4, Claude 3, Gemini, 本地模型';
-          } catch (error) {
-            return '无法获取模型列表: ' + error.message;
-          }
+    case 'list-models':
+      try {
+        // 这里可以从modelSettingStore获取模型列表
+        return '可用模型: OpenAI GPT-4, Claude 3, Gemini, 本地模型';
+      } catch (error) {
+        return '无法获取模型列表: ' + error.message;
+      }
           
-        case 'echo':
-          return args.join(' ');
+    case 'echo':
+      return args.join(' ');
           
-        case 'version':
-          return 'Chato v0.1.0 - AI助手应用';
+    case 'version':
+      return 'Chato v0.1.0 - AI助手应用';
           
-        default:
-          try {
-            // 尝试通过Tauri调用系统命令
-            const result = await invoke('execute_command', { command: command });
-            return result;
-          } catch {
-            return `未知命令: ${cmd}`;
-          }
+    default:
+      try {
+        // 尝试通过Tauri调用系统命令
+        const result = await invoke('execute_command', { command: command });
+        return result;
+      } catch {
+        return `未知命令: ${cmd}`;
       }
-    };
-
-    // 历史导航
-    const navigateHistory = (direction) => {
-      if (historyBuffer.value.length === 0) return;
-      
-      // 保存当前输入（如果是新命令）
-      if (historyIndex.value === -1) {
-        historyBuffer.value.push(currentCommand.value);
-      }
-      
-      // 更新索引
-      historyIndex.value += direction;
-      
-      // 边界检查
-      if (historyIndex.value < 0) {
-        historyIndex.value = historyBuffer.value.length - 1;
-      } else if (historyIndex.value >= historyBuffer.value.length) {
-        historyIndex.value = 0;
-      }
-      
-      // 设置当前命令
-      currentCommand.value = historyBuffer.value[historyIndex.value];
-    };
-
-    // 关闭命令行
-    const handleClose = () => {
-      emit('close');
-    };
-
-    // 最小化命令行
-    const minimizeCommandLine = () => {
-      // 这里可以实现最小化逻辑
-      alert('最小化功能待实现');
-    };
-
-    // 最大化命令行
-    const maximizeCommandLine = async () => {
-      if (isMaximized.value) {
-        // 恢复原始大小
-        isMaximized.value = false;
-        // 这里可以添加恢复原始大小的逻辑
-      } else {
-        // 最大化
-        isMaximized.value = true;
-        // 这里可以添加最大化的逻辑
-      }
-    };
-
-    // 监听可见性变化
-    watch(() => props.visible, (newVal) => {
-      if (newVal) {
-        nextTick(() => {
-          if (commandInput.value) {
-            commandInput.value.focus();
-          }
-        });
-      }
-    });
-
-    // 生命周期
-    onMounted(async () => {
-      cursorInterval = setInterval(() => {
-        showCursor.value = !showCursor.value;
-      }, 500);
-      // 获取初始路径
-      await getCurrentPath();
-    });
-
-    onUnmounted(() => {
-      if (cursorInterval) {
-        clearInterval(cursorInterval);
-      }
-    });
-
-    return {
-      outputContainer,
-      commandInput,
-      currentCommand,
-      commandHistory,
-      prompt,
-      currentPath,
-      showCursor,
-      executeCommand,
-      navigateHistory,
-      handleClose,
-      minimizeCommandLine,
-      maximizeCommandLine
-    };
   }
 };
+
+// 历史导航
+const navigateHistory = (direction) => {
+  if (historyBuffer.value.length === 0) return;
+  
+  // 保存当前输入（如果是新命令）
+  if (historyIndex.value === -1) {
+    historyBuffer.value.push(currentCommand.value);
+  }
+  
+  // 更新索引
+  historyIndex.value += direction;
+  
+  // 边界检查
+  if (historyIndex.value < 0) {
+    historyIndex.value = historyBuffer.value.length - 1;
+  } else if (historyIndex.value >= historyBuffer.value.length) {
+    historyIndex.value = 0;
+  }
+  
+  // 设置当前命令
+  currentCommand.value = historyBuffer.value[historyIndex.value];
+};
+
+// 关闭命令行
+const handleClose = () => {
+  emit('close');
+};
+
+// 最小化命令行
+const minimizeCommandLine = () => {
+  // 这里可以实现最小化逻辑
+  alert('最小化功能待实现');
+};
+
+// 最大化命令行
+const maximizeCommandLine = async () => {
+  if (isMaximized.value) {
+    // 恢复原始大小
+    isMaximized.value = false;
+    // 这里可以添加恢复原始大小的逻辑
+  } else {
+    // 最大化
+    isMaximized.value = true;
+    // 这里可以添加最大化的逻辑
+  }
+};
+
+// 监听可见性变化
+watch(() => props.visible, (newVal) => {
+  if (newVal) {
+    nextTick(() => {
+      if (commandInput.value) {
+        commandInput.value.focus();
+      }
+    });
+  }
+});
+
+// 生命周期
+onMounted(async () => {
+  cursorInterval = setInterval(() => {
+    showCursor.value = !showCursor.value;
+  }, 500);
+  // 获取初始路径
+  await getCurrentPath();
+});
+
+onUnmounted(() => {
+  if (cursorInterval) {
+    clearInterval(cursorInterval);
+  }
+});
 </script>
 
 <style scoped>

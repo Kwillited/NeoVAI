@@ -201,8 +201,8 @@
                       <div class="mt-2 text-xs text-gray-500">范围: 0-100</div>
                     </div>
                   </div>
-                  <span class="text-sm font-medium text-primary px-2 py-0.5 bg-primary/10 rounded-full" id="frequencyPenaltyValue">{{
-                    modelParams.frequency_penalty
+                  <span class="text-sm font-medium text-primary px-2 py-0.5 bg-primary/10 rounded-full" id="topKValue">{{
+                    modelParams.top_k
                   }}</span>
                 </div>
                 <input
@@ -210,10 +210,10 @@
                   min="0"
                   max="100"
                   step="1"
-                  :value="modelParams.frequency_penalty"
+                  :value="modelParams.top_k"
                   class="slider w-full"
-                  id="frequencyPenaltySlider"
-                  @input="handleFrequencyPenaltyChange"
+                  id="topKSlider"
+                  @input="handleTopKChange"
                 />
                 <div class="flex justify-between text-xs text-neutral mt-1">
                   <span>少样</span>
@@ -861,9 +861,9 @@ const handleTopPChange = (event) => {
   modelStore.updateModelParams({ top_p: parseFloat(event.target.value) });
 };
 
-// 处理频率惩罚参数变化
-const handleFrequencyPenaltyChange = (event) => {
-  modelStore.updateModelParams({ frequency_penalty: parseInt(event.target.value) });
+// 处理Top-k参数变化
+const handleTopKChange = (event) => {
+  modelStore.updateModelParams({ top_k: parseInt(event.target.value) });
 };
 
 // 处理最大长度参数变化
@@ -916,10 +916,8 @@ const toggleKnowledgeBase = () => {
     settingsStore.setActivePanel('history');
     
     // 主显示区：如果没有聊天消息，显示sendMessage视图，否则显示chat视图
-    if (window.setActiveContent) {
-      const hasMessages = chatStore.currentChatMessages && chatStore.currentChatMessages.length > 0;
-      window.setActiveContent(hasMessages ? 'chat' : 'sendMessage');
-    }
+    const hasMessages = chatStore.currentChatMessages && chatStore.currentChatMessages.length > 0;
+    settingsStore.setActiveContent(hasMessages ? 'chat' : 'sendMessage');
   } else {
     // 如果当前不是知识库模式，切换到知识库模式
     settingsStore.setActivePanel('rag');

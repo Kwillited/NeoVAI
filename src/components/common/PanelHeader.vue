@@ -48,9 +48,8 @@ const settingsStore = useSettingsStore();
 const handleBack = () => {
   settingsStore.setActivePanel('history');
   
-  // 触发自定义事件，允许父组件覆盖默认行为
-  const event = new CustomEvent('backToChat');
-  window.dispatchEvent(event);
+  // 直接使用store方法切换内容，不再使用全局事件
+  settingsStore.setActiveContent('chat');
 };
 </script>
 

@@ -219,9 +219,7 @@ const handleNewChat = () => {
   }));
   
   // 切换到发送消息视图
-  if (window.setActiveContent) {
-    window.setActiveContent('sendMessage');
-  }
+  settingsStore.setActiveContent('sendMessage');
 };
 
 // 本地状态
@@ -461,11 +459,6 @@ const getFileExtension = (filename) => {
 
 // 跟踪最近的双击时间
 let lastDoubleClickTime = 0;
-
-// 监听双击事件以更新最近双击时间
-window.addEventListener('folderDoubleClick', () => {
-  lastDoubleClickTime = Date.now();
-});
 
 // 处理文件夹选中事件
 const handleFolderSelected = (folder) => {

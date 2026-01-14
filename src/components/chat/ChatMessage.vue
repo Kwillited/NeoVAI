@@ -90,8 +90,12 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, onMounted } from 'vue'
 import Tooltip from '../common/Tooltip.vue'
+// 导入marked库和highlight.js
+import { marked } from 'marked'
+import hljs from 'highlight.js'
+import 'highlight.js/styles/github.css'
 
 const props = defineProps({
   message: {
@@ -130,55 +134,49 @@ const formattedContent = computed(() => {
   const thinkingTagRegex = /^\s*\<think>[\s\S]*?\<\/think>\s*/;
   const match = contentToParse.match(thinkingTagRegex);
   
-  // 使用全局marked对象转换Markdown为HTML
+  // 使用导入的marked库转换Markdown为HTML
   try {
-    // 确保marked对象存在
-    if (window.marked && typeof window.marked.parse === 'function') {
-      // 配置marked，自定义代码块渲染
-      const renderer = new window.marked.Renderer();
+    // 配置marked，自定义代码块渲染
+    const renderer = new marked.Renderer();
+    
+    // 保存原始的codeblock渲染方法
+    const originalCode = renderer.code;
+    
+    // 自定义代码块渲染
+    renderer.code = function(code, language) {
+      // 如果没有语言或语言为'text'，则显示为'plaintext'
+      const displayLanguage = language && language !== 'text' ? language : 'plaintext';
       
-      // 保存原始的codeblock渲染方法
-      const originalCode = renderer.code;
+      // 创建唯一ID用于复制功能
+      const codeBlockId = `code-block-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
       
-      // 自定义代码块渲染
-      renderer.code = function(code, language) {
-        // 如果没有语言或语言为'text'，则显示为'plaintext'
-        const displayLanguage = language && language !== 'text' ? language : 'plaintext';
-        
-        // 创建唯一ID用于复制功能
-        const codeBlockId = `code-block-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-        
-        // 返回带头部的代码块HTML
-        return `
-          <div class="code-container">
-            <div class="code-header">
-              <span class="code-language">${displayLanguage}</span>
-              <button 
-                class="copy-code-btn"
-                data-code-block-id="${codeBlockId}"
-                onclick="copyCodeToClipboard('${codeBlockId}')"
-                title="复制代码"
-              >
-                <i class="fa-solid fa-copy"></i>
-              </button>
-            </div>
-            <pre><code id="${codeBlockId}">${code}</code></pre>
+      // 返回带头部的代码块HTML
+      return `
+        <div class="code-container">
+          <div class="code-header">
+            <span class="code-language">${displayLanguage}</span>
+            <button 
+              class="copy-code-btn"
+              data-code-block-id="${codeBlockId}"
+              @click="copyCodeToClipboard('${codeBlockId}')"
+              title="复制代码"
+            >
+              <i class="fa-solid fa-copy"></i>
+            </button>
           </div>
-        `;
-      };
-      
-      // 设置marked配置
-      window.marked.setOptions({
-        renderer: renderer,
-        breaks: true,
-        gfm: true
-      });
-      
-      return window.marked.parse(contentToParse);
-    } else {
-      // 如果marked不存在，回退到简单的换行处理
-      return contentToParse.replace(/\n/g, '<br>');
-    }
+          <pre><code id="${codeBlockId}">${code}</code></pre>
+        </div>
+      `;
+    };
+    
+    // 设置marked配置
+    marked.setOptions({
+      renderer: renderer,
+      breaks: true,
+      gfm: true
+    });
+    
+    return marked.parse(contentToParse);
   } catch (error) {
     console.error('Markdown解析错误:', error);
     return contentToParse.replace(/\n/g, '<br>');
@@ -241,34 +239,32 @@ const copyMessageContent = async () => {
   }
 }
 
-// 添加全局复制代码函数
-if (typeof window !== 'undefined') {
-  window.copyCodeToClipboard = async (codeBlockId) => {
-    try {
-      const codeElement = document.getElementById(codeBlockId);
-      if (codeElement) {
-        const codeText = codeElement.textContent;
-        await navigator.clipboard.writeText(codeText);
+// 复制代码到剪贴板
+const copyCodeToClipboard = async (codeBlockId) => {
+  try {
+    const codeElement = document.getElementById(codeBlockId);
+    if (codeElement) {
+      const codeText = codeElement.textContent;
+      await navigator.clipboard.writeText(codeText);
+      
+      // 更改复制按钮图标为成功状态
+      const button = document.querySelector(`button[data-code-block-id="${codeBlockId}"]`);
+      if (button) {
+        const originalIcon = button.innerHTML;
+        button.innerHTML = '<i class="fa-solid fa-check"></i>';
+        button.classList.add('text-green-400');
         
-        // 更改复制按钮图标为成功状态
-        const button = document.querySelector(`button[data-code-block-id="${codeBlockId}"]`);
-        if (button) {
-          const originalIcon = button.innerHTML;
-          button.innerHTML = '<i class="fa-solid fa-check"></i>';
-          button.classList.add('text-green-400');
-          
-          // 2秒后恢复原状
-          setTimeout(() => {
-            button.innerHTML = originalIcon;
-            button.classList.remove('text-green-400');
-          }, 2000);
-        }
+        // 2秒后恢复原状
+        setTimeout(() => {
+          button.innerHTML = originalIcon;
+          button.classList.remove('text-green-400');
+        }, 2000);
       }
-    } catch (error) {
-      console.error('复制代码失败:', error);
     }
-  };
-}
+  } catch (error) {
+    console.error('复制代码失败:', error);
+  }
+};
 
 // 编辑消息（用户消息）
 const startEditMessage = () => {

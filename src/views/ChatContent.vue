@@ -300,9 +300,7 @@ watch(
   (newChatId) => {
     // 检查如果消息为空，切换到发送消息视图
     if (newChatId && chatStore.currentChatMessages.length === 0) {
-      if (window.setActiveContent) {
-        window.setActiveContent('sendMessage');
-      }
+      settingsStore.setActiveContent('sendMessage');
       return;
     }
     
@@ -317,9 +315,7 @@ watch(
   () => chatStore.currentChatMessages.length,
   (newLength) => {
     if (newLength === 0 && chatStore.currentChatId) {
-      if (window.setActiveContent) {
-        window.setActiveContent('sendMessage');
-      }
+      settingsStore.setActiveContent('sendMessage');
     }
   }
 );
@@ -343,9 +339,7 @@ onMounted(() => {
 
   // 检查如果消息为空，切换到发送消息视图
   if (chatStore.currentChatMessages.length === 0) {
-    if (window.setActiveContent) {
-      window.setActiveContent('sendMessage');
-    }
+    settingsStore.setActiveContent('sendMessage');
     return;
   }
 

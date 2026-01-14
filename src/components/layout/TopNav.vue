@@ -129,18 +129,12 @@ const handleClose = () => {
 // 处理视图按钮点击事件 - 切换右侧面板
 const toggleViewPanel = () => {
   settingsStore.toggleRightPanel();
-  // 关闭工具菜单
-  showToolMenu.value = false;
 };
 
 // 处理系统设置按钮点击事件
 const handleSystemSettingsClick = () => {
   settingsStore.setActivePanel('settings');
-  
-  // 直接更新activeContent状态以显示SettingsContent
-  if (window.setActiveContent) {
-    window.setActiveContent('settings');
-  }
+  settingsStore.setActiveContent('settings');
 };
 
 // 切换主题
@@ -174,7 +168,6 @@ const closeCommandLine = () => {
 
 // 点击外部区域关闭菜单
 const closeMenusOnClickOutside = (event) => {
-  const menuElements = document.querySelectorAll('.dropdown-content');
   const menuButtons = document.querySelectorAll('.relative.hover-scale');
   
   let clickedInsideMenu = false;

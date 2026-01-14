@@ -28,7 +28,10 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
+import { useSettingsStore } from '../../store/settingsStore.js';
+import { useRagStore } from '../../store/ragStore.js';
+import { showNotification } from '../../services/notificationUtils.js';
 import ActionButton from '../common/ActionButton.vue';
 import SearchBar from '../common/SearchBar.vue';
 
@@ -39,6 +42,10 @@ const props = defineProps({
   }
 });
 
+// 初始化store
+const settingsStore = useSettingsStore();
+const ragStore = useRagStore();
+
 // 搜索查询
 const searchQuery = ref('');
 // 当前是否处于RAG文件管理视图
@@ -46,78 +53,51 @@ const isRagManagementView = ref(false);
 
 // 处理新建知识库
 const handleCreateKnowledgeBase = () => {
-  const event = new CustomEvent('createKnowledgeBase');
-  window.dispatchEvent(event);
+  // 使用store方法触发创建知识库
+  // 实际实现需要根据store设计调整
+  showNotification('创建知识库功能待实现', 'info');
 };
 
 // 处理删除所有文件
 const handleDeleteAll = () => {
-  const event = new CustomEvent('deleteAll');
-  window.dispatchEvent(event);
+  // 直接调用store方法删除所有文件
+  ragStore.deleteAllFiles();
 };
 
 // 处理视图切换
 const handleViewToggle = () => {
-  if (window.setActiveContent) {
-    if (isRagManagementView.value) {
-      window.setActiveContent('chat');
-      isRagManagementView.value = false;
-    } else {
-      window.setActiveContent('ragManagement');
-      isRagManagementView.value = true;
-    }
+  if (isRagManagementView.value) {
+    settingsStore.setActiveContent('chat');
+    isRagManagementView.value = false;
+  } else {
+    settingsStore.setActiveContent('ragManagement');
+    isRagManagementView.value = true;
   }
 };
 
-// 监听视图变化事件
-const handleContentChanged = (event) => {
-  if (event.detail && event.detail.contentType) {
-    isRagManagementView.value = event.detail.contentType === 'ragManagement';
-  }
-};
+// 监听store中的activeContent变化
+watch(
+  () => settingsStore.activeContent,
+  (newContent) => {
+    isRagManagementView.value = newContent === 'ragManagement';
+  },
+  { immediate: true }
+);
 
 // 初始化当前视图状态
 const initializeViewState = () => {
-  // 尝试通过不同方式判断当前是否处于RAG管理视图
-  // 1. 检查是否有特定的class或元素标识RAG管理视图
-  const ragManagementElement = document.querySelector('.rag-management-container, #ragManagement');
-  if (ragManagementElement) {
-    isRagManagementView.value = true;
-    return;
-  }
-  
-  // 2. 检查当前URL路径或其他可能的标识
-  const currentPath = window.location.pathname;
-  if (currentPath.includes('rag') || currentPath.includes('management')) {
-    isRagManagementView.value = true;
-    return;
-  }
-  
-  // 3. 作为备选方案，检查当前活动内容
-  if (window.activeContentType) {
-    isRagManagementView.value = window.activeContentType === 'ragManagement';
-    return;
-  }
-  
-  // 默认值
-  isRagManagementView.value = false;
+  // 直接从store获取当前活动内容
+  isRagManagementView.value = settingsStore.activeContent === 'ragManagement';
 };
 
 onMounted(() => {
   initializeViewState();
-  window.addEventListener('contentChanged', handleContentChanged);
-});
-
-onUnmounted(() => {
-  window.removeEventListener('contentChanged', handleContentChanged);
 });
 
 // 处理搜索
 const handleSearch = () => {
-  const event = new CustomEvent('searchKnowledgeBase', {
-    detail: searchQuery.value
-  });
-  window.dispatchEvent(event);
+  // 直接调用store方法进行搜索
+  ragStore.searchKnowledgeBase(searchQuery.value);
 };
 </script>
 

@@ -325,9 +325,7 @@ const handleChatSelect = (chatId) => {
   chatStore.selectChat(chatId);
   
   // 确保activeContent是'chat'，以便正确显示ChatContent组件
-  if (window.setActiveContent) {
-    window.setActiveContent('chat');
-  }
+  settingsStore.setActiveContent('chat');
 };
 
 // 处理导出所有对话

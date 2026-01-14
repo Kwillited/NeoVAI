@@ -38,19 +38,16 @@ const settingsStore = useSettingsStore();
 
 // 处理返回上一级
 const handleBackToParent = () => {
-  // 触发事件通知父组件
-  const event = new CustomEvent('backToParent');
-  window.dispatchEvent(event);
+  // 使用store方法切换面板
+  settingsStore.setActivePanel('history');
 };
 
 // 处理返回聊天按钮点击事件
 const handleBackToChat = () => {
   settingsStore.setActivePanel('history');
-
-  // 如果App.vue中有activeContent状态，也需要更新
-  if (window.setActiveContent) {
-    window.setActiveContent('chat');
-  }
+  
+  // 使用store方法切换内容
+  settingsStore.setActiveContent('chat');
 };
 </script>
 

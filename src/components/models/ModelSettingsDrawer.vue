@@ -104,142 +104,133 @@
   </div>
 </template>
 
-<script>
-import { ref, defineComponent, computed } from 'vue';
+<script setup>
+import { ref, computed } from 'vue';
 import { useModelSettingStore } from '../../store/modelSettingStore.js';
+import { showNotification } from '../../services/notificationUtils.js';
 
-export default defineComponent({
-  name: 'ModelSettingsDrawer',
-  props: {
-    isVisible: {
-      type: Boolean,
-      default: false,
-    },
-    modelTitle: {
-      type: String,
-      default: '模型配置',
-    },
+// 定义组件名称
+defineOptions({
+  name: 'ModelSettingsDrawer'
+});
+
+// 定义组件属性
+const props = defineProps({
+  isVisible: {
+    type: Boolean,
+    default: false,
   },
-  emits: ['close', 'save'],
-  setup(props, { emit }) {
-    // 初始化store
-    const modelStore = useModelSettingStore();
-    
-    const modelVersion = ref('');
-    const customName = ref('');
-    const apiKey = ref('');
-    const apiBaseUrl = ref('');
-    const isStreamingEnabled = ref(true);
-    
-    // 判断是否为Ollama模型
-    const isOllama = computed(() => {
-      return props.modelTitle && props.modelTitle.toLowerCase() === 'ollama';
-    });
-    
-    // 错误状态对象
-    const errors = ref({
-      modelVersion: '',
-      apiKey: '',
-      apiBaseUrl: ''
-    });
-    
-    // 清除错误信息
-    const clearErrors = () => {
-      errors.value.modelVersion = '';
-      errors.value.apiKey = '';
-      errors.value.apiBaseUrl = '';
-    };
-
-    // 重置表单
-    const resetForm = () => {
-      modelVersion.value = '';
-      customName.value = '';
-      apiKey.value = '';
-      apiBaseUrl.value = '';
-      isStreamingEnabled.value = true;
-      clearErrors();
-    };
-
-    const closeDrawer = () => {
-      resetForm();
-      emit('close');
-    };
-
-    const cancelConfig = () => {
-      resetForm();
-      emit('close');
-    };
-
-    const saveConfig = async () => {
-      try {
-        // 清除之前的错误
-        clearErrors();
-        
-        // 表单验证
-        let hasError = false;
-        
-        if (!modelVersion.value.trim()) {
-          errors.value.modelVersion = '请输入模型版本';
-          hasError = true;
-        }
-        
-        if (!isOllama.value && !apiKey.value.trim()) {
-          errors.value.apiKey = '请输入API密钥';
-          hasError = true;
-        }
-        
-        if (!apiBaseUrl.value.trim()) {
-          errors.value.apiBaseUrl = '请输入API基础URL';
-          hasError = true;
-        }
-        
-        if (hasError) {
-          return;
-        }
-        
-        // 构建请求数据
-        const configData = {
-          customName: customName.value,
-          apiKey: apiKey.value,
-          apiBaseUrl: apiBaseUrl.value,
-          versionName: modelVersion.value,
-          streamingConfig: isStreamingEnabled.value
-        };
-        
-        console.log('保存的配置数据:', JSON.stringify(configData)); // 详细日志记录
-        
-        // 调用modelStore更新模型配置
-        await modelStore.updateModelVersion(props.modelTitle, modelVersion.value, configData);
-        
-        // 显示成功提示
-        alert('配置保存成功');
-        
-        // 保存后重置表单并关闭抽屉
-        resetForm();
-        closeDrawer();
-      } catch (error) {
-        console.error('保存配置失败:', error);
-        alert('保存配置失败，请稍后重试');
-      }
-    };
-
-    return {
-      modelVersion,
-      customName,
-      apiKey,
-      apiBaseUrl,
-      isStreamingEnabled,
-      errors,
-      closeDrawer,
-      cancelConfig,
-      saveConfig,
-      clearErrors,
-      isOllama,
-      resetForm,
-      modelStore
-    };
+  modelTitle: {
+    type: String,
+    default: '模型配置',
   },
 });
+
+// 定义组件事件
+const emit = defineEmits(['close', 'save']);
+
+// 初始化store
+const modelStore = useModelSettingStore();
+
+// 组件状态
+const modelVersion = ref('');
+const customName = ref('');
+const apiKey = ref('');
+const apiBaseUrl = ref('');
+const isStreamingEnabled = ref(true);
+
+// 判断是否为Ollama模型
+const isOllama = computed(() => {
+  return props.modelTitle && props.modelTitle.toLowerCase() === 'ollama';
+});
+
+// 错误状态对象
+const errors = ref({
+  modelVersion: '',
+  apiKey: '',
+  apiBaseUrl: ''
+});
+
+// 清除错误信息
+const clearErrors = () => {
+  errors.value.modelVersion = '';
+  errors.value.apiKey = '';
+  errors.value.apiBaseUrl = '';
+};
+
+// 重置表单
+const resetForm = () => {
+  modelVersion.value = '';
+  customName.value = '';
+  apiKey.value = '';
+  apiBaseUrl.value = '';
+  isStreamingEnabled.value = true;
+  clearErrors();
+};
+
+const closeDrawer = () => {
+  resetForm();
+  emit('close');
+};
+
+const cancelConfig = () => {
+  resetForm();
+  emit('close');
+};
+
+const saveConfig = async () => {
+  try {
+    // 清除之前的错误
+    clearErrors();
+    
+    // 表单验证
+    let hasError = false;
+    
+    if (!modelVersion.value.trim()) {
+      errors.value.modelVersion = '请输入模型版本';
+      hasError = true;
+    }
+    
+    if (!isOllama.value && !apiKey.value.trim()) {
+      errors.value.apiKey = '请输入API密钥';
+      hasError = true;
+    }
+    
+    if (!apiBaseUrl.value.trim()) {
+      errors.value.apiBaseUrl = '请输入API基础URL';
+      hasError = true;
+    }
+    
+    if (hasError) {
+      return;
+    }
+    
+    // 构建请求数据
+    const configData = {
+      customName: customName.value,
+      apiKey: apiKey.value,
+      apiBaseUrl: apiBaseUrl.value,
+      versionName: modelVersion.value,
+      streamingConfig: isStreamingEnabled.value
+    };
+    
+    console.log('保存的配置数据:', JSON.stringify(configData)); // 详细日志记录
+    
+    // 调用modelStore更新模型配置
+    await modelStore.updateModelVersion(props.modelTitle, modelVersion.value, configData);
+    
+    // 使用统一的通知服务
+    showNotification('配置保存成功', 'success');
+    
+    // 保存后重置表单并关闭抽屉
+    resetForm();
+    closeDrawer();
+  } catch (error) {
+    console.error('保存配置失败:', error);
+    // 使用统一的通知服务
+    showNotification('保存配置失败，请稍后重试', 'error');
+  }
+};
 </script>
 
 <style scoped>

@@ -166,7 +166,9 @@ onUnmounted(() => {
 <style scoped>
 .tooltip-wrapper {
   position: relative;
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .custom-tooltip {

@@ -83,14 +83,8 @@ const handleFolderDragOver = (event, folder) => {
     const files = Array.from(event.dataTransfer.files);
     
     if (files && files.length > 0) {
-      // 触发事件通知父组件处理文件上传
-      const dropEvent = new CustomEvent('folderDrop', {
-        detail: {
-          folder,
-          files
-        }
-      });
-      window.dispatchEvent(dropEvent);
+      // 直接调用store方法上传文件到指定文件夹
+      ragStore.uploadFilesToFolder(folder, files);
     }
   };
 
@@ -114,11 +108,8 @@ const handleFolderClick = (folder) => {
     
     // 设置定时器处理事件发送（延迟以区分双击）
     clickTimer = setTimeout(() => {
-      // 仅发送文件夹选中状态变化事件，移除视图切换功能
-      const event = new CustomEvent('folderSelected', {
-        detail: selectedFolder.value
-      });
-      window.dispatchEvent(event);
+      // 直接调用store方法保存选中的文件夹
+      ragStore.selectFolder(selectedFolder.value);
       
       clickTimer = null;
     }, 300); // 300ms是一个常用的双击判断阈值
@@ -136,19 +127,14 @@ const handleFolderDoubleClick = (folder) => {
   // 重置上次点击的文件夹
   lastClickedFolder = null;
   
-  // 触发事件通知父组件进入文件夹
-  const event = new CustomEvent('folderDoubleClick', {
-    detail: folder
-  });
-  window.dispatchEvent(event);
+  // 直接调用store方法进入文件夹
+  ragStore.enterFolder(folder);
 };
 
 // 处理删除文件夹
 const handleDeleteFolder = (folder) => {
-  const event = new CustomEvent('deleteFolder', {
-    detail: folder
-  });
-  window.dispatchEvent(event);
+  // 直接调用store方法删除文件夹
+  ragStore.deleteFolder(folder);
 };
 
 // 工具方法：根据ID获取文件夹信息

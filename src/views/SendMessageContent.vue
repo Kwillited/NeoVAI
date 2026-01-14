@@ -92,10 +92,8 @@ import ActionButton from '../components/common/ActionButton.vue';
 
 // 处理侧边菜单切换
 const handleSideMenuToggle = () => {
-  // 侧边菜单切换逻辑
-  if (window.toggleSidePanel) {
-    window.toggleSidePanel();
-  }
+  // 使用store方法切换左侧面板可见性
+  settingsStore.toggleLeftNav();
 };
 
 // 初始化stores
@@ -193,10 +191,8 @@ const handleSendMessage = async (message, model) => {
       await chatStore.createNewChat(model);
     }
     
-    // 立即切换到ChatContent视图，以便显示打字动画和流式输出
-    if (window.setActiveContent) {
-      window.setActiveContent('chat');
-    }
+    // 使用store方法切换到ChatContent视图
+    settingsStore.setActiveContent('chat');
     
     // 然后发送消息（此时视图已切换，用户可以看到实时效果）
     chatStore.sendMessage(message, model);

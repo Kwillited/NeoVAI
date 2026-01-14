@@ -920,9 +920,17 @@ const toggleKnowledgeBase = () => {
     // 主显示区：如果没有聊天消息，显示sendMessage视图，否则显示chat视图
     const hasMessages = chatStore.currentChatMessages && chatStore.currentChatMessages.length > 0;
     settingsStore.setActiveContent(hasMessages ? 'chat' : 'sendMessage');
+    
+    // 关闭知识库功能
+    settingsStore.ragConfig.enabled = false;
+    settingsStore.saveSettings();
   } else {
     // 如果当前不是知识库模式，切换到知识库模式
     settingsStore.setActivePanel('rag');
+    
+    // 开启知识库功能
+    settingsStore.ragConfig.enabled = true;
+    settingsStore.saveSettings();
   }
 };
 

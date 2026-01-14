@@ -1,0 +1,101 @@
+/* 加载状态样式变量 */
+:root {
+  /* 主要颜色 */
+  --loading-primary-color: var(--primary-color, #3b82f6);
+  
+  /* 文本颜色 */
+  --loading-text-color: var(--text-color-secondary, #6b7280);
+  --loading-text-color-dark: var(--text-color-secondary-dark, #9ca3af);
+  
+  /* 动画时长 */
+  --loading-spin-duration: 1s;
+  --loading-bounce-duration: 1.4s;
+  
+  /* 旋转动画大小 */
+  --loading-spin-small: 1rem;
+  --loading-spin-medium: 2rem;
+  --loading-spin-large: 3rem;
+  
+  /* 打字动画圆点大小 */
+  --loading-typing-dot-small: 6px;
+  --loading-typing-dot-medium: 8px;
+  --loading-typing-dot-large: 12px;
+  
+  /* 容器间距 */
+  --loading-container-gap: 0.5rem;
+  
+  /* 覆盖层样式 */
+  --loading-overlay-background: rgba(255, 255, 255, 0.8);
+  --loading-overlay-background-dark: rgba(17, 24, 39, 0.8);
+  
+  /* 加载文本大小 */
+  --loading-text-size: 0.875rem;
+}
+
+/* 深色模式适配 */
+.dark {
+  --loading-primary-color: var(--primary-color, #60a5fa);
+  --loading-text-color: var(--loading-text-color-dark);
+}
+
+/* 基础动画类 */
+.animate-spin {
+  animation: spin var(--loading-spin-duration) linear infinite;
+}
+
+.animate-bounce {
+  animation: bounce var(--loading-bounce-duration) infinite ease-in-out both;
+}
+
+/* 旋转动画 */
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* 弹跳动画 */
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+/* 加载覆盖层 */
+.loading-overlay {
+  position: absolute;
+  inset: 0;
+  background-color: var(--loading-overlay-background);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  backdrop-filter: blur(1px);
+}
+
+.dark .loading-overlay {
+  background-color: var(--loading-overlay-background-dark);
+}
+
+/* 加载容器 */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--loading-container-gap);
+}
+
+/* 加载文本 */
+.loading-text {
+  font-size: var(--loading-text-size);
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--loading-text-color);
+}

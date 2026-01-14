@@ -32,10 +32,7 @@
 
     <!-- 加载状态指示器 -->
     <div v-if="ragStore.loading" class="loading-overlay absolute inset-0 bg-white/80 flex items-center justify-center z-50">
-      <div class="loading-spinner flex flex-col items-center">
-        <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary mb-2"></div>
-        <span class="text-sm text-gray-600">处理中...</span>
-      </div>
+      <Loading type="spin" size="medium" text="处理中..." />
     </div>
     
     <!-- 创建知识库模态弹窗 -->
@@ -83,6 +80,7 @@ import RagToolbar from '../rag/RagToolbar.vue';
 import FolderList from '../rag/FolderList.vue';
 import FileList from '../rag/FileList.vue';
 import StateDisplay from '../common/StateDisplay.vue';
+import Loading from '../common/Loading.vue';
 import CreateKnowledgeBaseModal from '../rag/CreateKnowledgeBaseModal.vue';
 import ConfirmationModal from '../common/ConfirmationModal.vue';
 

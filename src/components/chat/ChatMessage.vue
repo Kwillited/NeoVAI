@@ -39,11 +39,13 @@
             </div>
             
             <!-- 打字动画 -->
-            <div v-if="messageValue.isTyping" class="flex space-x-1 mt-2">
-              <div class="w-2 h-2 rounded-full bg-gray-400 animate-bounce" style="animation-delay: 0ms;"></div>
-              <div class="w-2 h-2 rounded-full bg-gray-400 animate-bounce" style="animation-delay: 150ms;"></div>
-              <div class="w-2 h-2 rounded-full bg-gray-400 animate-bounce" style="animation-delay: 300ms;"></div>
-            </div>
+            <Loading 
+              v-if="messageValue.isTyping" 
+              type="typing" 
+              size="small" 
+              color="var(--text-color-secondary, #9ca3af)" 
+              containerClass="mt-2"
+            />
           </div>
           
           <!-- 时间戳和操作按钮 -->
@@ -79,11 +81,13 @@
         </div>
         
         <!-- 打字动画 -->
-        <div v-if="messageValue.isTyping" class="flex justify-center space-x-1 mt-2">
-          <div class="w-2 h-2 rounded-full bg-gray-400 animate-bounce" style="animation-delay: 0ms;"></div>
-          <div class="w-2 h-2 rounded-full bg-gray-400 animate-bounce" style="animation-delay: 150ms;"></div>
-          <div class="w-2 h-2 rounded-full bg-gray-400 animate-bounce" style="animation-delay: 300ms;"></div>
-        </div>
+        <Loading 
+          v-if="messageValue.isTyping" 
+          type="typing" 
+          size="small" 
+          color="var(--text-color-secondary, #9ca3af)" 
+          containerClass="mt-2 flex justify-center"
+        />
       </div>
     </div>
   </div>
@@ -92,6 +96,7 @@
 <script setup>
 import { computed, onMounted } from 'vue'
 import Tooltip from '../common/Tooltip.vue'
+import Loading from '../common/Loading.vue'
 // 导入marked库和highlight.js
 import { marked } from 'marked'
 import hljs from 'highlight.js'

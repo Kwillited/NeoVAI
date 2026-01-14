@@ -14,10 +14,11 @@
 <script setup>
 import Tooltip from './Tooltip.vue';
 
-// 定义组件名称
+// 定义组件名称和属性继承选项
 // 使用defineOptions API注册组件名称，替代旧的export default语法
 defineOptions({
-  name: 'ActionButton'
+  name: 'ActionButton',
+  inheritAttrs: false // 阻止Vue自动将$attrs传递给组件根元素
 });
 
 // 定义组件属性

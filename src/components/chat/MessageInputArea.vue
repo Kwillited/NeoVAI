@@ -31,54 +31,57 @@
   <div id="MessageInputArea" class="border-t-0 pb-4 px-6 transition-colors duration-300 ease-in-out" :class="{ 'pt-4': activeView !== 'grid' }">
     <div class="relative w-full max-w-4xl mx-auto">
       <div class="card focus-ring depth-1 focus-within:depth-2 transition-all duration-300 ease-in-out bg-white dark:bg-dark-700">
-        <!-- 智能体选择 - 合并到卡片内部 -->
-        <div class="px-3 pt-3 pb-1 border-b border-gray-200 flex items-center gap-2">
-          <div class="relative inline-block">
-            <Tooltip content="选择智能体">
-              <button
-                class="h-7 flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-dark-600 px-3 rounded-lg transition-all duration-300 ease-in-out btn-secondary hover:bg-gray-100 hover:text-primary cursor-pointer"
-                @click="toggleAgentDropdown"
-              >
-                <i class="fa-solid fa-robot text-xs"></i>
-                <span>{{ currentAgentDisplayName }}</span>
-                <i class="fa-solid fa-chevron-down text-xs text-neutral"></i>
-              </button>
-            </Tooltip>
-            <div
-              ref="agentDropdown"
-              class="dropdown dropdown-content absolute left-0 top-full mt-1 w-48 bg-white z-50 depth-2"
-              :class="{ 'hidden': !showAgentDropdown }"
-              style="z-index: 1000 !important"
-            >
-              <div class="py-1">
+        <!-- 智能体选择和MCP工具 - 合并到卡片内部 -->
+        <div class="px-3 py-1.5 border-b border-gray-200 flex items-center gap-2">
+          <div class="flex items-center gap-2">
+            <!-- 智能体选择 -->
+            <div class="relative inline-block">
+              <Tooltip content="选择智能体">
                 <button
-                  v-for="agent in availableAgents"
-                  :key="agent.value"
-                  class="agent-option w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition-colors rounded-lg"
-                  :class="{ 'text-blue-600 bg-blue-50 dark:text-blue-400 dark:bg-blue-900/30': agent.value === currentAgent }"
-                  @click="selectAgent(agent.value)"
+                  class="h-6 flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-dark-600 px-3 rounded-lg transition-all duration-300 ease-in-out btn-secondary hover:bg-gray-100 hover:text-primary cursor-pointer"
+                  @click="toggleAgentDropdown"
                 >
-                  <i :class="['fa-solid', agent.icon, 'mr-2 text-sm']"></i>
-                  {{ agent.displayName }}
+
+                  <span>{{ currentAgentDisplayName }}</span>
+                  <i class="fa-solid fa-chevron-down text-xs text-neutral"></i>
                 </button>
+              </Tooltip>
+              <div
+                ref="agentDropdown"
+                class="dropdown dropdown-content absolute left-0 top-full mt-1 w-48 bg-white z-50 depth-2"
+                :class="{ 'hidden': !showAgentDropdown }"
+                style="z-index: 1000 !important"
+              >
+                <div class="py-1">
+                  <button
+                    v-for="agent in availableAgents"
+                    :key="agent.value"
+                    class="agent-option w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition-colors rounded-lg"
+                    :class="{ 'text-blue-600 bg-blue-50 dark:text-blue-400 dark:bg-blue-900/30': agent.value === currentAgent }"
+                    @click="selectAgent(agent.value)"
+                  >
+                    <i :class="['fa-solid', agent.icon, 'mr-2 text-sm']"></i>
+                    {{ agent.displayName }}
+                  </button>
+                </div>
               </div>
             </div>
+            
+            <!-- MCP工具按钮 -->
+            <Tooltip content="MCP工具">
+              <button
+                class="h-6 w-6 flex items-center justify-center transition-colors hover:bg-gray-100 text-gray-500 dark:hover:bg-dark-700 dark:text-gray-300 rounded-full"
+                @click="handleMcpService"
+              >
+                <i class="fa-solid fa-gear text-xs"></i>
+              </button>
+            </Tooltip>
           </div>
           
-          <!-- MCP服务按钮 -->
-          <Tooltip content="MCP服务">
-            <button
-              class="h-7 w-7 flex items-center justify-center transition-colors hover:bg-gray-100 text-gray-500 dark:hover:bg-dark-700 dark:text-gray-300 rounded-full"
-              @click="handleMcpService"
-            >
-              <i class="fa-solid fa-server text-xs"></i>
-            </button>
-          </Tooltip>
-          
           <!-- 展开/折叠控制按钮 -->
-          <div class="flex-1 flex justify-end">
+          <div class="flex-1 flex justify-end items-center">
             <button
-              class="h-7 w-7 flex items-center justify-center text-sm text-gray-600 dark:text-gray-300 hover:text-primary transition-all duration-300 ease-in-out"
+              class="h-6 w-6 flex items-center justify-center text-sm text-gray-600 dark:text-gray-300 hover:text-primary transition-all duration-300 ease-in-out"
               @click="toggleParamsPanel"
               :class="{ 'rotate-180': showParamsPanel }"
             >
@@ -90,12 +93,12 @@
         <!-- 可上滑展开的参数设置区域 -->
         <transition name="slide-up">
           <div v-if="showParamsPanel" class="border-b border-gray-200 overflow-hidden transition-all duration-300 ease-in-out">
-            <div class="px-3 py-3 space-y-4">
+            <div class="px-3 py-3 grid grid-cols-4 gap-3">
               <!-- 温度参数设置 -->
-              <div class="mb-6 border-b border-gray-200 pb-4">
+              <div class="px-2">
                 <div class="flex justify-between items-center mb-1">
                   <div class="flex items-center gap-1">
-                    <label class="text-sm font-medium text-gray-700">温度 (0-2)</label>
+                    <label class="text-xs font-medium text-gray-700">温度</label>
                     <button
                       class="text-xs text-neutral cursor-help p-1 relative"
                       @mouseover="showTooltip('temperature', $event)"
@@ -115,7 +118,7 @@
                     </div>
                   </div>
                   <span
-                    class="text-sm font-medium text-primary px-2 py-0.5 bg-primary/10 rounded-full"
+                    class="text-xs font-medium text-primary px-2 py-0.5 bg-primary/10 rounded-full"
                     id="temperatureValue"
                   >{{ modelParams.temperature }}</span>
                 </div>
@@ -130,16 +133,16 @@
                   @input="handleTemperatureChange"
                 />
                 <div class="flex justify-between text-xs text-neutral mt-1">
-                  <span>精确</span>
-                  <span>随机</span>
+                  <span>0</span>
+                  <span>2</span>
                 </div>
               </div>
 
               <!-- Top-p参数设置 -->
-              <div class="mb-6 border-b border-gray-200 pb-4">
+              <div class="px-2">
                 <div class="flex justify-between items-center mb-1">
                   <div class="flex items-center gap-1">
-                    <label class="text-sm font-medium text-gray-700">Top-p (0-1)</label>
+                    <label class="text-xs font-medium text-gray-700">Top-p</label>
                     <button
                       class="text-xs text-neutral cursor-help p-1 relative"
                       @mouseover="showTooltip('topP', $event)"
@@ -158,7 +161,7 @@
                       <div class="mt-2 text-xs text-gray-500">范围: 0-1</div>
                     </div>
                   </div>
-                  <span class="text-sm font-medium text-primary px-2 py-0.5 bg-primary/10 rounded-full" id="topPValue">{{
+                  <span class="text-xs font-medium text-primary px-2 py-0.5 bg-primary/10 rounded-full" id="topPValue">{{
                     modelParams.top_p
                   }}</span>
                 </div>
@@ -173,16 +176,16 @@
                   @input="handleTopPChange"
                 />
                 <div class="flex justify-between text-xs text-neutral mt-1">
-                  <span>严格</span>
-                  <span>宽松</span>
+                  <span>0</span>
+                  <span>1</span>
                 </div>
               </div>
 
               <!-- Top-k参数设置 -->
-              <div class="mb-6 border-b border-gray-200 pb-4">
+              <div class="px-2">
                 <div class="flex justify-between items-center mb-1">
                   <div class="flex items-center gap-1">
-                    <label class="text-sm font-medium text-gray-700">Top-k (0-100)</label>
+                    <label class="text-xs font-medium text-gray-700">Top-k</label>
                     <button
                       class="text-xs text-neutral cursor-help p-1 relative"
                       @mouseover="showTooltip('topK', $event)"
@@ -201,7 +204,7 @@
                       <div class="mt-2 text-xs text-gray-500">范围: 0-100</div>
                     </div>
                   </div>
-                  <span class="text-sm font-medium text-primary px-2 py-0.5 bg-primary/10 rounded-full" id="topKValue">{{
+                  <span class="text-xs font-medium text-primary px-2 py-0.5 bg-primary/10 rounded-full" id="topKValue">{{
                     modelParams.top_k
                   }}</span>
                 </div>
@@ -216,16 +219,16 @@
                   @input="handleTopKChange"
                 />
                 <div class="flex justify-between text-xs text-neutral mt-1">
-                  <span>少样</span>
-                  <span>多样</span>
+                  <span>0</span>
+                  <span>100</span>
                 </div>
               </div>
 
               <!-- 最大长度参数设置 -->
-              <div class="mb-6 pb-4">
+              <div class="px-2">
                 <div class="flex justify-between items-center mb-1">
                   <div class="flex items-center gap-1">
-                    <label class="text-sm font-medium text-gray-700">最大长度</label>
+                    <label class="text-xs font-medium text-gray-700">长度</label>
                     <button
                       class="text-xs text-neutral cursor-help p-1 relative"
                       @mouseover="showTooltip('maxLength', $event)"
@@ -244,7 +247,7 @@
                       <div class="mt-2 text-xs text-gray-500">范围: 512-8192</div>
                     </div>
                   </div>
-                  <span class="text-sm font-medium text-primary px-2 py-0.5 bg-primary/10 rounded-full" id="maxLengthValue">{{
+                  <span class="text-xs font-medium text-primary px-2 py-0.5 bg-primary/10 rounded-full" id="maxLengthValue">{{
                     modelParams.max_tokens
                   }}</span>
                 </div>
@@ -259,8 +262,8 @@
                   @input="handleMaxLengthChange"
                 />
                 <div class="flex justify-between text-xs text-neutral mt-1">
-                  <span>较短</span>
-                  <span>较长</span>
+                  <span>512</span>
+                  <span>8192</span>
                 </div>
               </div>
             </div>
@@ -305,7 +308,7 @@
             class="w-full resize-none border-none focus:ring-0 focus:outline-none text-base leading-relaxed placeholder-gray-400 dark:text-white dark:placeholder-gray-500 bg-transparent transition-all duration-300 ease-in-out"
             rows="2"
             @keydown.enter.exact.prevent="handleSendMessage"
-            @keydown.enter.shift=""
+
           ></textarea>
           <div
             v-if="isDragOver"
@@ -438,12 +441,12 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue';
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
 import { StorageManager } from '../../store/utils.js';
 import Tooltip from '../common/Tooltip.vue';
 
 // 接收从父组件传递的视图状态
-const props = defineProps({
+const _props = defineProps({
   activeView: {
     type: String,
     required: true
@@ -486,7 +489,7 @@ const isDeepThinking = ref(StorageManager.getItem(STORAGE_KEYS.DEEP_THINKING, fa
 // 联网搜索状态 - 从存储加载
 const isWebSearchEnabled = ref(StorageManager.getItem(STORAGE_KEYS.WEB_SEARCH, false));
 // RAG模式状态 - 从settingsStore获取
-const isRagMode = computed(() => settingsStore.activePanel === 'rag');
+const _isRagMode = computed(() => settingsStore.activePanel === 'rag');
 
 // 智能体相关状态
 const currentAgent = ref('default');
@@ -519,7 +522,6 @@ const notificationTitle = ref('');
 const notificationMessage = ref('');
 const notificationType = ref('info');
 let notificationTimer = null;
-let notificationProgressTimer = null;
 
 // 切换深度思考模式
 const toggleDeepThinking = () => {
@@ -904,7 +906,7 @@ const hideTooltip = (tooltipId) => {
   }
 };
 
-// 处理MCP服务点击事件
+// 处理MCP工具点击事件
 const handleMcpService = () => {
   settingsStore.setActivePanel('mcp');
 };

@@ -24,6 +24,11 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue';
 
+// 阻止Vue自动将$attrs传递给组件根元素
+defineOptions({
+  inheritAttrs: false
+});
+
 const props = defineProps({
   content: {
     type: String,

@@ -366,7 +366,7 @@
                   }"
                 @click="toggleKnowledgeBase"
               >
-                <i class="fa-solid fa-database"></i>
+                <i class="fa-solid fa-book-open"></i>
               </button>
             </Tooltip>
             <!-- 联网搜索切换按钮 -->

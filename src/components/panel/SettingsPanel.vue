@@ -22,7 +22,7 @@
           id="rag" 
           :activeSection="settingsStore.activeSection"
           label="知识库配置" 
-          iconClass="fa-solid fa-database"
+          iconClass="fa-solid fa-book-open"
           @click="handleSectionClick"
         />
         <SettingNavItem 

@@ -240,7 +240,7 @@ const handleClose = () => {
 // 最小化命令行
 const minimizeCommandLine = () => {
   // 这里可以实现最小化逻辑
-  alert('最小化功能待实现');
+  showNotification('最小化功能待实现', 'info');
 };
 
 // 最大化命令行

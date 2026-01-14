@@ -1,16 +1,17 @@
 <template>
-  <div v-if="visible" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50" @click="handleBackdropClick">
-    <div class="bg-white dark:bg-gray-800 dark:text-white rounded-lg shadow-xl dark:shadow-panel-dark p-6 w-full max-w-md mx-4 transform transition-all duration-300 scale-100" @click.stop>
-      <div class="mb-4 flex justify-between items-center">
-        <h3 class="text-lg font-semibold text-gray-800 dark:text-white">新建知识库</h3>
-        <button 
-          @click="handleCancel"
-          class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
-        >
-          <i class="fa-solid fa-times"></i>
-        </button>
-      </div>
-      
+  <ConfirmationModal
+    :visible="visible"
+    title="新建知识库"
+    confirm-text="创建"
+    cancel-text="取消"
+    :loading="ragStore.loading"
+    loading-text="创建中..."
+    confirm-type="primary"
+    @confirm="handleCreate"
+    @close="handleCancel"
+  >
+    <!-- 自定义内容：知识库名称输入表单 -->
+    <template #content>
       <div class="mb-4">
         <label for="knowledgeBaseName" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">知识库名称</label>
         <input
@@ -24,31 +25,15 @@
         />
         <p v-if="error" class="text-red-500 text-xs mt-1">{{ error }}</p>
       </div>
-      
-      <div class="flex justify-end space-x-3">
-        <button 
-          @click="handleCancel"
-          class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600 rounded-md hover:bg-gray-200 transition-colors"
-        >
-          取消
-        </button>
-        <button 
-          @click="handleCreate"
-          :disabled="!knowledgeBaseName.trim() || ragStore.loading"
-          class="px-4 py-2 text-sm font-medium text-white bg-primary rounded-md hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          <span v-if="!ragStore.loading">创建</span>
-          <span v-else>创建中...</span>
-        </button>
-      </div>
-    </div>
-  </div>
+    </template>
+  </ConfirmationModal>
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, nextTick } from 'vue';
+import { ref, onMounted, onUnmounted, nextTick, watch } from 'vue';
 import { useRagStore } from '../../store/ragStore.js';
 import { showNotification } from '../../services/notificationUtils.js';
+import ConfirmationModal from '../common/ConfirmationModal.vue';
 
 // Props
 const props = defineProps({
@@ -68,6 +53,21 @@ const ragStore = useRagStore();
 const knowledgeBaseName = ref('');
 const error = ref('');
 const inputRef = ref(null);
+
+// 当模态框显示时，自动聚焦输入框
+const focusInput = async () => {
+  if (props.visible && inputRef.value) {
+    await nextTick();
+    inputRef.value.focus();
+  }
+};
+
+// 监听visible属性变化
+watch(() => props.visible, (newValue) => {
+  if (newValue) {
+    focusInput();
+  }
+});
 
 // 处理创建知识库
 const handleCreate = async () => {
@@ -109,24 +109,22 @@ const handleCancel = () => {
   emit('close');
 };
 
-// 处理背景点击
-const handleBackdropClick = () => {
-  handleCancel();
-};
-
 // 重置表单
 const resetForm = () => {
   knowledgeBaseName.value = '';
   error.value = '';
 };
 
-// 当模态框显示时，自动聚焦输入框
-const focusInput = async () => {
-  if (props.visible && inputRef.value) {
-    await nextTick();
-    inputRef.value.focus();
-  }
-};
+// 组件挂载时添加ESC键监听
+onMounted(() => {
+  focusInput();
+  document.addEventListener('keydown', handleKeyDown);
+});
+
+// 组件卸载时移除ESC键监听
+onUnmounted(() => {
+  document.removeEventListener('keydown', handleKeyDown);
+});
 
 // 处理ESC键关闭模态框
 const handleKeyDown = (event) => {
@@ -134,37 +132,8 @@ const handleKeyDown = (event) => {
     handleCancel();
   }
 };
-
-// 监听visible属性变化
-onMounted(() => {
-  focusInput();
-  document.addEventListener('keydown', handleKeyDown);
-});
-
-onUnmounted(() => {
-  document.removeEventListener('keydown', handleKeyDown);
-});
 </script>
 
 <style scoped>
-/* 动画效果 */
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.3s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-}
-
-.slide-enter-active,
-.slide-leave-active {
-  transition: transform 0.3s ease;
-}
-
-.slide-enter-from,
-.slide-leave-to {
-  transform: scale(0.95);
-}
+/* 动画效果已移至通用模态框组件 */
 </style>

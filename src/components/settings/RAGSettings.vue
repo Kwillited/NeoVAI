@@ -34,8 +34,8 @@
           <div class="setting-item p-3 rounded-lg">
             <div class="flex justify-between items-center">
               <div>
-                <div class="font-medium text-sm">启用RAG功能</div>
-                <div class="text-xs text-neutral mt-0.5">启用后可以使用文档检索增强生成能力</div>
+                <div class="font-medium text-sm">启用知识库功能</div>
+              <div class="text-xs text-neutral mt-0.5">启用后可以使用文档检索增强生成能力</div>
               </div>
               <label class="toggle-switch">
                 <input type="checkbox" :checked="settingsStore.ragConfig.enabled" @change="handleRagEnabledChange" />
@@ -85,7 +85,7 @@
           <div class="setting-item p-3 rounded-lg">
             <div>
               <div class="font-medium text-sm">文档检索模式</div>
-              <div class="text-xs text-neutral mt-0.5">设置RAG的文档检索方式</div>
+              <div class="text-xs text-neutral mt-0.5">设置知识库的文档检索方式</div>
 
               <select
                 v-model="settingsStore.ragConfig.retrievalMode"
@@ -158,7 +158,7 @@
           <div class="setting-item p-3 rounded-lg">
             <div>
               <div class="font-medium text-sm">知识库存储路径</div>
-              <div class="text-xs text-neutral mt-0.5">RAG文档文件的存储位置（留空使用系统默认路径）</div>
+              <div class="text-xs text-neutral mt-0.5">知识库文档文件的存储位置（留空使用系统默认路径）</div>
 
               <input
                 type="text"

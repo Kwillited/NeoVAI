@@ -53,6 +53,18 @@
       </div>
     </div>
   </div>
+  
+  <!-- 确认删除工具模态框 -->
+  <ConfirmationModal
+    :visible="showDeleteModal"
+    title="确认删除"
+    :message="`确定要删除工具 '${currentDeleteToolName}' 吗？`"
+    confirmText="确认删除"
+    :loading="isDeletingTool"
+    loadingText="删除中..."
+    @confirm="handleDeleteToolConfirm"
+    @close="showDeleteModal = false"
+  />
 </template>
 
 <script setup>
@@ -61,9 +73,16 @@ import PanelHeader from '../common/PanelHeader.vue';
 import { showNotification } from '../../services/notificationUtils.js';
 import SearchBar from '../common/SearchBar.vue';
 import ActionButton from '../common/ActionButton.vue';
+import ConfirmationModal from '../common/ConfirmationModal.vue';
 
 // 搜索查询
 const searchQuery = ref('');
+
+// 确认删除模态框状态
+const showDeleteModal = ref(false);
+const currentDeleteToolId = ref(null);
+const currentDeleteToolName = ref(null);
+const isDeletingTool = ref(false);
 
 // 工具列表数据
 const tools = ref([
@@ -154,27 +173,43 @@ const handleFileUpload = async (event) => {
   }
 };
 
-// 处理删除工具
-const handleDeleteTool = async (toolId) => {
+// 处理删除工具 - 显示确认模态框
+const handleDeleteTool = (toolId) => {
+  // 查找要删除的工具
+  const tool = tools.value.find(t => t.id === toolId);
+  if (tool) {
+    // 设置要删除的工具信息
+    currentDeleteToolId.value = toolId;
+    currentDeleteToolName.value = tool.name;
+    // 显示确认模态框
+    showDeleteModal.value = true;
+  }
+};
+
+// 处理确认删除工具
+const handleDeleteToolConfirm = async () => {
+  if (!currentDeleteToolId.value) return;
+  
   try {
-    // 显示确认对话框
-    if (!confirm('确定要删除这个工具吗？')) {
-      return;
-    }
+    isDeletingTool.value = true;
     
     // 这里可以添加实际的删除API调用
-    // await apiService.deleteMcpTool(toolId);
+    // await apiService.deleteMcpTool(currentDeleteToolId.value);
     
     // 从本地列表中删除工具
-    const index = tools.value.findIndex(tool => tool.id === toolId);
+    const index = tools.value.findIndex(tool => tool.id === currentDeleteToolId.value);
     if (index !== -1) {
       const deletedTool = tools.value.splice(index, 1)[0];
       showNotification(`${deletedTool.name} 已删除`, 'success');
     }
     
+    // 关闭模态框
+    showDeleteModal.value = false;
   } catch (error) {
     console.error('Failed to delete MCP tool:', error);
     showNotification('工具删除失败', 'error');
+  } finally {
+    isDeletingTool.value = false;
   }
 };
 

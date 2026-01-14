@@ -13,11 +13,23 @@
           id="deleteAllBtn"
           icon="fa-trash-can"
           title="删除所有对话"
-          @click="handleDeleteAll"
+          @click="showDeleteAllModal = true"
           class="w-8 h-8 p-1.5 text-neutral hover:text-red-500 hover:bg-red-50"
         />
       </template>
     </PanelHeader>
+    
+    <!-- 确认删除所有对话模态框 -->
+    <ConfirmationModal
+      :visible="showDeleteAllModal"
+      title="确认删除"
+      message="确定要删除所有对话吗？这将删除所有历史对话，无法恢复！"
+      confirmText="确认删除"
+      :loading="isDeletingAll"
+      loadingText="删除中..."
+      @confirm="handleDeleteAllConfirm"
+      @close="showDeleteAllModal = false"
+    />
 
     <!-- 搜索框 -->
     <SearchBar v-model="searchQuery" placeholder="搜索对话..." />
@@ -134,6 +146,7 @@ import { useSettingsStore } from '../../store/settingsStore.js';
 import { showNotification } from '../../services/notificationUtils.js';
 import SearchBar from '../common/SearchBar.vue';
 import ActionButton from '../common/ActionButton.vue';
+import ConfirmationModal from '../common/ConfirmationModal.vue';
 
 // 滚动容器引用
 const scrollContainer = ref(null);
@@ -225,6 +238,12 @@ const searchQuery = ref('');
 
 // 用于管理分组的展开/折叠状态
 const collapsedGroups = reactive({});
+
+// 显示删除所有对话模态框
+const showDeleteAllModal = ref(false);
+
+// 删除所有对话的加载状态
+const isDeletingAll = ref(false);
 
 // 切换分组的展开/折叠状态
 function toggleGroup(groupTitle) {
@@ -349,18 +368,23 @@ const handleExportAll = () => {
     console.log('对话历史导出成功');
   } catch (error) {
     console.error('导出对话历史失败:', error);
-    alert('导出失败，请重试。');
+    showNotification('导出失败，请重试。', 'error');
   }
 };
 
-// 处理删除所有对话
-const handleDeleteAll = async () => {
-  console.log('删除所有对话');
+// 处理删除所有对话确认
+const handleDeleteAllConfirm = async () => {
+  console.log('确认删除所有对话');
+  isDeletingAll.value = true;
+  
   try {
     await chatStore.clearAllChats();
     showNotification('所有对话已删除', 'success');
+    showDeleteAllModal.value = false;
   } catch (error) {
     showNotification('删除失败: ' + error.message, 'error');
+  } finally {
+    isDeletingAll.value = false;
   }
 };
 

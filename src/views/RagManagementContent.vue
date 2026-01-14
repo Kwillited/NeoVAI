@@ -198,6 +198,7 @@ import { eventBus } from '../services/eventBus.js';
 import { generateId } from '../store/utils.js';
 import ActionButton from '../components/common/ActionButton.vue';
 import KnowledgeGraphCanvas from '../components/knowledge-graph/KnowledgeGraphCanvas.vue';
+import { showNotification } from '../services/notificationUtils.js';
 
 // 导入Tauri API用于文件操作
 // 移除不再需要的Tauri导入
@@ -425,7 +426,7 @@ const handleUploadClick = async () => {
     }
   } catch (error) {
     console.error('上传文件失败:', error);
-    alert(`上传文件失败: ${error.message || String(error)}`);
+    showNotification(`上传文件失败: ${error.message || String(error)}`, 'error');
   }
 };
 
@@ -548,7 +549,7 @@ const handleDeleteFile = async (fileId) => {
         }
       } catch (error) {
         console.error('删除文件失败:', error);
-        alert(`删除文件失败: ${error.message || String(error)}`);
+        showNotification(`删除文件失败: ${error.message || String(error)}`, 'error');
       }
     }
   };

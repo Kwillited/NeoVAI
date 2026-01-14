@@ -1,7 +1,7 @@
 <template>
   <div class="panel-header p-3 flex justify-between items-center transition-all duration-300">
     <div class="flex items-center">
-      <h2 class="text-lg font-bold text-dark">{{ currentFolder ? currentFolder.name : 'RAG知识库' }}</h2>
+      <h2 class="text-lg font-bold text-dark">{{ currentFolder ? currentFolder.name : '知识库' }}</h2>
     </div>
     <!-- 按钮区域 - 保持相同位置 -->
     <div class="flex items-center">

@@ -21,7 +21,7 @@
         <SettingNavItem 
           id="rag" 
           :activeSection="settingsStore.activeSection"
-          label="RAG配置" 
+          label="知识库配置" 
           iconClass="fa-solid fa-database"
           @click="handleSectionClick"
         />

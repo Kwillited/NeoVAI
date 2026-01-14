@@ -16,9 +16,9 @@
       iconClass="text-neutral hover:text-red-500 hover:bg-red-50"
     />
     <ActionButton
-      :id="isRagManagementView ? '返回对话' : '切换到RAG文件管理'"
+      :id="isRagManagementView ? '返回对话' : '切换到文件管理'"
       :icon="isRagManagementView ? 'fa-comment' : 'fa-folder-tree'"
-      :title="isRagManagementView ? '返回对话' : '切换到RAG文件管理'"
+      :title="isRagManagementView ? '返回对话' : '切换到文件管理'"
       @click="handleViewToggle"
     />
   </div>
@@ -53,15 +53,16 @@ const isRagManagementView = ref(false);
 
 // 处理新建知识库
 const handleCreateKnowledgeBase = () => {
-  // 使用store方法触发创建知识库
-  // 实际实现需要根据store设计调整
-  showNotification('创建知识库功能待实现', 'info');
+  // 触发创建知识库事件，由RagPanel组件处理并显示模态框
+  const event = new CustomEvent('createKnowledgeBase');
+  window.dispatchEvent(event);
 };
 
 // 处理删除所有文件
 const handleDeleteAll = () => {
-  // 直接调用store方法删除所有文件
-  ragStore.deleteAllFiles();
+  // 触发删除所有文件事件，由RagPanel组件处理并显示确认模态框
+  const event = new CustomEvent('deleteAll');
+  window.dispatchEvent(event);
 };
 
 // 处理视图切换

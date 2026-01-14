@@ -44,6 +44,29 @@
       @close="handleCloseModal"
       @created="handleKnowledgeBaseCreated"
     />
+    
+    <!-- 确认删除所有文件模态框 -->
+    <ConfirmationModal
+      :visible="showDeleteAllModal"
+      title="确认删除所有内容"
+      message="确定要删除所有文件和文件夹吗？<br><span class='text-red-500 font-medium'>此操作将同时清空向量数据库，且无法撤销！</span>"
+      :html="true"
+      confirmText="确认删除"
+      :loading="isDeletingAll"
+      loadingText="删除中..."
+      @confirm="handleDeleteAllConfirm"
+      @close="showDeleteAllModal = false"
+    />
+    
+    <!-- 确认删除文件夹模态框 -->
+    <ConfirmationModal
+      :visible="showDeleteFolderModal"
+      title="确认删除"
+      :message="`确定要删除知识库文件夹 '${deleteFolderData?.name}' 吗？这将删除该文件夹下的所有内容！`"
+      confirmText="确认删除"
+      @confirm="handleDeleteFolderConfirm"
+      @close="showDeleteFolderModal = false"
+    />
   </div>
 </template>
 
@@ -61,6 +84,7 @@ import FolderList from '../rag/FolderList.vue';
 import FileList from '../rag/FileList.vue';
 import StateDisplay from '../common/StateDisplay.vue';
 import CreateKnowledgeBaseModal from '../rag/CreateKnowledgeBaseModal.vue';
+import ConfirmationModal from '../common/ConfirmationModal.vue';
 
 const ragStore = useRagStore();
 
@@ -76,6 +100,14 @@ const loadingFolders = ref(false);
 const loadingFiles = ref(false);
 // 模态弹窗显示状态
 const showCreateModal = ref(false);
+// 确认删除所有文件模态框显示状态
+const showDeleteAllModal = ref(false);
+// 删除所有文件的加载状态
+const isDeletingAll = ref(false);
+// 确认删除文件夹模态框显示状态
+const showDeleteFolderModal = ref(false);
+// 当前要删除的文件夹数据
+const deleteFolderData = ref(null);
 // 文件夹ID到名称的映射
 const folderIdMap = ref({});
 
@@ -190,66 +222,17 @@ const handleCloseModal = () => {
   showCreateModal.value = false;
 };
 
-// 处理删除所有文件
-const handleDeleteAll = async () => {
-  // 使用自定义确认弹窗
-  const confirmed = await new Promise((resolve) => {
-    const confirmationDialog = document.createElement('div');
-    confirmationDialog.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
-    confirmationDialog.innerHTML = `
-      <div class="bg-white dark:bg-gray-800 dark:text-white rounded-lg shadow-xl dark:shadow-panel-dark p-6 w-full max-w-md">
-        <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">确认删除所有内容</h3>
-        <p class="text-gray-600 dark:text-gray-300 mb-6">
-          确定要删除所有文件和文件夹吗？<br>
-          <span class="text-red-500 font-medium">此操作将同时清空向量数据库，且无法撤销！</span>
-        </p>
-        <div class="flex justify-end gap-3">
-          <button id="cancelDeleteAll" class="px-4 py-2 rounded-md border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 text-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors">
-            取消
-          </button>
-          <button id="confirmDeleteAll" class="px-4 py-2 rounded-md bg-red-500 text-white hover:bg-red-600 transition-colors">
-            确认删除
-          </button>
-        </div>
-      </div>
-    `;
-    
-    document.body.appendChild(confirmationDialog);
-    
-    const cancelBtn = confirmationDialog.querySelector('#cancelDeleteAll');
-    const confirmBtn = confirmationDialog.querySelector('#confirmDeleteAll');
-    
-    const cleanup = () => {
-      cancelBtn.removeEventListener('click', handleCancel);
-      confirmBtn.removeEventListener('click', handleConfirm);
-      document.body.removeChild(confirmationDialog);
-    };
-    
-    const handleCancel = () => {
-      cleanup();
-      resolve(false);
-    };
-    
-    const handleConfirm = () => {
-      cleanup();
-      resolve(true);
-    };
-    
-    cancelBtn.addEventListener('click', handleCancel);
-    confirmBtn.addEventListener('click', handleConfirm);
-    
-    // 允许按ESC键取消
-    const handleEsc = (e) => {
-      if (e.key === 'Escape') {
-        handleCancel();
-        document.removeEventListener('keydown', handleEsc);
-      }
-    };
-    
-    document.addEventListener('keydown', handleEsc);
-  });
+// 处理删除所有文件 - 显示确认模态框
+const handleDeleteAll = () => {
+  // 显示确认删除模态框
+  showDeleteAllModal.value = true;
+};
+
+// 处理确认删除所有文件
+const handleDeleteAllConfirm = async () => {
+  isDeletingAll.value = true;
   
-  if (confirmed) {
+  try {
     const result = await ragStore.deleteAllFiles();
     if (result.success) {
       showNotification(result.message, 'success');
@@ -259,9 +242,13 @@ const handleDeleteAll = async () => {
       // 重置当前文件夹状态和文件列表，确保UI正确显示空状态
       currentFolder.value = null;
       currentFiles.value = [];
+      // 关闭模态框
+      showDeleteAllModal.value = false;
     } else {
       showNotification(`删除所有内容失败: ${result.error}`, 'error');
     }
+  } finally {
+    isDeletingAll.value = false;
   }
 };
 
@@ -444,90 +431,47 @@ const processFiles = async (files) => {
   }
 };
 
-// 处理删除文件夹
-const handleDeleteFolder = async (event) => {
+// 处理删除文件夹 - 显示确认模态框
+const handleDeleteFolder = (event) => {
   const folder = event.detail;
+  // 保存当前要删除的文件夹
+  deleteFolderData.value = folder;
+  // 显示确认删除模态框
+  showDeleteFolderModal.value = true;
+};
+
+// 处理确认删除文件夹
+const handleDeleteFolderConfirm = async () => {
+  if (!deleteFolderData.value) return;
   
-  // 创建自定义确认弹窗元素
-  const confirmationDialog = document.createElement('div');
-  confirmationDialog.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
-  confirmationDialog.innerHTML = `
-    <div class="bg-white dark:bg-gray-800 dark:text-white rounded-lg shadow-xl dark:shadow-panel-dark p-6 w-full max-w-md">
-      <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">确认删除</h3>
-      <p class="text-gray-600 dark:text-gray-300 mb-6">确定要删除知识库文件夹 "${folder.name}" 吗？这将删除该文件夹下的所有内容！</p>
-      <div class="flex justify-end gap-3">
-        <button id="cancelDelete" class="px-4 py-2 rounded-md border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 text-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors">
-          取消
-        </button>
-        <button id="confirmDelete" class="px-4 py-2 rounded-md bg-red-500 text-white hover:bg-red-600 transition-colors">
-          确认删除
-        </button>
-      </div>
-    </div>
-  `;
+  const folder = deleteFolderData.value;
   
-  document.body.appendChild(confirmationDialog);
-  
-  // 使用Promise包装确认逻辑
-  const confirmed = await new Promise((resolve) => {
-    const cancelBtn = confirmationDialog.querySelector('#cancelDelete');
-    const confirmBtn = confirmationDialog.querySelector('#confirmDelete');
-    
-    const cleanup = () => {
-      cancelBtn.removeEventListener('click', handleCancel);
-      confirmBtn.removeEventListener('click', handleConfirm);
-      document.body.removeChild(confirmationDialog);
+  try {
+    // 调用后端API删除文件夹，现在使用folder_id而不是folder_name
+    const config = {
+      method: 'DELETE',
+      url: '/api/rag/folders',
+      params: { folder_id: folder.id }
     };
+    await api(config);
     
-    const handleCancel = () => {
-      cleanup();
-      resolve(false);
-    };
+    // 显示成功提示
+    showNotification(`已成功删除知识库文件夹: ${folder.name}`, 'success');
     
-    const handleConfirm = () => {
-      cleanup();
-      resolve(true);
-    };
+    // 重新加载文件夹列表
+    await loadFolders();
     
-    cancelBtn.addEventListener('click', handleCancel);
-    confirmBtn.addEventListener('click', handleConfirm);
-    
-    // 允许按ESC键取消
-    const handleEsc = (e) => {
-      if (e.key === 'Escape') {
-        handleCancel();
-        document.removeEventListener('keydown', handleEsc);
-      }
-    };
-    
-    document.addEventListener('keydown', handleEsc);
-  });
-  
-  if (confirmed) {
-    try {
-          // 调用后端API删除文件夹，现在使用folder_id而不是folder_name
-          const config = {
-            method: 'DELETE',
-            url: '/api/rag/folders',
-            params: { folder_id: folder.id }
-          };
-          await api(config);
-      
-      // 显示成功提示
-      showNotification(`已成功删除知识库文件夹: ${folder.name}`, 'success');
-      
-      // 重新加载文件夹列表
-      await loadFolders();
-      
-      // 如果删除的是当前文件夹，则返回上一级
-      if (currentFolder.value === folder) {
-        currentFolder.value = null;
-        currentFiles.value = [];
-      }
-    } catch (error) {
-      // 显示错误提示
-      showNotification(`删除知识库文件夹失败: ${error.message || String(error)}`, 'error');
+    // 如果删除的是当前文件夹，则返回上一级
+    if (currentFolder.value === folder) {
+      currentFolder.value = null;
+      currentFiles.value = [];
     }
+    
+    // 关闭模态框
+    showDeleteFolderModal.value = false;
+  } catch (error) {
+    // 显示错误提示
+    showNotification(`删除知识库文件夹失败: ${error.message || String(error)}`, 'error');
   }
 };
 

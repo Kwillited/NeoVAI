@@ -95,7 +95,7 @@ const updateSettingsSection = () => {
       models: '模型配置',
       notifications: '通知设置',
       about: '关于页面',
-      rag: 'RAG配置',
+      rag: '知识库配置',
       mcp: 'MCP服务设置',
     };
     titleElement.textContent = sectionTitles[activeSection] || '设置';

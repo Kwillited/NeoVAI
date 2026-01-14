@@ -156,7 +156,7 @@ const handleSwitchAccount = () => {
 // 处理退出账号点击
 const handleLogout = () => {
   showUserMenu.value = false;
-  alert('退出账号功能待实现');
+  showNotification('退出账号功能待实现', 'info');
 };
 
 

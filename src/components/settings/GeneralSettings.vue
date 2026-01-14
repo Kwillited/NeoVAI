@@ -135,7 +135,7 @@
           <div class="setting-item p-3 rounded-lg">
             <div>
               <div class="font-medium text-sm">文件视图模式</div>
-              <div class="text-xs text-neutral mt-0.5">选择RAG文件管理界面的显示方式</div>
+              <div class="text-xs text-neutral mt-0.5">选择文件管理界面的显示方式</div>
 
               <div class="flex gap-3 mt-2">
                 <button

@@ -32,7 +32,7 @@
     <div class="relative w-full max-w-4xl mx-auto">
       <div class="card focus-ring depth-1 focus-within:depth-2 transition-all duration-300 ease-in-out bg-white dark:bg-dark-700">
         <!-- 智能体选择 - 合并到卡片内部 -->
-        <div class="px-3 pt-3 pb-1 border-b border-gray-200 flex items-center justify-between">
+        <div class="px-3 pt-3 pb-1 border-b border-gray-200 flex items-center gap-2">
           <div class="relative inline-block">
             <Tooltip content="选择智能体">
               <button
@@ -66,17 +66,17 @@
           </div>
           
           <!-- MCP服务按钮 -->
-          <div class="flex items-center gap-2">
-            <Tooltip content="MCP服务">
-              <button
-                class="h-7 w-7 flex items-center justify-center transition-colors hover:bg-gray-100 text-gray-500 dark:hover:bg-dark-700 dark:text-gray-300 rounded-full"
-                @click="handleMcpService"
-              >
-                <i class="fa-solid fa-server text-xs"></i>
-              </button>
-            </Tooltip>
-            
-            <!-- 展开/折叠控制按钮 -->
+          <Tooltip content="MCP服务">
+            <button
+              class="h-7 w-7 flex items-center justify-center transition-colors hover:bg-gray-100 text-gray-500 dark:hover:bg-dark-700 dark:text-gray-300 rounded-full"
+              @click="handleMcpService"
+            >
+              <i class="fa-solid fa-server text-xs"></i>
+            </button>
+          </Tooltip>
+          
+          <!-- 展开/折叠控制按钮 -->
+          <div class="flex-1 flex justify-end">
             <button
               class="h-7 w-7 flex items-center justify-center text-sm text-gray-600 dark:text-gray-300 hover:text-primary transition-all duration-300 ease-in-out"
               @click="toggleParamsPanel"

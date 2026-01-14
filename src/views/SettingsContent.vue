@@ -5,13 +5,6 @@
     <!-- 标题栏 - 使用全局panel-header样式 -->
     <div class="panel-header">
       <div class="flex items-center gap-6">
-        <ActionButton
-          class="absolute left-3"
-          icon="fa-bars"
-          title="隐藏左侧面板"
-          @click="handleSideMenuToggle"
-        />
-
         <h2 class="text-lg font-bold text-dark" id="currentSettingTitle">基本设置</h2>
       </div>
     </div>
@@ -50,9 +43,6 @@
 <script setup>
 import { onMounted, watch } from 'vue';
 import { useSettingsStore } from '../store/settingsStore.js';
-
-// 导入设置子组件
-import ActionButton from '../components/common/ActionButton.vue';
 import GeneralSettings from '../components/settings/GeneralSettings.vue';
 import ModelsSettings from '../components/settings/ModelsSettings.vue';
 import NotificationsSettings from '../components/settings/NotificationsSettings.vue';
@@ -63,12 +53,7 @@ import McpSettings from '../components/settings/McpSettings.vue';
 // 初始化store
 const settingsStore = useSettingsStore();
 
-// 处理侧边菜单切换
-const handleSideMenuToggle = () => {
-  // 只使用store提供的方法切换左侧导航栏的可见性
-  // DOM操作逻辑移至App.vue中统一管理
-  settingsStore.toggleLeftNav();
-};
+
 
 // 更新设置部分显示
 const updateSettingsSection = () => {

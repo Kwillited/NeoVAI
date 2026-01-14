@@ -2,17 +2,6 @@
   <div class="files-list mt-3">
     <h3 class="text-sm font-medium text-gray-700 dark:text-white mb-2 px-2">{{ currentFolder.name }} 中的文件 ({{ currentFiles.length }})</h3>
     
-    <!-- 上传文件按钮 -->
-    <ActionButton
-      class="btn-secondary w-full py-2 mb-3 flex items-center justify-center text-sm text-neutral hover:text-primary hover:bg-primary/10 rounded-lg transition-all duration-300"
-      title="上传文件到当前知识库"
-      @click="handleUploadToFolder"
-      icon="fa-upload"
-      style="justify-content: center;"
-    >
-      上传文件
-    </ActionButton>
-    
     <!-- 文件列表 -->
     <div v-if="currentFiles.length > 0">
       <div v-for="file in currentFiles" :key="file.path"
@@ -40,10 +29,9 @@
 </template>
 
 <script setup>
-import ActionButton from '../common/ActionButton.vue';
 import StateDisplay from '../common/StateDisplay.vue';
 
-const props = defineProps({
+defineProps({
   currentFolder: {
     type: Object,
     required: true
@@ -67,14 +55,6 @@ const formatFileSize = (bytes) => {
   const i = Math.floor(Math.log(bytes) / Math.log(k));
   
   return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-};
-
-// 处理上传文件到当前文件夹
-const handleUploadToFolder = () => {
-  const event = new CustomEvent('uploadToFolder', {
-    detail: props.currentFolder
-  });
-  window.dispatchEvent(event);
 };
 </script>
 

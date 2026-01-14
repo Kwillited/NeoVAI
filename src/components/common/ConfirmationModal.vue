@@ -1,6 +1,6 @@
 <template>
-  <div v-if="visible" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50" @click="handleBackdropClick">
-    <div class="bg-white dark:bg-gray-800 dark:text-white rounded-lg shadow-xl dark:shadow-panel-dark p-6 w-full max-w-md mx-4 transform transition-all duration-300 scale-100" @click.stop>
+  <div v-if="visible" class="fixed inset-0 flex items-center justify-center z-50" @click="handleBackdropClick">
+    <div class="bg-white dark:bg-gray-800 dark:text-white rounded-xl shadow-2xl dark:shadow-2xl border-2 border-gray-200 dark:border-gray-600 p-6 w-full max-w-md mx-4 transform transition-all duration-300 scale-100" @click.stop>
       <!-- 标题区域 -->
       <div class="mb-4">
         <slot name="header">
@@ -51,7 +51,7 @@
 import { onMounted, onUnmounted } from 'vue';
 
 // Props
-const props = defineProps({
+const _props = defineProps({
   // 是否显示模态框
   visible: {
     type: Boolean,

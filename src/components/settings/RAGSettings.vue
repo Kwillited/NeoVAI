@@ -32,19 +32,6 @@
       <div v-show="activeTab === 'basic'" class="p-4">
         <div class="space-y-4">
           <div class="setting-item p-3 rounded-lg">
-            <div class="flex justify-between items-center">
-              <div>
-                <div class="font-medium text-sm">启用知识库功能</div>
-              <div class="text-xs text-neutral mt-0.5">启用后可以使用文档检索增强生成能力</div>
-              </div>
-              <label class="toggle-switch">
-                <input type="checkbox" :checked="settingsStore.ragConfig.enabled" @change="handleRagEnabledChange" />
-                <span class="toggle-slider"></span>
-              </label>
-            </div>
-          </div>
-
-          <div class="setting-item p-3 rounded-lg">
             <div>
               <div class="font-medium text-sm">Embedder模型</div>
               <div class="text-xs text-neutral mt-0.5">用于将文本转换为向量的模型</div>
@@ -185,12 +172,6 @@ import { useSettingsStore } from '../../store/settingsStore.js';
 const settingsStore = useSettingsStore();
 // 活动选项卡，默认为基本设置
 const activeTab = ref('basic');
-
-// 处理RAG启用状态变更
-function handleRagEnabledChange(event) {
-  const enabled = event.target.checked;
-  settingsStore.toggleRag(enabled);
-}
 
 // 更新RAG配置
 function updateRagConfig() {

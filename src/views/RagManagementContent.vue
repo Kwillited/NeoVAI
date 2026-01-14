@@ -187,6 +187,18 @@
       </div>
     </div>
   </div>
+  
+  <!-- 确认删除模态框 -->
+  <ConfirmationModal
+    :visible="showDeleteModal"
+    title="确认删除"
+    message="确定要删除这个文件吗？"
+    confirmText="确认删除"
+    cancelText="取消"
+    confirmType="danger"
+    @confirm="handleDeleteConfirm"
+    @cancel="showDeleteModal = false"
+  />
 </template>
 
 <script setup>
@@ -198,6 +210,7 @@ import { eventBus } from '../services/eventBus.js';
 import { generateId } from '../store/utils.js';
 import ActionButton from '../components/common/ActionButton.vue';
 import KnowledgeGraphCanvas from '../components/knowledge-graph/KnowledgeGraphCanvas.vue';
+import ConfirmationModal from '../components/common/ConfirmationModal.vue';
 import { showNotification } from '../services/notificationUtils.js';
 
 // 导入Tauri API用于文件操作
@@ -230,6 +243,8 @@ const selectedFolder = ref(null); // 当前选中的文件夹
 const currentFolder = ref('');
 const folders = ref([]);
 const isSliderActive = ref(false); // 滑动控件状态
+const showDeleteModal = ref(false); // 确认删除模态框显示状态
+const fileIdToDelete = ref(null); // 要删除的文件ID
 
 // 初始化时加载文件夹
 const loadFolders = async () => {
@@ -476,83 +491,41 @@ const handleFolderSelected = (folder) => {
 
 
 // 删除文件
-const handleDeleteFile = async (fileId) => {
-    // 创建自定义确认弹窗元素
-    const confirmationDialog = document.createElement('div');
-    confirmationDialog.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
-    confirmationDialog.innerHTML = `
-      <div class="bg-white dark:bg-gray-800 dark:text-white rounded-lg shadow-xl dark:shadow-panel-dark p-6 w-full max-w-md">
-        <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">确认删除</h3>
-        <p class="text-gray-600 dark:text-gray-300 mb-6">确定要删除这个文件吗？</p>
-        <div class="flex justify-end gap-3">
-          <button id="cancelDelete" class="px-4 py-2 rounded-md border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 text-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors">
-            取消
-          </button>
-          <button id="confirmDelete" class="px-4 py-2 rounded-md bg-red-500 text-white hover:bg-red-600 transition-colors">
-            确认删除
-          </button>
-        </div>
-      </div>
-    `;
-    
-    document.body.appendChild(confirmationDialog);
-    
-    // 使用Promise包装确认逻辑
-    const confirmed = await new Promise((resolve) => {
-      const cancelBtn = confirmationDialog.querySelector('#cancelDelete');
-      const confirmBtn = confirmationDialog.querySelector('#confirmDelete');
-      
-      const cleanup = () => {
-        cancelBtn.removeEventListener('click', handleCancel);
-        confirmBtn.removeEventListener('click', handleConfirm);
-        document.body.removeChild(confirmationDialog);
-      };
-      
-      const handleCancel = () => {
-        cleanup();
-        resolve(false);
-      };
-      
-      const handleConfirm = () => {
-        cleanup();
-        resolve(true);
-      };
-      
-      cancelBtn.addEventListener('click', handleCancel);
-      confirmBtn.addEventListener('click', handleConfirm);
-      
-      // 允许按ESC键取消
-      const handleEsc = (e) => {
-        if (e.key === 'Escape') {
-          handleCancel();
-          document.removeEventListener('keydown', handleEsc);
-        }
-      };
-      
-      document.addEventListener('keydown', handleEsc);
-    });
-    
-    if (confirmed) {
-      try {
-        // 获取当前文件夹ID（如果有）
-        const folderId = selectedFolder.value?.id || '';
-        // 传递文件夹ID给deleteFile方法
-        await ragStore.deleteFile(fileId, folderId);
-        // 删除后刷新文件列表
-        // 根据当前是否有选中的文件夹决定如何刷新
-        if (currentFolder.value && selectedFolder.value) {
-          // 如果在某个文件夹中删除文件，重新加载该文件夹的内容
-          await handleFolderClick(selectedFolder.value);
-        } else {
-          // 否则刷新根目录的文件列表
-          await refreshFiles();
-        }
-      } catch (error) {
-        console.error('删除文件失败:', error);
-        showNotification(`删除文件失败: ${error.message || String(error)}`, 'error');
-      }
+const handleDeleteFile = (fileId) => {
+  // 保存要删除的文件ID
+  fileIdToDelete.value = fileId;
+  // 显示确认删除模态框
+  showDeleteModal.value = true;
+};
+
+// 处理确认删除
+const handleDeleteConfirm = async () => {
+  if (!fileIdToDelete.value) return;
+  
+  try {
+    // 获取当前文件夹ID（如果有）
+    const folderId = selectedFolder.value?.id || '';
+    // 传递文件夹ID给deleteFile方法
+    await ragStore.deleteFile(fileIdToDelete.value, folderId);
+    // 删除后刷新文件列表
+    // 根据当前是否有选中的文件夹决定如何刷新
+    if (currentFolder.value && selectedFolder.value) {
+      // 如果在某个文件夹中删除文件，重新加载该文件夹的内容
+      await handleFolderClick(selectedFolder.value);
+    } else {
+      // 否则刷新根目录的文件列表
+      await refreshFiles();
     }
-  };
+  } catch (error) {
+    console.error('删除文件失败:', error);
+    showNotification(`删除文件失败: ${error.message || String(error)}`, 'error');
+  } finally {
+    // 关闭模态框
+    showDeleteModal.value = false;
+    // 重置要删除的文件ID
+    fileIdToDelete.value = null;
+  }
+};
 
 // 处理文件夹点击
 const handleFolderClick = async (folder) => {

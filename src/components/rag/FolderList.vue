@@ -33,8 +33,12 @@
 <script setup>
 import { ref } from 'vue';
 import ActionButton from '../common/ActionButton.vue';
+import { useRagStore } from '../../store/ragStore.js';
 
-const props = defineProps({
+// 初始化ragStore
+const ragStore = useRagStore();
+
+const _props = defineProps({
   folders: {
     type: Array,
     default: () => []
@@ -88,7 +92,7 @@ const handleFolderDragOver = (event, folder) => {
     }
   };
 
-// 处理文件夹点击事件 - 仅保留选中功能
+// 处理文件夹点击事件
 const handleFolderClick = (folder) => {
   // 如果两次点击的是不同文件夹，直接处理单击
   if (lastClickedFolder !== folder) {
@@ -108,8 +112,9 @@ const handleFolderClick = (folder) => {
     
     // 设置定时器处理事件发送（延迟以区分双击）
     clickTimer = setTimeout(() => {
-      // 直接调用store方法保存选中的文件夹
-      ragStore.selectFolder(selectedFolder.value);
+      // 触发folderSelected事件，让RagPanel处理
+      const event = new CustomEvent('folderSelected', { detail: selectedFolder.value });
+      window.dispatchEvent(event);
       
       clickTimer = null;
     }, 300); // 300ms是一个常用的双击判断阈值
@@ -127,25 +132,19 @@ const handleFolderDoubleClick = (folder) => {
   // 重置上次点击的文件夹
   lastClickedFolder = null;
   
-  // 直接调用store方法进入文件夹
-  ragStore.enterFolder(folder);
+  // 触发folderDoubleClick事件，让RagPanel处理
+  const event = new CustomEvent('folderDoubleClick', { detail: folder });
+  window.dispatchEvent(event);
 };
 
 // 处理删除文件夹
 const handleDeleteFolder = (folder) => {
-  // 直接调用store方法删除文件夹
-  ragStore.deleteFolder(folder);
+  // 触发deleteFolder事件，让RagPanel处理
+  const event = new CustomEvent('deleteFolder', { detail: folder });
+  window.dispatchEvent(event);
 };
 
-// 工具方法：根据ID获取文件夹信息
-const getFolderById = (folderId) => {
-  return props.folders.find(folder => folder.id === folderId) || null;
-};
 
-// 工具方法：根据名称获取文件夹信息
-const getFolderByName = (folderName) => {
-  return props.folders.find(folder => folder.name === folderName) || null;
-};
 </script>
 
 <style scoped>

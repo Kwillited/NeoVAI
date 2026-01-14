@@ -421,6 +421,54 @@ export const useRagStore = defineStore('rag', {
       }
     },
 
+    // 设置当前文件夹
+    setCurrentFolder(folder) {
+      this.currentFolder = folder;
+    },
+
+    // 选择文件夹
+    selectFolder(folder) {
+      this.currentFolder = folder;
+    },
+
+    // 进入文件夹
+    async enterFolder(folder) {
+      this.currentFolder = folder;
+      // 加载文件夹中的文件
+      if (folder) {
+        await this.loadFilesInFolder(folder);
+      }
+    },
+
+    // 上传文件到指定文件夹
+    async uploadFilesToFolder(folder, files) {
+      if (!folder || !files || files.length === 0) return;
+      
+      // 使用batchUploadFiles方法上传文件到指定文件夹
+      await this.batchUploadFiles(files, folder.id || folder.name);
+    },
+
+    // 删除文件夹
+    async deleteFolder(folder) {
+      if (!folder || !folder.id) return;
+      
+      this.loading = true;
+      this.clearError();
+      
+      try {
+        // 调用后端API删除文件夹
+        await apiService.delete(`/api/rag/folders/${folder.id}`);
+        
+        // 重新加载文件夹列表和文件列表以确保同步
+        await Promise.all([this.loadFolders(), this.loadFiles()]);
+      } catch (error) {
+        console.error('删除文件夹失败:', error);
+        this.setError(`删除文件夹失败: ${error.message || '未知错误'}`);
+      } finally {
+        this.loading = false;
+      }
+    },
+
     // 批量上传文件
     async batchUploadFiles(files, folder = '') {
       if (!files || files.length === 0) return;

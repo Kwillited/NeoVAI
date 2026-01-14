@@ -12,13 +12,6 @@
         title="返回上一级"
         @click="handleBackToParent"
       />
-      <!-- 一级菜单时显示返回聊天按钮 -->
-      <ActionButton
-        v-else
-        icon="fa-arrow-left"
-        title="返回聊天"
-        @click="handleBackToChat"
-      />
     </div>
   </div>
 </template>
@@ -38,16 +31,8 @@ const settingsStore = useSettingsStore();
 
 // 处理返回上一级
 const handleBackToParent = () => {
-  // 使用store方法切换面板
-  settingsStore.setActivePanel('history');
-};
-
-// 处理返回聊天按钮点击事件
-const handleBackToChat = () => {
-  settingsStore.setActivePanel('history');
-  
-  // 使用store方法切换内容
-  settingsStore.setActiveContent('chat');
+  // 触发返回上一级事件，让RagPanel组件处理返回逻辑
+  window.dispatchEvent(new CustomEvent('backToParent'));
 };
 </script>
 

@@ -58,11 +58,6 @@
 import { ref, nextTick, onMounted, onUnmounted, watch } from 'vue';
 import { invoke } from '@tauri-apps/api/core';
 
-// 定义组件名称
-defineOptions({
-  name: 'CommandLine'
-});
-
 // 定义组件属性
 const props = defineProps({
   visible: {
@@ -73,6 +68,11 @@ const props = defineProps({
 
 // 定义组件事件
 const emit = defineEmits(['close']);
+
+// 定义组件名称
+defineOptions({
+  name: 'CommandLine'
+});
 
 // 组件状态
 const outputContainer = ref(null);

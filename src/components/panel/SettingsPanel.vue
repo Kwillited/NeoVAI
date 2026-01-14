@@ -85,13 +85,5 @@ const handleSectionClick = (section) => {
   color: #e2e8f0;
 }
 
-/* 返回按钮深色模式 */
-.dark .btn-secondary {
-  color: #94a3b8;
-}
 
-.dark .btn-secondary:hover {
-  color: #818cf8;
-  background-color: rgba(129, 140, 248, 0.1);
-}
 </style>

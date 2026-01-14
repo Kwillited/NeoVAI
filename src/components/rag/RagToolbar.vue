@@ -1,25 +1,31 @@
 <template>
   <div class="toolbar flex justify-between items-center mb-3 p-2 bg-gray-50 dark:bg-gray-800 dark:border-gray-700 rounded-lg border border-gray-100 transition-all duration-300">
-    <ActionButton
+    <Button
       id="createKnowledgeBaseBtn"
       icon="fa-folder-plus"
-      title="新建知识库"
+      tooltip="新建知识库"
       @click="handleCreateKnowledgeBase"
+      size="sm"
+      shape="full"
     />
 
-    <ActionButton
+    <Button
       id="deleteAllBtn"
       icon="fa-trash-can"
-      title="删除所有文件夹"
+      tooltip="删除所有文件夹"
       @click="handleDeleteAll"
       :disabled="loading"
-      iconClass="text-neutral hover:text-red-500 hover:bg-red-50"
+      size="sm"
+      shape="full"
+      class="text-neutral hover:text-red-500 hover:bg-red-50"
     />
-    <ActionButton
+    <Button
       :id="isRagManagementView ? '返回对话' : '切换到文件管理'"
       :icon="isRagManagementView ? 'fa-comment' : 'fa-folder-tree'"
-      :title="isRagManagementView ? '返回对话' : '切换到文件管理'"
+      :tooltip="isRagManagementView ? '返回对话' : '切换到文件管理'"
       @click="handleViewToggle"
+      size="sm"
+      shape="full"
     />
   </div>
   
@@ -32,7 +38,7 @@ import { ref, onMounted, watch } from 'vue';
 import { useSettingsStore } from '../../store/settingsStore.js';
 import { useRagStore } from '../../store/ragStore.js';
 import { showNotification } from '../../services/notificationUtils.js';
-import ActionButton from '../common/ActionButton.vue';
+import Button from '../common/Button.vue';
 import SearchBar from '../common/SearchBar.vue';
 
 const props = defineProps({
@@ -103,24 +109,6 @@ const handleSearch = () => {
 </script>
 
 <style scoped>
-/* 工具栏样式 */
-.toolbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 12px;
-  padding: 8px;
-  background-color: #f9fafb;
-  border-radius: 0.5rem;
-  border: 1px solid #f3f4f6;
-}
-
-/* 夜间模式工具栏样式 */
-.dark .toolbar {
-  background-color: #1f2937;
-  border-color: #374151;
-}
-
 /* 禁用状态样式 */
 button:disabled {
   opacity: 0.5;

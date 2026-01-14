@@ -6,11 +6,8 @@
     <!-- 1. 顶部导航栏 -->
     <TopNav data-tauri-drag-region/>
 
-    <!-- 主内容区域：包含左侧导航和显示区域 -->
+    <!-- 主内容区域：显示区域 -->
     <div class="flex flex-1 overflow-hidden">
-      <!-- 2. 左侧导航栏 -->
-      <LeftNav v-if="settingsStore.leftNavVisible" />
-
       <!-- 3. 显示区域容器 -->
       <DisplayArea 
         :active-content="settingsStore.activeContent" 
@@ -29,7 +26,6 @@
 
 <script setup>
 import { ref, onMounted, watch } from 'vue';
-import LeftNav from './components/layout/LeftNav.vue';
 import TopNav from './components/layout/TopNav.vue';
 import ModelVersionForm from './components/models/ModelVersionForm.vue';
 import ModelSettingsDrawer from './components/models/ModelSettingsDrawer.vue';

@@ -14,13 +14,6 @@
 <script setup>
 import Tooltip from './Tooltip.vue';
 
-// 定义组件名称和属性继承选项
-// 使用defineOptions API注册组件名称，替代旧的export default语法
-defineOptions({
-  name: 'ActionButton',
-  inheritAttrs: false // 阻止Vue自动将$attrs传递给组件根元素
-});
-
 // 定义组件属性
 const props = defineProps({
   icon: {
@@ -39,6 +32,14 @@ const props = defineProps({
 
 // 定义组件事件
 const emit = defineEmits(['click']);
+
+// 定义组件名称和属性继承选项
+// 使用defineOptions API注册组件名称，替代旧的export default语法
+// 注意：defineOptions必须在defineProps和defineEmits之后调用
+defineOptions({
+  name: 'ActionButton',
+  inheritAttrs: false // 阻止Vue自动将$attrs传递给组件根元素
+});
 
 // 处理点击事件并传递事件对象
 const handleClick = (event) => {

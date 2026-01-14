@@ -1,36 +1,9 @@
 <template>
-  <!-- 自定义通知组件 -->
-  <div v-if="showNotification" class="notification-overlay fixed bottom-4 right-4 z-50">
-    <div class="notification-card bg-white dark:bg-dark-700 shadow-lg rounded-lg p-4 min-w-[300px] transition-all duration-300 ease-in-out transform translate-y-0 opacity-100">
-      <div class="flex items-start">
-        <div class="flex-shrink-0 mt-1">
-          <i v-if="notificationType === 'success'" class="fa-solid fa-check-circle text-green-500"></i>
-          <i v-else-if="notificationType === 'error'" class="fa-solid fa-exclamation-circle text-red-500"></i>
-          <i v-else-if="notificationType === 'info'" class="fa-solid fa-info-circle text-blue-500"></i>
-          <i v-else class="fa-solid fa-bell text-gray-500"></i>
-        </div>
-        <div class="ml-3 w-0 flex-1 pt-0.5">
-          <p class="text-sm font-medium text-gray-900 dark:text-white">{{ notificationTitle }}</p>
-          <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ notificationMessage }}</p>
-        </div>
-        <div class="ml-4 flex-shrink-0 flex">
-          <button @click="hideNotification" class="bg-white dark:bg-dark-700 rounded-md inline-flex text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-            <span class="sr-only">关闭</span>
-            <i class="fa-solid fa-times"></i>
-          </button>
-        </div>
-      </div>
-      <!-- 倒计时进度条 -->
-      <div class="mt-3 h-1 bg-gray-200 dark:bg-gray-600 rounded-full overflow-hidden">
-        <div class="notification-progress h-full bg-primary rounded-full transition-all duration-[2900ms] ease-linear" :style="{ width: '0%' }"></div>
-      </div>
-    </div>
-  </div>
   
   <!-- 聊天输入区域 - 在切换到图谱视图时添加顶部padding -->
   <div id="MessageInputArea" class="border-t-0 pb-4 px-6 transition-colors duration-300 ease-in-out" :class="{ 'pt-4': activeView !== 'grid' }">
     <div class="relative w-full max-w-4xl mx-auto">
-      <div class="card focus-ring depth-1 focus-within:depth-2 transition-all duration-300 ease-in-out bg-white dark:bg-dark-700">
+      <div class="bg-white dark:bg-dark-700 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md focus-within:shadow-md transition-all duration-300 ease-in-out">
         <!-- 智能体选择和MCP工具 - 合并到卡片内部 -->
         <div class="px-3 py-1.5 border-b border-gray-200 flex items-center gap-2">
           <div class="flex items-center gap-2">
@@ -38,7 +11,7 @@
             <div class="relative inline-block">
               <Tooltip content="选择智能体">
                 <button
-                  class="h-6 flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-dark-600 px-3 rounded-lg transition-all duration-300 ease-in-out btn-secondary hover:bg-gray-100 hover:text-primary cursor-pointer"
+                  class="h-6 flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-dark-600 px-3 rounded-lg transition-all duration-300 ease-in-out hover:bg-gray-100 hover:text-primary cursor-pointer"
                   @click="toggleAgentDropdown"
                 >
 
@@ -48,7 +21,7 @@
               </Tooltip>
               <div
                 ref="agentDropdown"
-                class="dropdown dropdown-content absolute left-0 bottom-full mb-1 w-48 bg-white z-50 depth-2"
+                class="absolute left-0 bottom-full mb-1 w-48 bg-white z-50 rounded-lg border border-gray-200 shadow-md"
                 :class="{ 'hidden': !showAgentDropdown }"
                 style="z-index: 1000 !important"
               >
@@ -56,7 +29,7 @@
                   <button
                     v-for="agent in availableAgents"
                     :key="agent.value"
-                    class="agent-option w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition-colors rounded-lg"
+                    class="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition-colors rounded-lg"
                     :class="{ 'text-blue-600 bg-blue-50 dark:text-blue-400 dark:bg-blue-900/30': agent.value === currentAgent }"
                     @click="selectAgent(agent.value)"
                   >
@@ -109,7 +82,7 @@
                     <!-- 悬停提示弹窗 -->
                     <div
                       v-if="activeTooltip === 'temperature'"
-                      class="click-tooltip absolute z-50 bg-white border border-gray-200 rounded-lg shadow-lg p-3 text-sm max-w-xs animate-fade-in"
+                      class="absolute z-50 bg-white border border-gray-200 rounded-lg shadow-lg p-3 text-sm max-w-xs transition-opacity duration-200"
                       :style="tooltipStyle"
                     >
                       <div class="font-medium mb-1">温度参数说明</div>
@@ -398,7 +371,7 @@
               </Tooltip>
               <div
                 ref="modelDropdown"
-                class="dropdown dropdown-content absolute left-0 bottom-full mb-2 w-48 bg-white z-50 depth-2"
+                class="dropdown absolute left-0 bottom-full mb-2 w-48 bg-white z-50 shadow-lg rounded-lg animate-fade-in"
                 :class="{ 'hidden': !showModelDropdown }"
                 style="z-index: 1000 !important"
               >
@@ -418,14 +391,14 @@
           </div>
           <button
               v-if="!hasActiveStreaming"
-              class="w-8 h-8 flex items-center justify-center text-white bg-primary hover:bg-secondary rounded-full transition-all duration-300 ease-in-out hover-scale"
+              class="w-8 h-8 flex items-center justify-center text-white bg-primary hover:bg-secondary rounded-full transition-all duration-300 ease-in-out hover:scale-105"
             @click="handleSendMessage"
           >
             <i class="fa-solid fa-arrow-up"></i>
           </button>
           <Tooltip v-else content="终止输出">
             <button
-              class="w-8 h-8 flex items-center justify-center text-white bg-red-500 hover:bg-red-600 rounded-full transition-all duration-300 ease-in-out hover-scale"
+              class="w-8 h-8 flex items-center justify-center text-white bg-red-500 hover:bg-red-600 rounded-full transition-all duration-300 ease-in-out hover:scale-105"
               @click="handleCancelStreaming"
             >
               <i class="fa-solid fa-stop"></i>
@@ -442,8 +415,9 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
-import { StorageManager } from '../../store/utils.js';
+import { StorageManager, formatFileSize } from '../../store/utils.js';
 import Tooltip from '../common/Tooltip.vue';
+import { showNotification } from '../../services/notificationUtils.js';
 
 // 接收从父组件传递的视图状态
 const _props = defineProps({
@@ -516,12 +490,7 @@ const tooltipStyle = ref({});
 // 从store获取模型参数
 const modelParams = computed(() => modelStore.currentModelParams);
 
-// 自定义通知组件状态
-const showNotification = ref(false);
-const notificationTitle = ref('');
-const notificationMessage = ref('');
-const notificationType = ref('info');
-let notificationTimer = null;
+
 
 // 切换深度思考模式
 const toggleDeepThinking = () => {
@@ -699,17 +668,17 @@ const handleSendMessage = async () => {
           
           if (!ollamaStatus.installed) {
             // Ollama未安装，显示提示
-            displayNotification('error', '提示', 'Ollama未安装，请先安装Ollama后再使用该模型', 3000);
+            showNotification('Ollama未安装，请先安装Ollama后再使用该模型', 'error', 3000);
           } else if (!ollamaStatus.running) {
             // 如果服务没有运行，启动它
             await invoke('start_ollama_service');
             // 显示服务正在启动的提示
-            displayNotification('info', '提示', 'Ollama服务正在启动，请稍候...', 3000);
+            showNotification('Ollama服务正在启动，请稍候...', 'success', 3000);
           }
         } catch (error) {
           console.error('Ollama服务管理失败:', error);
           // 显示更具体的错误信息
-          displayNotification('error', '错误', `Ollama服务管理失败: ${error.message || error}`, 3000);
+          showNotification(`Ollama服务管理失败: ${error.message || error}`, 'error', 3000);
         }
       }, 0);
     }
@@ -732,51 +701,7 @@ const handleCancelStreaming = () => {
   hasActiveStreaming.value = false;
 };
 
-// 显示通知
-const displayNotification = (type = 'info', title = '', message = '', duration = 3000) => {
-  // 清除之前的定时器
-  hideNotification();
-  
-  // 设置通知内容
-  notificationType.value = type;
-  notificationTitle.value = title;
-  notificationMessage.value = message;
-  
-  // 显示通知
-  showNotification.value = true;
-  
-  // 触发进度条动画
-  setTimeout(() => {
-    const progressBar = document.querySelector('.notification-progress');
-    if (progressBar) {
-      // 重置进度条
-      progressBar.style.width = '100%';
-      progressBar.style.transition = 'none';
-      
-      // 触发重排
-      void progressBar.offsetWidth;
-      
-      // 设置动画
-      progressBar.style.transition = `width ${duration - 100}ms ease-linear`;
-      progressBar.style.width = '0%';
-    }
-  }, 10);
-  
-  // 设置自动关闭定时器
-  notificationTimer = setTimeout(() => {
-    hideNotification();
-  }, duration);
-};
 
-// 隐藏通知
-const hideNotification = () => {
-  if (notificationTimer) {
-    clearTimeout(notificationTimer);
-    notificationTimer = null;
-  }
-  
-  showNotification.value = false;
-};
 
 // 检查是否有活动的流式输出
 const checkForActiveStreaming = () => {
@@ -1017,69 +942,11 @@ const getFileIcon = (fileName) => {
   return iconMap[extension] || 'fa-file';
 };
 
-// 格式化文件大小
-const formatFileSize = (bytes) => {
-  if (bytes < 1024) return bytes + ' B';
-  else if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
-  else return (bytes / 1048576).toFixed(1) + ' MB';
-};
+
 
 </script>
 
 <style scoped>
-/* 卡片阴影效果 - 增加特异性确保样式应用 */
-.card {
-  border-radius: 20px !important;
-  border: 1px solid #e5e7eb !important;
-  overflow: visible;
-  transition: box-shadow 0.3s ease;
-}
-
-/* 深度效果 - 增加特异性确保样式应用 */
-.depth-1 {
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
-}
-
-.depth-1:hover {
-  box-shadow:
-    0 4px 6px -1px rgba(0, 0, 0, 0.1),
-    0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
-}
-
-.depth-2 {
-  box-shadow:
-    0 4px 6px -1px rgba(0, 0, 0, 0.1),
-    0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
-}
-
-/* 按钮悬停效果 */
-.hover-scale:hover {
-  transform: scale(1.05);
-}
-
-/* 焦点环效果 */
-.focus-ring:focus {
-  outline: 2px solid rgba(66, 153, 225, 0.5);
-  outline-offset: 2px;
-}
-
-/* 下拉菜单动画 */
-.dropdown-content {
-  animation: dropdownFade 0.2s ease-in-out;
-  border-radius: 8px;
-}
-
-@keyframes dropdownFade {
-  from {
-    opacity: 0;
-    transform: translateY(-5px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
 /* 参数面板滑入滑出动画 */
 .slide-up-enter-active,
 .slide-up-leave-active {
@@ -1168,17 +1035,7 @@ const formatFileSize = (bytes) => {
   background: #3b82f6;
 }
 
-/* 点击提示弹窗样式 */
-.click-tooltip {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
-  animation: fadeIn 0.2s ease-in-out;
-}
-
-.animate-fade-in {
-  animation: fadeIn 0.2s ease-in-out;
-}
-
+/* 淡入动画 */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -1190,77 +1047,7 @@ const formatFileSize = (bytes) => {
   }
 }
 
-/* 深色模式提示弹窗样式 */
-.dark .click-tooltip {
-  background-color: #334155 !important;
-  border-color: #475569 !important;
-  color: #e2e8f0;
-}
-
-.dark .click-tooltip .font-medium {
-  color: #e2e8f0;
-}
-
-.dark .click-tooltip p {
-  color: #cbd5e1;
-}
-
-.dark .click-tooltip .text-xs {
-  color: #94a3b8;
-}
-
-/* 模型选项样式 */
-.model-option {
-  border-radius: 8px;
-  transition: all 0.2s ease;
-  border: 1px solid transparent;
-}
-
-.model-option:hover {
-  background-color: #f8fafc !important;
-}
-
-/* 智能体选项样式 */
-.agent-option {
-  border-radius: 8px;
-  transition: all 0.2s ease;
-  border: 1px solid transparent;
-}
-
-.agent-option:hover {
-  background-color: #f8fafc !important;
-}
-
-/* 深色模式样式 */
-.dark .dropdown-content {
-  background-color: #334155 !important;
-  border-color: #475569 !important;
-}
-
-.dark .model-option {
-  color: #e2e8f0;
-}
-
-.dark .model-option:hover {
-  background-color: #475569 !important;
-}
-
-.dark .agent-option {
-  color: #e2e8f0;
-}
-
-.dark .agent-option:hover {
-  background-color: #475569 !important;
-}
-
-.dark .btn-secondary {
-    background-color: transparent;
-    color: #e2e8f0;
-  border-color: #475569;
-}
-
-.dark .btn-secondary:hover {
-    background-color: transparent;
-    border-color: #64748b;
+.animate-fade-in {
+  animation: fadeIn 0.2s ease-in-out;
 }
 </style>

@@ -6,19 +6,21 @@
       <slot name="actions"></slot>
       
       <!-- 默认返回按钮（如果有返回按钮配置） -->
-      <ActionButton
+      <Button
         v-if="showBackButton"
         :id="backButtonId"
         icon="fa-arrow-left"
-        title="返回聊天"
+        tooltip="返回聊天"
         @click="handleBack"
+        size="sm"
+        shape="full"
       />
     </div>
   </div>
 </template>
 
 <script setup>
-import ActionButton from '../common/ActionButton.vue';
+import Button from '../common/Button.vue';
 import { useSettingsStore } from '../../store/settingsStore.js';
 
 // 定义props

@@ -109,11 +109,6 @@ import { ref, computed } from 'vue';
 import { useModelSettingStore } from '../../store/modelSettingStore.js';
 import { showNotification } from '../../services/notificationUtils.js';
 
-// 定义组件名称
-defineOptions({
-  name: 'ModelSettingsDrawer'
-});
-
 // 定义组件属性
 const props = defineProps({
   isVisible: {
@@ -128,6 +123,11 @@ const props = defineProps({
 
 // 定义组件事件
 const emit = defineEmits(['close', 'save']);
+
+// 定义组件名称
+defineOptions({
+  name: 'ModelSettingsDrawer'
+});
 
 // 初始化store
 const modelStore = useModelSettingStore();

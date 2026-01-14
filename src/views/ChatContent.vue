@@ -107,6 +107,8 @@
 import { ref, onMounted, onUnmounted, nextTick, computed, watch } from 'vue';
 import { useChatStore } from '../store/chatStore.js';
 import { useSettingsStore } from '../store/settingsStore.js';
+// 导入公共工具函数
+import { formatDate } from '../store/utils.js';
 
 // 导入子组件
 import ChatMessagesContainer from '../components/chat/ChatMessagesContainer.vue';
@@ -164,31 +166,7 @@ const selectChatFromHistory = (chatId) => {
   settingsStore.setActiveContent('chat');
 };
 
-// 格式化日期显示
-const formatDate = (timestamp) => {
-  const date = new Date(timestamp);
-  const now = new Date();
-  const diff = now - date;
-  
-  // 小于1小时，显示几分钟前
-  if (diff < 3600000) {
-    const minutes = Math.floor(diff / 60000);
-    return `${minutes}分钟前`;
-  }
-  // 小于24小时，显示几小时前
-  else if (diff < 86400000) {
-    const hours = Math.floor(diff / 3600000);
-    return `${hours}小时前`;
-  }
-  // 今年内，显示月日
-  else if (date.getFullYear() === now.getFullYear()) {
-    return `${date.getMonth() + 1}月${date.getDate()}日`;
-  }
-  // 其他情况，显示年月日
-  else {
-    return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`;
-  }
-};
+
 
 // 点击外部区域关闭菜单
 const closeMenusOnClickOutside = (event) => {

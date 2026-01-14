@@ -94,13 +94,13 @@
 </template>
 
 <script setup>
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, onUnmounted } from 'vue'
 import Tooltip from '../common/Tooltip.vue'
 import Loading from '../common/Loading.vue'
-// 导入marked库和highlight.js
-import { marked } from 'marked'
-import hljs from 'highlight.js'
-import 'highlight.js/styles/github.css'
+// 导入集中化的markdown插件
+import { marked } from '../../plugins/markdown.js'
+// 导入公共工具函数
+import { formatTime, copyToClipboard } from '../../store/utils.js'
 
 const props = defineProps({
   message: {
@@ -137,50 +137,10 @@ const formattedContent = computed(() => {
   // 处理AI回复中的思考标签（</think>）
   let contentToParse = messageContent.value;
   const thinkingTagRegex = /^\s*\<think>[\s\S]*?\<\/think>\s*/;
-  const match = contentToParse.match(thinkingTagRegex);
+  contentToParse = contentToParse.replace(thinkingTagRegex, '');
   
-  // 使用导入的marked库转换Markdown为HTML
+  // 使用集中化配置的marked库转换Markdown为HTML
   try {
-    // 配置marked，自定义代码块渲染
-    const renderer = new marked.Renderer();
-    
-    // 保存原始的codeblock渲染方法
-    const originalCode = renderer.code;
-    
-    // 自定义代码块渲染
-    renderer.code = function(code, language) {
-      // 如果没有语言或语言为'text'，则显示为'plaintext'
-      const displayLanguage = language && language !== 'text' ? language : 'plaintext';
-      
-      // 创建唯一ID用于复制功能
-      const codeBlockId = `code-block-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-      
-      // 返回带头部的代码块HTML
-      return `
-        <div class="code-container">
-          <div class="code-header">
-            <span class="code-language">${displayLanguage}</span>
-            <button 
-              class="copy-code-btn"
-              data-code-block-id="${codeBlockId}"
-              @click="copyCodeToClipboard('${codeBlockId}')"
-              title="复制代码"
-            >
-              <i class="fa-solid fa-copy"></i>
-            </button>
-          </div>
-          <pre><code id="${codeBlockId}">${code}</code></pre>
-        </div>
-      `;
-    };
-    
-    // 设置marked配置
-    marked.setOptions({
-      renderer: renderer,
-      breaks: true,
-      gfm: true
-    });
-    
     return marked.parse(contentToParse);
   } catch (error) {
     console.error('Markdown解析错误:', error);
@@ -201,43 +161,16 @@ const updateKey = computed(() => {
   return `${messageContent.value.length}-${messageValue.value.lastUpdate || Date.now()}`
 })
 
-// 格式化时间
-const formatTime = (timestamp) => {
-  if (!timestamp) return ''
-  const date = new Date(timestamp)
-  const now = new Date()
-  const diff = now - date
-  
-  // 计算分钟、小时、天的差值
-  const minutes = Math.floor(diff / (1000 * 60))
-  const hours = Math.floor(diff / (1000 * 60 * 60))
-  const days = Math.floor(diff / (1000 * 60 * 60 * 24))
-  
-  // 根据差值返回不同的时间格式
-  if (minutes < 1) {
-    return '刚刚'
-  } else if (minutes < 60) {
-    return `${minutes}分钟前`
-  } else if (hours < 24) {
-    return `${hours}小时前`
-  } else if (days < 7) {
-    return `${days}天前`
-  } else {
-    // 超过一周显示具体日期
-    return date.toLocaleDateString('zh-CN')
-  }
-}
-
 // 复制消息内容到剪贴板
 const copyMessageContent = async () => {
   try {
     // 移除思考标签（</think>和</think>）后再复制
     let contentToCopy = messageContent.value;
-    const thinkingTagRegex = /^\s*\<think>[\s\S]*?\<\/think\>\s*/;
+    const thinkingTagRegex = /^\s*\<think>[\s\S]*?\<\/think>\s*/;
     if (thinkingTagRegex.test(contentToCopy)) {
       contentToCopy = contentToCopy.replace(thinkingTagRegex, '');
     }
-    await navigator.clipboard.writeText(contentToCopy)
+    await copyToClipboard(contentToCopy)
     // 可以在这里添加一个临时的提示，告知用户复制成功
   } catch (error) {
     console.error('复制失败:', error)
@@ -250,7 +183,7 @@ const copyCodeToClipboard = async (codeBlockId) => {
     const codeElement = document.getElementById(codeBlockId);
     if (codeElement) {
       const codeText = codeElement.textContent;
-      await navigator.clipboard.writeText(codeText);
+      await copyToClipboard(codeText);
       
       // 更改复制按钮图标为成功状态
       const button = document.querySelector(`button[data-code-block-id="${codeBlockId}"]`);
@@ -279,6 +212,27 @@ const startEditMessage = () => {
     content: messageValue.value.content
   })
 }
+
+// 事件委托处理代码块复制按钮点击
+const handleCodeCopyClick = (event) => {
+  const button = event.target.closest('.copy-code-btn');
+  if (button) {
+    const codeBlockId = button.getAttribute('data-code-block-id');
+    if (codeBlockId) {
+      copyCodeToClipboard(codeBlockId);
+    }
+  }
+};
+
+// 监听组件挂载后的点击事件
+onMounted(() => {
+  document.addEventListener('click', handleCodeCopyClick);
+});
+
+// 组件卸载时清理事件监听器
+onUnmounted(() => {
+  document.removeEventListener('click', handleCodeCopyClick);
+});
 
 // 定义发射事件
 const emit = defineEmits(['editMessage'])
@@ -323,37 +277,5 @@ const emit = defineEmits(['editMessage'])
   font-size: 0.875rem;
   display: flex;
   align-items: center;
-}
-
-/* 动画 */
-.animate-bounce {
-  animation: bounce 1.4s infinite ease-in-out both;
-}
-
-@keyframes bounce {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-5px);
-  }
-}
-
-/* 居中样式特定样式 */
-.max-w-2xl {
-  max-width: 42rem;
-}
-
-.my-4 {
-  margin-top: 1rem;
-  margin-bottom: 1rem;
-}
-
-.justify-center {
-  justify-content: center;
-}
-
-.dark .bg-gray-700\/50 {
-  background-color: rgba(55, 65, 81, 0.5);
 }
 </style>

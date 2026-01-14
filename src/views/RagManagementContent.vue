@@ -207,7 +207,7 @@ import { useSettingsStore } from '../store/settingsStore.js';
 import { useRagStore } from '../store/ragStore.js';
 import { useChatStore } from '../store/chatStore.js';
 import { eventBus } from '../services/eventBus.js';
-import { generateId } from '../store/utils.js';
+import { generateId, formatFileSize } from '../store/utils.js';
 import ActionButton from '../components/common/ActionButton.vue';
 import KnowledgeGraphCanvas from '../components/knowledge-graph/KnowledgeGraphCanvas.vue';
 import ConfirmationModal from '../components/common/ConfirmationModal.vue';
@@ -454,16 +454,7 @@ const handleSideMenuToggle = () => {
 
 
 
-// 格式化文件大小
-const formatFileSize = (bytes) => {
-  if (!bytes || bytes === 0) return '0 Bytes';
-  
-  const k = 1024;
-  const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-  
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-};
+
 
 // 获取文件扩展名
 const getFileExtension = (filename) => {
@@ -575,6 +566,17 @@ const handleViewSwitch = (event) => {
 
 
 
+// 处理文件上传完成事件
+const handleFilesUploaded = () => {
+  // 如果有选中的文件夹，重新加载该文件夹的内容
+  if (selectedFolder.value) {
+    handleFolderClick(selectedFolder.value);
+  } else {
+    refreshFiles();
+  }
+  loadFolders();
+};
+
 // 组件挂载时加载文件并监听事件
 onMounted(() => {
   console.log('RagManagementContent组件挂载');
@@ -604,42 +606,25 @@ onMounted(() => {
   eventBus.on('folderSelected', handleFolderSelected);
   
   // 监听RagPanel中的文件上传完成事件
-  eventBus.on('filesUploaded', () => {
-    // 如果有选中的文件夹，重新加载该文件夹的内容
-    if (selectedFolder.value) {
-      handleFolderClick(selectedFolder.value);
-    } else {
-      refreshFiles();
-    }
-    loadFolders();
-  });
+  eventBus.on('filesUploaded', handleFilesUploaded);
   
   // 监听视图切换事件
   window.addEventListener('switchToThumbnailView', handleViewSwitch);
   
   // 监听可能的全局内容变化事件
   window.addEventListener('contentChanged', handleContentChanged);
-  
-  
 });
 
 // 组件卸载时取消监听
 onUnmounted(() => {
   eventBus.off('folderSelected', handleFolderSelected);
-  eventBus.off('filesUploaded', () => {
-    refreshFiles();
-    loadFolders();
-  });
+  eventBus.off('filesUploaded', handleFilesUploaded);
   
   // 移除视图切换事件监听
   window.removeEventListener('switchToThumbnailView', handleViewSwitch);
   
   // 清除contentChanged事件监听
   window.removeEventListener('contentChanged', handleContentChanged);
-  
-  
-  
-  
 });
 
 // 处理内容变化事件的单独函数
@@ -683,13 +668,7 @@ const handleContentChanged = async (event) => {
   /* 移除底部边框 */
 }
 
-.btn-secondary {
-  transition: all 0.2s ease;
-}
 
-.btn-secondary:hover {
-  background-color: #f1f5f9 !important;
-}
 
 /* 视图切换滑块样式 */
 .toggle-wrapper {

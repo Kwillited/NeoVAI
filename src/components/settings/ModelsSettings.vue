@@ -141,7 +141,14 @@
   />
   
   <!-- 模型版本表单组件 -->
-  <ModelVersionForm ref="modelVersionFormRef" />
+  <ModelVersionForm 
+    :visible="modelVersionFormVisible"
+    :model-name="selectedModelName"
+    :mode="modelVersionFormMode"
+    :model-data="selectedModelData"
+    @close="handleModelVersionFormClose"
+    @success="handleModelVersionFormSuccess"
+  />
   
   <!-- 模型版本编辑组件 -->
 
@@ -165,7 +172,12 @@ const configuredModelsSearch = ref('');
 const unconfiguredModelsSearch = ref('');
 const isConfigDrawerVisible = ref(false);
 const currentEditingModel = ref(null);
-const modelVersionFormRef = ref(null);
+
+// ModelVersionForm 组件状态管理
+const modelVersionFormVisible = ref(false);
+const selectedModelName = ref('');
+const modelVersionFormMode = ref('add'); // add 或 edit
+const selectedModelData = ref(null);
 
 // 计算属性：筛选已配置模型 - 直接使用store中的getter
 const configuredModels = computed(() => modelStore.configuredModels);
@@ -197,20 +209,7 @@ const filteredUnconfiguredModels = computed(() => {
   );
 });
 
-// 获取模型显示名称（包含版本信息）
-const getModelDisplayName = (model) => {
-  // 查找选中的版本
-  const selectedVersion = model.versions?.find(v => v.id === model.selected_version || v.name === model.selected_version);
-  if (!selectedVersion) {
-    return model.name; // 模型顶级配置中没有custom_name
-  }
-  
-  // 优先使用版本的custom_name，否则使用版本的name
-  const versionDisplay = selectedVersion.custom_name || selectedVersion.version_name;
-  
-  // 返回格式：name-versionDisplay
-  return `${model.name}-${versionDisplay}`;
-};
+
 
 // 加载模型列表 - 使用modelStore中的方法
 // 为模型添加图标URL
@@ -256,10 +255,11 @@ const configModel = (model) => {
 
 // 编辑模型
 const editModel = (model) => {
-  if (modelVersionFormRef.value) {
-    // 使用showAddModal方法显示添加模型版本的模态框
-    modelVersionFormRef.value.showAddModal(model.name);
-  }
+  // 使用新的方式显示添加模型版本的模态框
+  modelVersionFormVisible.value = true;
+  selectedModelName.value = model.name;
+  modelVersionFormMode.value = 'add';
+  selectedModelData.value = null;
 };
 
 // 关闭配置抽屉
@@ -270,21 +270,40 @@ const closeConfigDrawer = () => {
 
 // 编辑模型版本
 const editModelVersion = (model) => {
-  if (modelVersionFormRef.value && model.selected_version) {
+  if (model.selected_version) {
     // 获取版本对象
     const version = model.selected_version;
     
     // 填充表单数据并显示模态框
-    modelVersionFormRef.value.showEditModal({
+    modelVersionFormVisible.value = true;
+    selectedModelName.value = model.name;
+    modelVersionFormMode.value = 'edit';
+    selectedModelData.value = {
       id: typeof version === 'object' ? version.version_name : version, // 只使用version_name字段
       modelName: model.name,
-      modelVersion: typeof version === 'object' ? version.version_name : version,
+      versionName: typeof version === 'object' ? version.version_name : version,
       customName: typeof version === 'object' ? (version.custom_name || '') : '',
       apiKey: typeof version === 'object' ? (version.api_key || '') : '',
       apiBaseUrl: typeof version === 'object' ? (version.api_base_url || 'https://api.openai.com') : 'https://api.openai.com',
-      streaming: typeof version === 'object' ? (version.streaming_config || false) : false
-    });
+      streamingConfig: typeof version === 'object' ? (version.streaming_config || false) : false
+    };
   }
+};
+
+// 处理模型版本表单关闭
+const handleModelVersionFormClose = () => {
+  modelVersionFormVisible.value = false;
+  selectedModelName.value = '';
+  selectedModelData.value = null;
+};
+
+// 处理模型版本表单成功
+const handleModelVersionFormSuccess = () => {
+  modelVersionFormVisible.value = false;
+  selectedModelName.value = '';
+  selectedModelData.value = null;
+  // 重新加载模型数据
+  loadModels();
 };
 
 // 删除模型版本 - 使用modelStore中的方法
@@ -409,50 +428,6 @@ watch(
 .model-item:hover {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   transform: translateY(-2px);
-}
-
-.input-field {
-  border: 1px solid #e5e7eb;
-  border-radius: 0.375rem;
-  background-color: #ffffff;
-}
-
-.input-field:focus {
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.3);
-}
-
-.setting-item {
-  background-color: #f9fafb;
-}
-
-.btn {
-  transition: all 0.2s ease;
-  border-radius: 8px;
-  border: 1px solid transparent;
-}
-
-.btn-primary {
-  background-color: #4f46e5;
-  color: white;
-}
-
-.btn-primary:hover {
-  background-color: #4338ca;
-  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
-  transform: translateY(-1px);
-}
-
-.btn-secondary {
-  background-color: white;
-  color: #64748b;
-  border-color: #e2e8f0;
-}
-
-.btn-secondary:hover {
-  background-color: #f8fafc;
-  border-color: #cbd5e1;
-  transform: translateY(-1px);
 }
 
 .text-xs.text-gray-500.mb-1 {

@@ -23,64 +23,65 @@
     <!-- 应用控制按钮 -->
       <div class="flex items-center gap-4 pr-4">
         <!-- 直接显示视图按钮 -->
-        <Tooltip content="视图">
-          <button 
-            class="btn-secondary w-4 h-4 p-0 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-dark-700 rounded-full text-neutral dark:text-gray-300 transition-all duration-300"
-            title="视图"
-            @click="toggleViewPanel"
-          >
-            <i class="fa-solid fa-columns text-sm"></i>
-          </button>
-        </Tooltip>
+        <Button 
+          icon="fa-columns"
+          tooltip="视图"
+          @click="toggleViewPanel"
+          size="sm"
+          shape="full"
+        />
         
         <!-- 分隔栏 -->
         <div class="h-4 w-px bg-gray-200 dark:bg-dark-700 mx-1"></div>
         
         <!-- 主题切换按钮 -->
-        <Tooltip content="切换主题">
-          <button class="btn-secondary w-4 h-4 p-0 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-dark-700 rounded-full text-neutral dark:text-gray-300 transition-all duration-300" @click="handleToggleTheme">
-            <i :class="['fa-regular', settingsStore.systemSettings.darkMode ? 'fa-sun' : 'fa-moon', 'text-sm']"></i>
-          </button>
-        </Tooltip>
+        <Button 
+          :icon="settingsStore.systemSettings.darkMode ? 'fa-sun' : 'fa-moon'"
+          tooltip="切换主题"
+          @click="handleToggleTheme"
+          size="sm"
+          shape="full"
+        />
         
-
-        <Tooltip content="系统设置">
-          <button class="btn-secondary w-4 h-4 p-0 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-dark-700 rounded-full text-neutral dark:text-gray-300 transition-all duration-300" @click="handleSystemSettingsClick">
-            <i class="fa-solid fa-gear text-sm"></i>
-          </button>
-        </Tooltip>
+        <Button 
+          icon="fa-gear"
+          tooltip="系统设置"
+          @click="handleSystemSettingsClick"
+          size="sm"
+          shape="full"
+        />
         
         <!-- 用户按钮带下拉菜单 -->
         <div class="relative hover-scale">
-            <button 
-              class="btn-secondary w-4 h-4 p-0 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-dark-700 rounded-full text-neutral dark:text-gray-300 transition-all duration-300"
+            <Button 
+              icon="fa-user-circle"
               @click.stop="toggleUserMenu"
-            >
-              <i class="fa-solid fa-user-circle text-base" @click.stop="toggleUserMenu"></i>
-            </button>
+              size="sm"
+              shape="full"
+              class="i:text-base"
+            />
           
           <!-- 用户功能下拉菜单 -->
           <div 
             v-if="showUserMenu"
             class="absolute top-full mt-2 left-1/2 transform -translate-x-1/2 w-14 rounded-lg shadow-lg border z-50 dropdown-content flex flex-col items-center py-2 bg-white border-gray-200 dark:bg-dark-800 dark:border-dark-700"
           >
-            <Tooltip content="切换账户">
-              <button 
-                class="w-10 h-10 rounded-full flex items-center justify-center transition-colors hover:bg-gray-100 text-gray-500 dark:hover:bg-dark-700 dark:text-gray-300"
-                @click="handleSwitchAccount"
-              >
-                <i class="fa-solid fa-exchange"></i>
-              </button>
-            </Tooltip>
+            <Button 
+              icon="fa-exchange"
+              tooltip="切换账户"
+              @click="handleSwitchAccount"
+              size="lg"
+              shape="full"
+            />
             <div class="my-1 w-8 border-t border-gray-200 dark:border-dark-700"></div>
-            <Tooltip content="退出账号">
-              <button 
-                class="w-10 h-10 rounded-full flex items-center justify-center transition-colors text-red-500"
-                @click="handleLogout"
-              >
-                <i class="fa-solid fa-arrow-right-from-bracket"></i>
-              </button>
-            </Tooltip>
+            <Button 
+              icon="fa-arrow-right-from-bracket"
+              tooltip="退出账号"
+              @click="handleLogout"
+              size="lg"
+              shape="full"
+              class="text-red-500"
+            />
           </div>
         </div>
       
@@ -100,6 +101,7 @@ import { useChatStore } from '../../store/chatStore.js';
 import { Window } from '@tauri-apps/api/window';
 import CommandLine from '../../components/common/CommandLine.vue';
 import Tooltip from '../../components/common/Tooltip.vue';
+import Button from '../../components/common/Button.vue';
 
 // 使用全局store管理视图状态
 const chatStore = useChatStore();

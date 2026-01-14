@@ -32,13 +32,6 @@
           >
             样式设置
           </button>
-          <button
-            class="px-6 py-3 text-sm font-medium border-b-2 transition-colors"
-            :class="activeTab === 'knowledgeGraph' ? 'border-primary text-primary' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
-            @click="activeTab = 'knowledgeGraph'"
-          >
-            <i class="fa-solid fa-network-wired mr-2"></i>知识图谱样式
-          </button>
         </div>
       </div>
       
@@ -46,18 +39,13 @@
       <div v-show="activeTab === 'chat'" class="p-4">
         <div class="space-y-4">
 
-          <div class="setting-item p-3 rounded-lg">
-            <div class="flex justify-between items-center">
-              <div>
-                <div class="font-medium text-sm">启用流式输出</div>
-                <div class="text-xs text-neutral mt-0.5">启用后，对话将以流式方式输出，而不是等待全部生成完成</div>
-              </div>
-              <label class="toggle-switch">
-                <input type="checkbox" :checked="settingsStore.systemSettings.streamingEnabled" @change="toggleStreaming" />
-                <span class="toggle-slider"></span>
-              </label>
-            </div>
-          </div>
+          <SettingItem
+            type="toggle"
+            title="启用流式输出"
+            description="启用后，对话将以流式方式输出，而不是等待全部生成完成"
+            v-model="settingsStore.systemSettings.streamingEnabled"
+            @change="toggleStreaming"
+          />
 
           <div class="setting-item p-3 rounded-lg">
             <div>
@@ -94,152 +82,40 @@
       <!-- 样式设置选项卡内容 -->
       <div v-show="activeTab === 'style'" class="p-4">
         <div class="space-y-4">
-          <div class="setting-item p-3 rounded-lg">
-            <div class="flex justify-between items-center">
-              <div>
-                <div class="font-medium text-sm">深色模式</div>
-                <div class="text-xs text-neutral mt-0.5">启用后，界面将切换到深色主题，减轻夜间使用时的视觉疲劳</div>
-              </div>
-              <label class="toggle-switch">
-                <input type="checkbox" :checked="settingsStore.systemSettings.darkMode" @change="toggleDarkMode" />
-                <span class="toggle-slider"></span>
-              </label>
-            </div>
-          </div>
-          <div class="setting-item p-3 rounded-lg">
-            <div>
-              <div class="font-medium text-sm">对话样式</div>
-              <div class="text-xs text-neutral mt-0.5">选择对话界面的显示样式</div>
+          <SettingItem
+            type="toggle"
+            title="深色模式"
+            description="启用后，界面将切换到深色主题，减轻夜间使用时的视觉疲劳"
+            v-model="settingsStore.systemSettings.darkMode"
+            @change="toggleDarkMode"
+          />
+          <SettingItem
+            type="button-group"
+            title="对话样式"
+            description="选择对话界面的显示样式"
+            v-model="chatStyleValue"
+            :options="[
+              { value: 'bubble', label: '气泡模式', icon: 'fa-comment' },
+              { value: 'document', label: '文档样式', icon: 'fa-file-lines' }
+            ]"
+            @change="setChatStyle"
+          />
 
-              <div class="flex gap-3 mt-2">
-                <button
-                  id="chatStyleBubble"
-                  class="chat-style-btn flex-1 py-2 px-3 text-sm border rounded-lg transition-all duration-300 hover:bg-gray-50"
-                  :class="settingsStore.systemSettings.chatStyleDocument ? 'border-gray-200 bg-white text-gray-700' : 'border-primary bg-primary/10 text-primary active'"
-                  @click="setChatStyle('bubble')"
-                >
-                  <i class="fa-regular fa-comment mr-2"></i>气泡模式
-                </button>
-                <button
-                  id="chatStyleDocument"
-                  class="chat-style-btn flex-1 py-2 px-3 text-sm border rounded-lg transition-all duration-300 hover:bg-gray-50"
-                  :class="settingsStore.systemSettings.chatStyleDocument ? 'border-primary bg-primary/10 text-primary active' : 'border-gray-200 bg-white text-gray-700'"
-                  @click="setChatStyle('document')"
-                >
-                  <i class="fa-regular fa-file-lines mr-2"></i>文档样式
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <div class="setting-item p-3 rounded-lg">
-            <div>
-              <div class="font-medium text-sm">文件视图模式</div>
-              <div class="text-xs text-neutral mt-0.5">选择文件管理界面的显示方式</div>
-
-              <div class="flex gap-3 mt-2">
-                <button
-                  id="viewModeGrid"
-                  class="chat-style-btn flex-1 py-2 px-3 text-sm border rounded-lg transition-all duration-300 hover:bg-gray-50"
-                  :class="settingsStore.systemSettings.viewMode === 'grid' ? 'border-primary bg-primary/10 text-primary active' : 'border-gray-200 bg-white text-gray-700'"
-                  @click="setViewMode('grid')"
-                >
-                  <i class="fa-solid fa-th mr-2"></i>网格视图
-                </button>
-                <button
-                  id="viewModeList"
-                  class="chat-style-btn flex-1 py-2 px-3 text-sm border rounded-lg transition-all duration-300 hover:bg-gray-50"
-                  :class="settingsStore.systemSettings.viewMode === 'list' ? 'border-primary bg-primary/10 text-primary active' : 'border-gray-200 bg-white text-gray-700'"
-                  @click="setViewMode('list')"
-                >
-                  <i class="fa-solid fa-list mr-2"></i>列表视图
-                </button>
-              </div>
-            </div>
-          </div>
+          <SettingItem
+            type="button-group"
+            title="文件视图模式"
+            description="选择文件管理界面的显示方式"
+            v-model="viewModeValue"
+            :options="[
+              { value: 'grid', label: '网格视图', icon: 'fa-th' },
+              { value: 'list', label: '列表视图', icon: 'fa-list' }
+            ]"
+            @change="setViewMode"
+          />
         </div>
       </div>
       
-      <!-- 知识图谱样式选项卡内容 -->
-      <div v-show="activeTab === 'knowledgeGraph'" class="p-4">
-        <div class="space-y-4">
-          <div class="setting-item p-3 rounded-lg">
-            <div>
-              <div class="font-medium text-sm">知识图谱布局</div>
-              <div class="text-xs text-neutral mt-0.5">选择知识图谱的展示布局方式</div>
 
-              <div class="flex gap-3 mt-2">
-                <button
-                  id="graphLayoutForce"
-                  class="chat-style-btn flex-1 py-2 px-3 text-sm border rounded-lg transition-all duration-300 hover:bg-gray-50"
-                  :class="settingsStore.systemSettings.graphLayout === 'force' ? 'border-primary bg-primary/10 text-primary active' : 'border-gray-200 bg-white text-gray-700'"
-                  @click="setGraphLayout('force')"
-                >
-                  <i class="fa-solid fa-arrows-rotate mr-2"></i>力导向布局
-                </button>
-                <button
-                  id="graphLayoutHierarchical"
-                  class="chat-style-btn flex-1 py-2 px-3 text-sm border rounded-lg transition-all duration-300 hover:bg-gray-50"
-                  :class="settingsStore.systemSettings.graphLayout === 'hierarchical' ? 'border-primary bg-primary/10 text-primary active' : 'border-gray-200 bg-white text-gray-700'"
-                  @click="setGraphLayout('hierarchical')"
-                >
-                  <i class="fa-solid fa-sitemap mr-2"></i>层次布局
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <div class="setting-item p-3 rounded-lg">
-            <div>
-              <div class="font-medium text-sm">节点大小</div>
-              <div class="text-xs text-neutral mt-0.5">调整知识图谱中节点的显示大小</div>
-              
-              <div class="mt-2">
-                <input
-                  type="range"
-                  min="20"
-                  max="80"
-                  step="5"
-                  v-model="graphNodeSize"
-                  @input="updateGraphNodeSize"
-                  class="w-full accent-primary"
-                />
-                <div class="flex justify-between text-xs text-neutral mt-1">
-                  <span>小</span>
-                  <span>{{ graphNodeSize }}px</span>
-                  <span>大</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="setting-item p-3 rounded-lg">
-            <div class="flex justify-between items-center">
-              <div>
-                <div class="font-medium text-sm">显示节点标签</div>
-                <div class="text-xs text-neutral mt-0.5">在节点上显示标签文本</div>
-              </div>
-              <label class="toggle-switch">
-                <input type="checkbox" :checked="settingsStore.systemSettings.showGraphNodeLabels" @change="toggleGraphNodeLabels" />
-                <span class="toggle-slider"></span>
-              </label>
-            </div>
-          </div>
-
-          <div class="setting-item p-3 rounded-lg">
-            <div class="flex justify-between items-center">
-              <div>
-                <div class="font-medium text-sm">动画效果</div>
-                <div class="text-xs text-neutral mt-0.5">为知识图谱添加动态布局效果</div>
-              </div>
-              <label class="toggle-switch">
-                <input type="checkbox" :checked="settingsStore.systemSettings.graphAnimations" @change="toggleGraphAnimations" />
-                <span class="toggle-slider"></span>
-              </label>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
   </div>
 </template>
@@ -250,6 +126,7 @@ import { useSettingsStore } from '../../store/settingsStore.js';
 import { useModelSettingStore } from '../../store/modelSettingStore.js';
 import { eventBus } from '../../services/eventBus.js';
 import { showNotification } from '../../services/notificationUtils.js';
+import SettingItem from '../common/SettingItem.vue';
 
 const settingsStore = useSettingsStore();
 const modelStore = useModelSettingStore();
@@ -259,6 +136,22 @@ const isLoading = ref(false);
 const models = ref([]);
 const defaultModel = ref('');
 const activeTab = ref('chat'); // 默认选中对话设置选项卡
+
+// 计算属性：聊天样式值（转换为字符串格式）
+const chatStyleValue = computed({
+  get: () => settingsStore.systemSettings.chatStyleDocument ? 'document' : 'bubble',
+  set: (value) => {
+    settingsStore.systemSettings.chatStyleDocument = value === 'document';
+  }
+});
+
+// 计算属性：文件视图模式值
+const viewModeValue = computed({
+  get: () => settingsStore.systemSettings.viewMode,
+  set: (value) => {
+    settingsStore.systemSettings.viewMode = value;
+  }
+});
 
 // 计算属性：所有可用的模型版本
 const allModelVersions = computed(() => {
@@ -415,45 +308,4 @@ const toggleStreaming = () => {
     streamingEnabled: !settingsStore.systemSettings.streamingEnabled
   });
 };
-
-// 设置知识图谱布局
-const setGraphLayout = (layout) => {
-  settingsStore.updateSystemSettings({
-    graphLayout: layout
-  });
-};
-
-// 知识图谱节点大小
-const graphNodeSize = ref(settingsStore.systemSettings.graphNodeSize || 40);
-
-// 更新知识图谱节点大小
-const updateGraphNodeSize = () => {
-  settingsStore.updateSystemSettings({
-    graphNodeSize: parseInt(graphNodeSize.value)
-  });
-};
-
-// 切换显示节点标签
-const toggleGraphNodeLabels = () => {
-  settingsStore.updateSystemSettings({
-    showGraphNodeLabels: !settingsStore.systemSettings.showGraphNodeLabels
-  });
-};
-
-// 切换知识图谱动画
-const toggleGraphAnimations = () => {
-  settingsStore.updateSystemSettings({
-    graphAnimations: !settingsStore.systemSettings.graphAnimations
-  });
-};
-
-// 监听设置变化，同步节点大小
-watch(
-  () => settingsStore.systemSettings.graphNodeSize,
-  (newSize) => {
-    if (newSize !== undefined) {
-      graphNodeSize.value = newSize;
-    }
-  }
-);
 </script>

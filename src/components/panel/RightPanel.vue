@@ -121,6 +121,8 @@ import { useChatStore } from '../../store/chatStore.js';
 import ActionButton from '../common/ActionButton.vue';
 import { showNotification } from '../../services/notificationUtils.js';
 import { ref, watch } from 'vue';
+// 导入公共工具函数
+import { formatTime } from '../../store/utils.js';
 
 // 定义props
 const props = defineProps({
@@ -184,12 +186,7 @@ const getTotalTokens = () => {
   return getInputTokens() + getOutputTokens();
 };
 
-// 格式化时间
-const formatTime = (timestamp) => {
-  if (!timestamp) return '无';
-  const date = new Date(timestamp);
-  return date.toLocaleTimeString();
-};
+
 
 // 获取最新更新时间
 const getLastUpdateTime = () => {

@@ -1,11 +1,10 @@
 <template>
-  <div class="tooltip-wrapper" ref="tooltipWrapper">
+  <div class="relative flex items-center justify-center" ref="tooltipWrapper">
     <slot></slot>
     <!-- 预渲染的隐藏tooltip，用于获取准确的尺寸 -->
     <div
       v-if="content"
-      class="custom-tooltip tooltip-measure"
-      :class="`tooltip-${placement}`"
+      class="absolute left-[-9999px] top-[-9999px] opacity-0 visibility-hidden pointer-events-none whitespace-nowrap bg-black/80 text-white px-2 py-1 rounded text-xs custom-tooltip tooltip-measure"
     >
       {{ content }}
     </div>
@@ -13,8 +12,7 @@
     <Teleport to="body">
       <div
         v-if="show && content"
-        class="custom-tooltip"
-        :class="`tooltip-${placement}`"
+        class="fixed z-50 bg-black/80 text-white px-2 py-1 rounded text-xs shadow-lg custom-tooltip"
         :style="tooltipStyle"
       >
         {{ content }}
@@ -24,12 +22,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue';
-
-// 阻止Vue自动将$attrs传递给组件根元素
-defineOptions({
-  inheritAttrs: false
-});
+import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue';
 
 const props = defineProps({
   content: {
@@ -43,6 +36,11 @@ const props = defineProps({
       return ['top', 'bottom', 'left', 'right'].includes(value);
     }
   }
+});
+
+// 阻止Vue自动将$attrs传递给组件根元素
+defineOptions({
+  inheritAttrs: false
 });
 
 const show = ref(false);
@@ -144,8 +142,6 @@ const debouncedHandleResize = () => {
   resizeTimeout = setTimeout(handleResize, 100);
 };
 
-import { nextTick } from 'vue';
-
 onMounted(() => {
   const wrapper = tooltipWrapper.value;
   if (wrapper) {
@@ -170,54 +166,3 @@ onUnmounted(() => {
 });
 </script>
 
-<style scoped>
-.tooltip-wrapper {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.custom-tooltip {
-  background-color: rgba(0, 0, 0, 0.8);
-  color: white;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 12px;
-  white-space: nowrap;
-  opacity: 0;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  animation: tooltipFadeIn 0.2s ease-in-out forwards;
-}
-
-/* 预渲染的tooltip测量元素，用于获取准确尺寸 */
-.custom-tooltip.tooltip-measure {
-  position: absolute;
-  left: -9999px;
-  top: -9999px;
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-  /* 确保不应用动画，避免影响尺寸计算 */
-  animation: none;
-  /* 确保z-index低于实际显示的tooltip */
-  z-index: 1;
-}
-
-@keyframes tooltipFadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-/* 移除位置位移动画，只使用基础的透明度动画，确保首次和后续悬停位置一致 */
-.tooltip-top,
-.tooltip-bottom,
-.tooltip-left,
-.tooltip-right {
-  animation: tooltipFadeIn 0.2s ease-in-out forwards;
-}
-</style>

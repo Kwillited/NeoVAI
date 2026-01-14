@@ -68,15 +68,13 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
-import PanelHeader from '../common/PanelHeader.vue';
+import { ref, onMounted } from 'vue';
+import { useChatStore } from '../../store/chatStore.js';
+import { useSettingsStore } from '../../store/settingsStore.js';
 import { showNotification } from '../../services/notificationUtils.js';
-import SearchBar from '../common/SearchBar.vue';
+import { useSearch } from '../../composables/useSearch.js';
 import ActionButton from '../common/ActionButton.vue';
 import ConfirmationModal from '../common/ConfirmationModal.vue';
-
-// 搜索查询
-const searchQuery = ref('');
 
 // 确认删除模态框状态
 const showDeleteModal = ref(false);
@@ -91,17 +89,10 @@ const tools = ref([
   { id: 3, name: '文件处理', description: '文档分析和转换工具', type: 'fileProcessor' }
 ]);
 
-// 根据搜索查询过滤工具
-const filteredTools = computed(() => {
-  if (!searchQuery.value.trim()) {
-    return tools.value;
-  }
-  
-  const query = searchQuery.value.toLowerCase().trim();
-  return tools.value.filter(tool => 
-    tool.name.toLowerCase().includes(query) || 
-    tool.description.toLowerCase().includes(query)
-  );
+// 使用搜索组合式函数
+const { searchQuery, filteredTools, handleSearch } = useSearch({
+  data: tools,
+  searchFields: (tool) => [tool.name, tool.description]
 });
 
 // 组件挂载时的初始化

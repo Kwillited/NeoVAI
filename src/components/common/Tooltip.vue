@@ -9,15 +9,17 @@
     >
       {{ content }}
     </div>
-    <!-- 实际显示的tooltip -->
-    <div
-      v-if="show && content"
-      class="custom-tooltip"
-      :class="`tooltip-${placement}`"
-      :style="tooltipStyle"
-    >
-      {{ content }}
-    </div>
+    <!-- 实际显示的tooltip，使用Teleport挂载到body -->
+    <Teleport to="body">
+      <div
+        v-if="show && content"
+        class="custom-tooltip"
+        :class="`tooltip-${placement}`"
+        :style="tooltipStyle"
+      >
+        {{ content }}
+      </div>
+    </Teleport>
   </div>
 </template>
 

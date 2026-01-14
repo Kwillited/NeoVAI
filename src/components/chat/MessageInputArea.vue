@@ -48,7 +48,7 @@
               </Tooltip>
               <div
                 ref="agentDropdown"
-                class="dropdown dropdown-content absolute left-0 top-full mt-1 w-48 bg-white z-50 depth-2"
+                class="dropdown dropdown-content absolute left-0 bottom-full mb-1 w-48 bg-white z-50 depth-2"
                 :class="{ 'hidden': !showAgentDropdown }"
                 style="z-index: 1000 !important"
               >

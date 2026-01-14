@@ -13,17 +13,19 @@
         'bg-neutral-100 dark:bg-dark-bg-tertiary border-neutral-400 dark:border-gray-600': selectedFolder === folder && draggingFolder !== folder
       }"
     >
-      <div class="folder-header flex items-center">
-        <i class="fa-solid fa-folder text-gray-500 dark:text-gray-400 mr-2"></i>
-        <span class="font-medium text-sm text-gray-700 dark:text-gray-300">{{ folder.name }}</span>
-        <div v-if="draggingFolder === folder" class="ml-2 text-xs text-blue-500">
-          释放以上传到此文件夹
+      <div class="folder-header flex items-center justify-between">
+        <div class="folder-info flex items-center">
+          <i class="fa-solid fa-folder text-gray-500 dark:text-gray-400 mr-2"></i>
+          <span class="font-medium text-sm text-gray-700 dark:text-gray-300">{{ folder.name }}</span>
+          <div v-if="draggingFolder === folder" class="ml-2 text-xs text-blue-500">
+            释放以上传到此文件夹
+          </div>
         </div>
         <ActionButton
           icon="fa-trash-can"
           title="删除此知识库文件夹"
           @click.stop="handleDeleteFolder(folder)"
-          class="ml-auto text-gray-500 hover:text-red-500 text-sm"
+          class="text-gray-500 hover:text-red-500 text-sm"
         />
       </div>
     </div>
@@ -186,12 +188,18 @@ const handleDeleteFolder = (folder) => {
 .folder-item.border-primary {
   box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
   background-color: #eff6ff;
-}
-
+}/* 文件夹头部样式 */
 .folder-header {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   height: 28px;
   line-height: 28px;
+}
+
+/* 文件夹信息区域 */
+.folder-info {
+  display: flex;
+  align-items: center;
 }
 </style>

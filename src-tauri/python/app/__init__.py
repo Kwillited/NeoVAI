@@ -18,4 +18,14 @@ def create_app():
     app.register_blueprint(rag_bp)
     app.register_blueprint(settings_bp)
     
+    # 添加健康检查端点
+    @app.route('/api/health')
+    def health_check():
+        """健康检查端点"""
+        return app.response_class(
+            response='{"status": "healthy", "message": "Chato backend service is running"}',
+            status=200,
+            mimetype='application/json'
+        )
+    
     return app

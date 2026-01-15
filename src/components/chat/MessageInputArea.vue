@@ -871,14 +871,14 @@ const toggleKnowledgeBase = () => {
     const hasMessages = chatStore.currentChatMessages && chatStore.currentChatMessages.length > 0;
     settingsStore.setActiveContent(hasMessages ? 'chat' : 'sendMessage');
     
-    // 关闭知识库功能
-    settingsStore.ragConfig.enabled = false;
+    // 关闭知识库功能并保存设置
+    settingsStore.updateRagConfig({ enabled: false });
   } else {
     // 如果当前不是知识库模式，切换到知识库模式
     settingsStore.setActivePanel('rag');
     
-    // 开启知识库功能
-    settingsStore.ragConfig.enabled = true;
+    // 开启知识库功能并保存设置
+    settingsStore.updateRagConfig({ enabled: true });
   }
 };
 

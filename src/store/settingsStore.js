@@ -345,6 +345,13 @@ export const useSettingsStore = defineStore('settings', {
           document.body.style.fontFamily = this.systemSettings.fontFamily;
         }
 
+        // 确保activePanel和ragConfig.enabled状态一致
+        if (this.ragConfig.enabled && this.activePanel !== 'rag') {
+          this.activePanel = 'rag';
+        } else if (!this.ragConfig.enabled && this.activePanel === 'rag') {
+          this.activePanel = 'history';
+        }
+
         // 记录最后使用时间
         this.updateLastUsedTime();
       } catch (error) {

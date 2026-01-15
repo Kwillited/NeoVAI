@@ -504,9 +504,9 @@ const toggleWebSearch = () => {
   StorageManager.setItem(STORAGE_KEYS.WEB_SEARCH, isWebSearchEnabled.value);
 };
 
-// 从store获取当前聊天的模型，默认使用settingsStore中的默认模型
+// 从store获取当前聊天的模型，优先使用当前对话的模型，否则使用settingsStore中的默认模型
 // 注意：聊天界面选择模型不会修改系统默认设置，只影响当前聊天
-const currentModel = ref(settingsStore.systemSettings.defaultModel);
+const currentModel = ref(chatStore.currentChat?.model || settingsStore.systemSettings.defaultModel);
 
 // 监听系统默认模型变化，更新当前模型（如果用户没有手动选择过）
 let userHasSelectedModel = false;
@@ -689,9 +689,10 @@ const handleSendMessage = async () => {
 watch(
   () => chatStore.currentChatId,
   () => {
-    // 新聊天时，重置用户选择标志，使用系统默认模型
+    // 新聊天时，重置用户选择标志
     userHasSelectedModel = false;
-    currentModel.value = settingsStore.systemSettings.defaultModel || modelStore.currentSelectedModel;
+    // 优先使用当前对话保存的模型，如果没有则使用系统默认模型
+    currentModel.value = chatStore.currentChat?.model || settingsStore.systemSettings.defaultModel || modelStore.currentSelectedModel;
   }
 );
 
@@ -863,13 +864,13 @@ const toggleKnowledgeBase = () => {
 const handleClickOutside = (event) => {
   // 关闭模型下拉菜单
   if (modelDropdown.value && !modelDropdown.value.contains(event.target) &&
-      !event.target.closest('.btn-secondary') && showModelDropdown.value) {
+      !event.target.closest('button') && showModelDropdown.value) {
     showModelDropdown.value = false;
   }
   
   // 关闭智能体下拉菜单
   if (agentDropdown.value && !agentDropdown.value.contains(event.target) &&
-      !event.target.closest('.btn-secondary') && showAgentDropdown.value) {
+      !event.target.closest('button') && showAgentDropdown.value) {
     showAgentDropdown.value = false;
   }
 };

@@ -92,7 +92,7 @@ export const useChatStore = defineStore('chat', {
     },
 
     // 创建新对话（调用API）
-    async createNewChat() {
+    async createNewChat(model) {
       try {
         // 先取消当前会话的选中状态，实现更流畅的过渡效果
         this.currentChatId = null;
@@ -103,7 +103,15 @@ export const useChatStore = defineStore('chat', {
         console.log('调用API创建新对话...');
         const response = await apiService.chat.createChat('新对话');
         console.log('API调用成功，响应:', response);
-        const newChat = response.chat;
+        let newChat = response.chat;
+        
+        // 如果传递了模型参数，保存到新对话中
+        if (model) {
+          newChat = {
+            ...newChat,
+            model: model
+          };
+        }
         
         // 将新对话添加到本地状态
         this.chats.unshift(newChat); // 添加到开头，保持最新优先
@@ -237,7 +245,7 @@ export const useChatStore = defineStore('chat', {
         if (shouldUseStreaming) {
         // 使用流式消息发送
         let aiMessage = null;
-        
+
         try {
           await apiService.chat.sendStreamingMessage(
             currentChat.id,         // chatId
@@ -245,9 +253,8 @@ export const useChatStore = defineStore('chat', {
             this.uploadedFiles,     // files
             {
               model: formattedModel, // 确保使用name-version.version_name格式的模型名称
-              modelParams: modelStore.currentModelParams,  // 模型参数
-              ragConfig: settingsStore.ragConfig,       // RAG配置
               deepThinking: deepThinking, // 使用传递的深度思考参数
+              ragConfig: { enabled: settingsStore.ragConfig.enabled }, // 仅发送RAG启用状态
               webSearchEnabled: webSearchEnabled // 使用传递的联网搜索参数
             },
               // 处理接收到的消息
@@ -418,9 +425,8 @@ export const useChatStore = defineStore('chat', {
             {
               model: formattedModel, // 确保使用name-version.version_name格式的模型名称
               stream: false,  // 非流式输出
-              modelParams: modelStore.currentModelParams,  // 模型参数
-              ragConfig: settingsStore.ragConfig,       // RAG配置
               deepThinking: deepThinking, // 使用传递的深度思考参数
+              ragConfig: { enabled: settingsStore.ragConfig.enabled }, // 仅发送RAG启用状态
               webSearchEnabled: webSearchEnabled // 使用传递的联网搜索参数
             }
           );

@@ -483,13 +483,11 @@ def load_settings_from_db():
         # 保持现有设置不变
 
 # 将设置数据保存到SQLite数据库
-def save_settings_to_db():
+def save_settings_to_db(conn):
     """将设置数据保存到SQLite数据库"""
     global db
     
     try:
-        # 获取数据库连接
-        conn = get_db_connection()
         cursor = conn.cursor()
         
         # 保存所有设置
@@ -504,22 +502,19 @@ def save_settings_to_db():
             except Exception as e:
                 print(f"❌ 保存设置 '{key}' 失败: {str(e)}")
         
-        conn.commit()
-        conn.close()
         print("✅ 设置数据已保存到SQLite数据库")
     except Exception as e:
         print(f"❌ 保存设置数据到SQLite失败: {str(e)}")
+        raise
 
 # --------------------------
 # 5. 数据保存（从内存DB到SQLite和JSON文件）
 # --------------------------
-def save_chats_to_db():
+def save_chats_to_db(conn):
     """将对话数据保存到SQLite数据库"""
     global db
     
     try:
-        # 获取数据库连接
-        conn = get_db_connection()
         cursor = conn.cursor()
         
         # 删除现有所有对话和消息（为了简化，直接重新插入）
@@ -547,7 +542,8 @@ def save_chats_to_db():
                 role = msg['role']
                 content = msg['content']
                 thinking = msg.get('thinking', None)
-                msg_created_at = msg['createdAt']
+                # 确保createdAt有值，即使键存在但值为None也使用默认值
+                msg_created_at = msg.get('createdAt') or datetime.now().isoformat()
                 model = msg.get('model', None)
                 
                 cursor.execute('''
@@ -555,31 +551,42 @@ def save_chats_to_db():
                 VALUES (?, ?, ?, ?, ?, ?, ?)
                 ''', (msg_id, chat_id, role, content, thinking, msg_created_at, model))
         
-        conn.commit()
-        conn.close()
         print("✅ 对话数据已保存到SQLite数据库")
     except Exception as e:
         print(f"❌ 保存对话数据到SQLite失败: {str(e)}")
+        raise
 
 def save_data():
     """保存数据到SQLite数据库"""
+    conn = None
     try:
+        # 使用单个数据库连接执行所有保存操作，避免数据库锁定
+        conn = get_db_connection()
+        
         # 保存对话数据到SQLite数据库
-        save_chats_to_db()
+        save_chats_to_db(conn)
         # 保存模型数据到SQLite数据库
-        save_models_to_db()
+        save_models_to_db(conn)
         # 保存设置数据到SQLite数据库
-        save_settings_to_db()
+        save_settings_to_db(conn)
+        
+        # 提交事务
+        conn.commit()
         print("✅ 所有数据保存到SQLite成功")
     except Exception as e:
         print(f"❌ 保存数据时出错: {str(e)}")
+        # 回滚事务
+        if conn:
+            conn.rollback()
+    finally:
+        # 确保连接关闭
+        if conn:
+            conn.close()
 
 # 将模型数据保存到SQLite数据库
-def save_models_to_db():
+def save_models_to_db(conn):
     """将模型数据保存到SQLite数据库"""
     try:
-        # 获取数据库连接
-        conn = get_db_connection()
         cursor = conn.cursor()
         
         for model in db['models']:
@@ -620,8 +627,7 @@ def save_models_to_db():
                     version.get('streaming_config', False)
                 ))
         
-        conn.commit()
-        conn.close()
         print("✅ 模型数据已保存到SQLite数据库")
     except Exception as e:
         print(f"❌ 保存模型数据到SQLite失败: {str(e)}")
+        raise

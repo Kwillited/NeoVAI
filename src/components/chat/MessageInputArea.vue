@@ -11,7 +11,7 @@
             <div class="relative inline-block">
               <Tooltip content="选择智能体">
                 <button
-                  class="h-6 flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-dark-600 px-3 rounded-lg transition-all duration-300 ease-in-out hover:bg-gray-100 hover:text-primary cursor-pointer"
+                  class="h-6 flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-dark-700 px-3 rounded-lg transition-all duration-300 ease-in-out hover:bg-gray-100 dark:hover:bg-dark-600 hover:text-primary cursor-pointer btn-secondary"
                   @click="toggleAgentDropdown"
                 >
 
@@ -21,7 +21,7 @@
               </Tooltip>
               <div
                 ref="agentDropdown"
-                class="absolute left-0 bottom-full mb-1 w-48 bg-white z-50 rounded-lg border border-gray-200 shadow-md"
+                class="absolute left-0 bottom-full mb-1 w-48 bg-white dark:bg-dark-700 z-50 rounded-lg border border-gray-200 dark:border-gray-700 shadow-md"
                 :class="{ 'hidden': !showAgentDropdown }"
                 style="z-index: 1000 !important"
               >
@@ -29,8 +29,8 @@
                   <button
                     v-for="agent in availableAgents"
                     :key="agent.value"
-                    class="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition-colors rounded-lg"
-                    :class="{ 'text-blue-600 bg-blue-50 dark:text-blue-400 dark:bg-blue-900/30': agent.value === currentAgent }"
+                    class="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-dark-600 transition-colors rounded-lg"
+                  :class="{ 'text-blue-600 bg-blue-50 dark:text-blue-400 dark:bg-blue-900/30': agent.value === currentAgent }"
                     @click="selectAgent(agent.value)"
                   >
                     <i :class="['fa-solid', agent.icon, 'mr-2 text-sm']"></i>
@@ -71,9 +71,9 @@
               <div class="px-2">
                 <div class="flex justify-between items-center mb-1">
                   <div class="flex items-center gap-1">
-                    <label class="text-xs font-medium text-gray-700">温度</label>
+                    <label class="text-xs font-medium text-gray-700 dark:text-gray-300">温度</label>
                     <button
-                      class="text-xs text-neutral cursor-help p-1 relative"
+                      class="text-xs text-neutral dark:text-gray-400 cursor-help p-1 relative"
                       @mouseover="showTooltip('temperature', $event)"
                       @mouseleave="hideTooltip('temperature')"
                     >
@@ -82,16 +82,16 @@
                     <!-- 悬停提示弹窗 -->
                     <div
                       v-if="activeTooltip === 'temperature'"
-                      class="absolute z-50 bg-white border border-gray-200 rounded-lg shadow-lg p-3 text-sm max-w-xs transition-opacity duration-200"
+                      class="absolute z-50 bg-white dark:bg-dark-700 border border-gray-200 dark:border-gray-600 rounded-lg shadow-lg p-3 text-sm max-w-xs transition-opacity duration-200"
                       :style="tooltipStyle"
                     >
-                      <div class="font-medium mb-1">温度参数说明</div>
-                      <p class="text-gray-700">控制生成结果的随机性，较低的值产生更确定的结果，较高的值产生更多样的结果。</p>
-                      <div class="mt-2 text-xs text-gray-500">范围: 0-2</div>
+                      <div class="font-medium mb-1 dark:text-white">温度参数说明</div>
+                      <p class="text-gray-700 dark:text-gray-300">控制生成结果的随机性，较低的值产生更确定的结果，较高的值产生更多样的结果。</p>
+                      <div class="mt-2 text-xs text-gray-500 dark:text-gray-400">范围: 0-2</div>
                     </div>
                   </div>
                   <span
-                    class="text-xs font-medium text-primary px-2 py-0.5 bg-primary/10 rounded-full"
+                    class="text-xs font-medium text-blue-500 dark:text-blue-400 px-2 py-0.5 bg-blue-500/10 dark:bg-blue-400/10 rounded-full"
                     id="temperatureValue"
                   >{{ modelParams.temperature }}</span>
                 </div>
@@ -105,7 +105,7 @@
                   id="temperatureSlider"
                   @input="handleTemperatureChange"
                 />
-                <div class="flex justify-between text-xs text-neutral mt-1">
+                <div class="flex justify-between text-xs text-neutral dark:text-gray-400 mt-1">
                   <span>0</span>
                   <span>2</span>
                 </div>
@@ -115,9 +115,9 @@
               <div class="px-2">
                 <div class="flex justify-between items-center mb-1">
                   <div class="flex items-center gap-1">
-                    <label class="text-xs font-medium text-gray-700">Top-p</label>
+                    <label class="text-xs font-medium text-gray-700 dark:text-gray-300">Top-p</label>
                     <button
-                      class="text-xs text-neutral cursor-help p-1 relative"
+                      class="text-xs text-neutral dark:text-gray-400 cursor-help p-1 relative"
                       @mouseover="showTooltip('topP', $event)"
                       @mouseleave="hideTooltip('topP')"
                     >
@@ -126,15 +126,15 @@
                     <!-- 悬停提示弹窗 -->
                     <div
                       v-if="activeTooltip === 'topP'"
-                      class="click-tooltip absolute z-50 bg-white border border-gray-200 rounded-lg shadow-lg p-3 text-sm max-w-xs animate-fade-in"
+                      class="click-tooltip absolute z-50 bg-white dark:bg-dark-700 border border-gray-200 dark:border-gray-600 rounded-lg shadow-lg p-3 text-sm max-w-xs animate-fade-in"
                       :style="tooltipStyle"
                     >
-                      <div class="font-medium mb-1">Top-p参数说明</div>
-                      <p class="text-gray-700">控制词汇多样性，只有累积概率超过此阈值的词才会被考虑。</p>
-                      <div class="mt-2 text-xs text-gray-500">范围: 0-1</div>
+                      <div class="font-medium mb-1 dark:text-white">Top-p参数说明</div>
+                      <p class="text-gray-700 dark:text-gray-300">控制词汇多样性，只有累积概率超过此阈值的词才会被考虑。</p>
+                      <div class="mt-2 text-xs text-gray-500 dark:text-gray-400">范围: 0-1</div>
                     </div>
                   </div>
-                  <span class="text-xs font-medium text-primary px-2 py-0.5 bg-primary/10 rounded-full" id="topPValue">{{
+                  <span class="text-xs font-medium text-blue-500 dark:text-blue-400 px-2 py-0.5 bg-blue-500/10 dark:bg-blue-400/10 rounded-full" id="topPValue">{{
                     modelParams.top_p
                   }}</span>
                 </div>
@@ -148,7 +148,7 @@
                   id="topPSlider"
                   @input="handleTopPChange"
                 />
-                <div class="flex justify-between text-xs text-neutral mt-1">
+                <div class="flex justify-between text-xs text-neutral dark:text-gray-400 mt-1">
                   <span>0</span>
                   <span>1</span>
                 </div>
@@ -158,9 +158,9 @@
               <div class="px-2">
                 <div class="flex justify-between items-center mb-1">
                   <div class="flex items-center gap-1">
-                    <label class="text-xs font-medium text-gray-700">Top-k</label>
+                    <label class="text-xs font-medium text-gray-700 dark:text-gray-300">Top-k</label>
                     <button
-                      class="text-xs text-neutral cursor-help p-1 relative"
+                      class="text-xs text-neutral dark:text-gray-400 cursor-help p-1 relative"
                       @mouseover="showTooltip('topK', $event)"
                       @mouseleave="hideTooltip('topK')"
                     >
@@ -169,15 +169,15 @@
                     <!-- 悬停提示弹窗 -->
                     <div
                       v-if="activeTooltip === 'topK'"
-                      class="click-tooltip absolute z-50 bg-white border border-gray-200 rounded-lg shadow-lg p-3 text-sm max-w-xs animate-fade-in"
+                      class="click-tooltip absolute z-50 bg-white dark:bg-dark-700 border border-gray-200 dark:border-gray-600 rounded-lg shadow-lg p-3 text-sm max-w-xs animate-fade-in"
                       :style="tooltipStyle"
                     >
-                      <div class="font-medium mb-1">Top-k参数说明</div>
-                      <p class="text-gray-700">限制每一步考虑的最高概率词汇数量，较小的值会产生更连贯的结果。</p>
-                      <div class="mt-2 text-xs text-gray-500">范围: 0-100</div>
+                      <div class="font-medium mb-1 dark:text-white">Top-k参数说明</div>
+                      <p class="text-gray-700 dark:text-gray-300">限制每一步考虑的最高概率词汇数量，较小的值会产生更连贯的结果。</p>
+                      <div class="mt-2 text-xs text-gray-500 dark:text-gray-400">范围: 0-100</div>
                     </div>
                   </div>
-                  <span class="text-xs font-medium text-primary px-2 py-0.5 bg-primary/10 rounded-full" id="topKValue">{{
+                  <span class="text-xs font-medium text-blue-500 dark:text-blue-400 px-2 py-0.5 bg-blue-500/10 dark:bg-blue-400/10 rounded-full" id="topKValue">{{
                     modelParams.top_k
                   }}</span>
                 </div>
@@ -191,7 +191,7 @@
                   id="topKSlider"
                   @input="handleTopKChange"
                 />
-                <div class="flex justify-between text-xs text-neutral mt-1">
+                <div class="flex justify-between text-xs text-neutral dark:text-gray-400 mt-1">
                   <span>0</span>
                   <span>100</span>
                 </div>
@@ -201,9 +201,9 @@
               <div class="px-2">
                 <div class="flex justify-between items-center mb-1">
                   <div class="flex items-center gap-1">
-                    <label class="text-xs font-medium text-gray-700">长度</label>
+                    <label class="text-xs font-medium text-gray-700 dark:text-gray-300">长度</label>
                     <button
-                      class="text-xs text-neutral cursor-help p-1 relative"
+                      class="text-xs text-neutral dark:text-gray-400 cursor-help p-1 relative"
                       @mouseover="showTooltip('maxLength', $event)"
                       @mouseleave="hideTooltip('maxLength')"
                     >
@@ -212,15 +212,15 @@
                     <!-- 悬停提示弹窗 -->
                     <div
                       v-if="activeTooltip === 'maxLength'"
-                      class="click-tooltip absolute z-50 bg-white border border-gray-200 rounded-lg shadow-lg p-3 text-sm max-w-xs animate-fade-in"
+                      class="click-tooltip absolute z-50 bg-white dark:bg-dark-700 border border-gray-200 dark:border-gray-600 rounded-lg shadow-lg p-3 text-sm max-w-xs animate-fade-in"
                       :style="tooltipStyle"
                     >
-                      <div class="font-medium mb-1">最大长度参数说明</div>
-                      <p class="text-gray-700">控制生成内容的最大长度，较大的值可以生成更长的回复，但可能会导致生成时间延长。</p>
-                      <div class="mt-2 text-xs text-gray-500">范围: 512-8192</div>
+                      <div class="font-medium mb-1 dark:text-white">最大长度参数说明</div>
+                      <p class="text-gray-700 dark:text-gray-300">控制生成内容的最大长度，较大的值可以生成更长的回复，但可能会导致生成时间延长。</p>
+                      <div class="mt-2 text-xs text-gray-500 dark:text-gray-400">范围: 512-8192</div>
                     </div>
                   </div>
-                  <span class="text-xs font-medium text-primary px-2 py-0.5 bg-primary/10 rounded-full" id="maxLengthValue">{{
+                  <span class="text-xs font-medium text-blue-500 dark:text-blue-400 px-2 py-0.5 bg-blue-500/10 dark:bg-blue-400/10 rounded-full" id="maxLengthValue">{{
                     modelParams.max_tokens
                   }}</span>
                 </div>
@@ -234,7 +234,7 @@
                   id="maxLengthSlider"
                   @input="handleMaxLengthChange"
                 />
-                <div class="flex justify-between text-xs text-neutral mt-1">
+                <div class="flex justify-between text-xs text-neutral dark:text-gray-400 mt-1">
                   <span>512</span>
                   <span>8192</span>
                 </div>
@@ -298,9 +298,9 @@
             <Tooltip content="上传文件">
               <button
                   class="btn-secondary w-8 h-8 flex items-center justify-center rounded-lg transition-all duration-300 ease-in-out"
-                  :class="{ 
-                      'text-gray-500 dark:text-gray-300 bg-gray-50 dark:bg-dark-700 hover:bg-gray-100 dark:hover:bg-dark-600 hover:text-primary': uploadedFiles.length === 0, 
-                      'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/40': uploadedFiles.length > 0 
+                  :class="{
+                      'text-gray-500 dark:text-gray-300 hover:text-primary': uploadedFiles.length === 0,
+                      'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/40': uploadedFiles.length > 0
                     }"
                 @click="triggerFileUpload"
               >
@@ -320,9 +320,9 @@
             <Tooltip content="深度思考模式">
               <button
                 class="btn-secondary flex items-center justify-center w-8 h-8 rounded-lg transition-all duration-300 ease-in-out"
-                :class="{ 
-                    'text-gray-500 dark:text-gray-300 bg-gray-50 dark:bg-dark-700 hover:bg-gray-100 dark:hover:bg-dark-600 hover:text-primary': !isDeepThinking, 
-                    'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/40': isDeepThinking 
+                :class="{
+                    'text-gray-500 dark:text-gray-300 hover:text-primary': !isDeepThinking,
+                    'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/40': isDeepThinking
                   }"
                 @click="toggleDeepThinking"
               >
@@ -333,9 +333,9 @@
             <Tooltip content="知识库">
               <button
                 class="btn-secondary flex items-center justify-center w-8 h-8 rounded-lg transition-all duration-300 ease-in-out"
-                :class="{ 
-                    'text-gray-500 dark:text-gray-300 bg-gray-50 dark:bg-dark-700 hover:bg-gray-100 dark:hover:bg-dark-600 hover:text-primary': settingsStore.activePanel !== 'rag', 
-                    'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/40': settingsStore.activePanel === 'rag' 
+                :class="{
+                    'text-gray-500 dark:text-gray-300 hover:text-primary': settingsStore.activePanel !== 'rag',
+                    'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/40': settingsStore.activePanel === 'rag'
                   }"
                 @click="toggleKnowledgeBase"
               >
@@ -346,9 +346,9 @@
             <Tooltip content="联网搜索">
               <button
                 class="btn-secondary flex items-center justify-center w-8 h-8 rounded-lg transition-all duration-300 ease-in-out"
-                :class="{ 
-                    'text-gray-500 dark:text-gray-300 bg-gray-50 dark:bg-dark-700 hover:bg-gray-100 dark:hover:bg-dark-600 hover:text-primary': !isWebSearchEnabled, 
-                    'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/40': isWebSearchEnabled 
+                :class="{
+                    'text-gray-500 dark:text-gray-300 hover:text-primary': !isWebSearchEnabled,
+                    'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/40': isWebSearchEnabled
                   }"
                 @click="toggleWebSearch"
               >
@@ -360,7 +360,7 @@
                 <button
                   class="h-8 flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-dark-700 px-3 rounded-lg transition-all duration-300 ease-in-out"
                   :class="{
-                    'btn-secondary hover:bg-gray-100 hover:text-primary cursor-pointer': availableModels.length > 1,
+                    'btn-secondary hover:bg-gray-100 dark:hover:bg-dark-600 hover:text-primary cursor-pointer': availableModels.length > 1,
                     'cursor-default opacity-70': availableModels.length <= 1
                   }"
                   @click="toggleModelDropdown"
@@ -371,7 +371,7 @@
               </Tooltip>
               <div
                 ref="modelDropdown"
-                class="dropdown absolute left-0 bottom-full mb-2 w-48 bg-white z-50 shadow-lg rounded-lg animate-fade-in"
+                class="dropdown absolute left-0 bottom-full mb-2 w-48 bg-white dark:bg-dark-700 z-50 shadow-lg rounded-lg border border-gray-200 dark:border-gray-700 animate-fade-in"
                 :class="{ 'hidden': !showModelDropdown }"
                 style="z-index: 1000 !important"
               >
@@ -379,7 +379,7 @@
                   <button
                     v-for="model in orderedModels"
                     :key="model.value"
-                    class="model-option w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition-colors"
+                    class="model-option w-full text-left px-4 py-2 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-dark-600 transition-colors"
                     :class="{ 'text-blue-600 bg-blue-50 dark:text-blue-400 dark:bg-blue-900/30': model.value === currentModel }"
                     @click="selectModel(model.value)"
                   >
@@ -999,7 +999,7 @@ const getFileIcon = (fileName) => {
 }
 
 .slider:hover {
-  background: #d1d5db;
+  background: #9ca3af;
 }
 
 .slider::-webkit-slider-thumb {
@@ -1035,7 +1035,7 @@ const getFileIcon = (fileName) => {
 
 /* 深色模式滑块样式 */
 .dark .slider {
-  background: #4b5563;
+  background: #374151;
 }
 
 .dark .slider:hover {
@@ -1044,18 +1044,24 @@ const getFileIcon = (fileName) => {
 
 .dark .slider::-webkit-slider-thumb {
   background: #60a5fa;
+  box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.2);
 }
 
 .dark .slider::-webkit-slider-thumb:hover {
   background: #3b82f6;
+  transform: scale(1.2);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
 }
 
 .dark .slider::-moz-range-thumb {
   background: #60a5fa;
+  box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.2);
 }
 
 .dark .slider::-moz-range-thumb:hover {
   background: #3b82f6;
+  transform: scale(1.2);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
 }
 
 /* 淡入动画 */

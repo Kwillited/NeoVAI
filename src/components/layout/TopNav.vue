@@ -5,13 +5,13 @@
       <!-- Mac风格窗口控制按钮 -->
        <div class="flex gap-2.5 mr-4">
           <Tooltip content="关闭">
-            <button class="w-3 h-3 rounded-full bg-red-500 hover:bg-red-600 transition-colors duration-200" @click="handleClose"></button>
+            <button class="w-3 h-3 rounded-full bg-red-500 hover:bg-red-600 transition-colors duration-200 focus:outline-none focus:ring-0" @click="handleClose"></button>
           </Tooltip>
           <Tooltip content="最小化">
-            <button class="w-3 h-3 rounded-full bg-yellow-500 hover:bg-yellow-600 transition-colors duration-200" @click="handleMinimize"></button>
+            <button class="w-3 h-3 rounded-full bg-yellow-500 hover:bg-yellow-600 transition-colors duration-200 focus:outline-none focus:ring-0" @click="handleMinimize"></button>
           </Tooltip>
           <Tooltip content="最大化">
-            <button class="w-3 h-3 rounded-full bg-green-500 hover:bg-green-600 transition-colors duration-200" @click="handleMaximize"></button>
+            <button class="w-3 h-3 rounded-full bg-green-500 hover:bg-green-600 transition-colors duration-200 focus:outline-none focus:ring-0" @click="handleMaximize"></button>
           </Tooltip>
         </div>
       <!-- NeoVAI标题已删除 -->

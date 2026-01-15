@@ -108,7 +108,7 @@ const baseClasses = computed(() => {
     'font-medium',
     {
       'opacity-50 cursor-not-allowed': props.disabled,
-      'focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary': !props.disabled
+
     }
   ];
 });

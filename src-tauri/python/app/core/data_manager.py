@@ -12,6 +12,13 @@ db = {
     'settings': {}
 }
 
+# 脏标记，用于跟踪哪些数据需要保存
+dirty_flags = {
+    'chats': False,
+    'models': False,
+    'settings': False
+}
+
 # 加载默认设置
 for key, value in config_manager._config.items():
     db['settings'][key] = value
@@ -517,26 +524,21 @@ def save_chats_to_db(conn):
     try:
         cursor = conn.cursor()
         
-        # 删除现有所有对话和消息（为了简化，直接重新插入）
-        cursor.execute("DELETE FROM messages")
-        cursor.execute("DELETE FROM chats")
-        
-        # 插入所有对话和消息
+        # 使用INSERT OR REPLACE保存对话和消息，只更新或插入需要的记录
         for chat in db['chats']:
             chat_id = chat['id']
             title = chat['title']
             preview = chat.get('preview', '')
             created_at = chat['createdAt']
             updated_at = chat['updatedAt']
-            model = chat.get('model', '')
             
-            # 插入对话
+            # 使用INSERT OR REPLACE插入或更新对话
             cursor.execute('''
-            INSERT INTO chats (id, title, preview, created_at, updated_at)
+            INSERT OR REPLACE INTO chats (id, title, preview, created_at, updated_at)
             VALUES (?, ?, ?, ?, ?)
             ''', (chat_id, title, preview, created_at, updated_at))
             
-            # 插入对话中的消息
+            # 保存对话中的消息
             for msg in chat.get('messages', []):
                 msg_id = msg['id']
                 role = msg['role']
@@ -547,7 +549,7 @@ def save_chats_to_db(conn):
                 model = msg.get('model', None)
                 
                 cursor.execute('''
-                INSERT INTO messages (id, chat_id, role, actual_content, thinking, created_at, model)
+                INSERT OR REPLACE INTO messages (id, chat_id, role, actual_content, thinking, created_at, model)
                 VALUES (?, ?, ?, ?, ?, ?, ?)
                 ''', (msg_id, chat_id, role, content, thinking, msg_created_at, model))
         
@@ -556,23 +558,51 @@ def save_chats_to_db(conn):
         print(f"❌ 保存对话数据到SQLite失败: {str(e)}")
         raise
 
+def set_dirty_flag(data_type, is_dirty=True):
+    """设置数据脏标记
+    
+    参数:
+        data_type: 数据类型，可选值: 'chats', 'models', 'settings'
+        is_dirty: 是否为脏数据，默认为True
+    """
+    if data_type in dirty_flags:
+        dirty_flags[data_type] = is_dirty
+
+
 def save_data():
-    """保存数据到SQLite数据库"""
+    """保存数据到SQLite数据库，只保存有脏标记的数据"""
     conn = None
     try:
         # 使用单个数据库连接执行所有保存操作，避免数据库锁定
         conn = get_db_connection()
         
-        # 保存对话数据到SQLite数据库
-        save_chats_to_db(conn)
-        # 保存模型数据到SQLite数据库
-        save_models_to_db(conn)
-        # 保存设置数据到SQLite数据库
-        save_settings_to_db(conn)
+        # 记录需要保存的数据类型
+        saved_types = []
+        
+        # 只保存有脏标记的数据
+        if dirty_flags['chats']:
+            save_chats_to_db(conn)
+            saved_types.append('chats')
+            dirty_flags['chats'] = False
+        
+        if dirty_flags['models']:
+            save_models_to_db(conn)
+            saved_types.append('models')
+            dirty_flags['models'] = False
+        
+        if dirty_flags['settings']:
+            save_settings_to_db(conn)
+            saved_types.append('settings')
+            dirty_flags['settings'] = False
         
         # 提交事务
         conn.commit()
-        print("✅ 所有数据保存到SQLite成功")
+        
+        if saved_types:
+            print(f"✅ 数据已保存到SQLite: {', '.join(saved_types)}")
+        else:
+            print("ℹ️  没有数据需要保存")
+            
     except Exception as e:
         print(f"❌ 保存数据时出错: {str(e)}")
         # 回滚事务
@@ -590,11 +620,12 @@ def save_models_to_db(conn):
         cursor = conn.cursor()
         
         for model in db['models']:
-            # 更新模型
+            # 使用INSERT OR REPLACE插入或更新模型
             cursor.execute('''
-            UPDATE models SET description = ?, configured = ?, enabled = ?, icon_class = ?, icon_bg = ?, icon_color = ?, icon_url = ?, icon_blob = ?
-            WHERE name = ?
+            INSERT OR REPLACE INTO models (name, description, configured, enabled, icon_class, icon_bg, icon_color, icon_url, icon_blob)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
             ''', (
+                model['name'],
                 model['description'],
                 model['configured'],
                 model['enabled'],
@@ -602,21 +633,29 @@ def save_models_to_db(conn):
                 model['icon_bg'],
                 model['icon_color'],
                 model.get('icon_url', ''),
-                model.get('icon_blob', None),
-                model['name']
+                model.get('icon_blob', None)
             ))
             
             # 获取模型ID
             cursor.execute("SELECT id FROM models WHERE name = ?", (model['name'],))
             model_id = cursor.fetchone()[0]
             
-            # 删除现有的所有版本
-            cursor.execute("DELETE FROM model_versions WHERE model_id = ?", (model_id,))
+            # 获取现有版本名称列表
+            cursor.execute("SELECT version_name FROM model_versions WHERE model_id = ?", (model_id,))
+            existing_versions = set(row[0] for row in cursor.fetchall())
             
-            # 插入新版本
+            # 要保存的版本名称集合
+            new_versions = set(version['version_name'] for version in model.get('versions', []))
+            
+            # 删除不再存在的版本
+            versions_to_delete = existing_versions - new_versions
+            for version_name in versions_to_delete:
+                cursor.execute("DELETE FROM model_versions WHERE model_id = ? AND version_name = ?", (model_id, version_name))
+            
+            # 插入或更新版本
             for version in model.get('versions', []):
                 cursor.execute('''
-                INSERT INTO model_versions (model_id, version_name, custom_name, api_key, api_base_url, streaming_config)
+                INSERT OR REPLACE INTO model_versions (model_id, version_name, custom_name, api_key, api_base_url, streaming_config)
                 VALUES (?, ?, ?, ?, ?, ?)
                 ''', (
                     model_id,

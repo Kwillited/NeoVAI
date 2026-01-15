@@ -95,34 +95,64 @@ function handleApiError(error) {
   }
 }
 
-// 创建API请求重试函数
-async function requestWithRetry(config, retryLimit = 2, delay = 500) {
+// 创建API请求重试函数 - 优化版：支持多种重试策略和配置
+async function requestWithRetry(config, options = {}) {
+  // 默认重试配置
+  const defaultOptions = {
+    maxRetries: 5,
+    initialDelay: 500,
+    backoffFactor: 1.5,
+    maxDelay: 8000,
+    jitter: 0.1, // ±10% 随机抖动
+    retryableStatusCodes: [500, 502, 503, 504],
+    retryableMethods: ['GET', 'POST', 'PUT', 'DELETE'],
+    ...options
+  };
+  
+  let attempt = 0;
   let lastError;
 
-  for (let attempt = 0; attempt < retryLimit; attempt++) {
+  while (attempt <= defaultOptions.maxRetries) {
     try {
-      if (attempt > 0) {
-        // 线性退避策略，比指数退避更快速
-        const waitTime = delay + (attempt - 1) * 500;
-        await new Promise((resolve) => setTimeout(resolve, waitTime));
+      attempt++;
+      if (attempt > 1) {
+        // 计算重试延迟：指数退避 + 随机抖动
+        const delay = Math.min(
+          defaultOptions.initialDelay * Math.pow(defaultOptions.backoffFactor, attempt - 2),
+          defaultOptions.maxDelay
+        );
+        // 添加随机抖动，减少重试风暴
+        const jitter = delay * defaultOptions.jitter * (Math.random() * 2 - 1); // ±10% 随机抖动
+        const finalDelay = Math.max(defaultOptions.initialDelay, delay + jitter);
+        
+        console.warn(`请求失败，正在进行第 ${attempt}/${defaultOptions.maxRetries + 1} 次重试，${Math.round(finalDelay/1000)}秒后重试...`);
+        await new Promise(resolve => setTimeout(resolve, finalDelay));
       }
 
       return await api.request(config);
     } catch (error) {
-      // 只对特定错误进行重试
-      if (!isRetryableError(error)) {
-        throw error;
+      // 检查是否是可重试的错误
+      const isRetryable = 
+        // 网络错误或超时
+        (!error.response && (error.code === 'ECONNABORTED' || error.message.includes('Network Error') || error.message.includes('fetch failed'))) ||
+        // 重试状态码
+        (error.response && defaultOptions.retryableStatusCodes.includes(error.response.status)) ||
+        // 请求方法允许重试
+        defaultOptions.retryableMethods.includes(config.method);
+      
+      if (!isRetryable || attempt > defaultOptions.maxRetries) {
+        lastError = error;
+        break;
       }
 
       lastError = error;
-      console.warn(`请求失败，正在重试 (${attempt + 1}/${retryLimit})`);
     }
   }
 
   throw lastError;
 }
 
-// 判断是否为可重试的错误
+// 判断是否为可重试的错误 - 保留此函数以兼容现有代码
 function isRetryableError(error) {
   // 网络错误、超时、500系列错误可以重试
   return (
@@ -238,6 +268,57 @@ export function handleStreamingResponse(url, data, onMessage, onError, onComplet
 
 // API服务方法
 export const apiService = {
+  // 健康检查方法 - 优化版：使用已有端点作为健康检查，避免404
+  healthCheck: async () => {
+    try {
+      // 使用较短的超时时间进行健康检查
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 3000);
+      
+      try {
+        // 首先尝试调用健康检查端点
+        const healthResponse = await fetch('/api/health', {
+          method: 'GET',
+          signal: controller.signal
+        });
+        
+        clearTimeout(timeoutId);
+        
+        if (healthResponse.ok) {
+          console.log('使用 /api/health 端点进行健康检查，服务正常');
+          return await healthResponse.json();
+        }
+      } catch (healthError) {
+        // 如果健康检查端点不存在，尝试使用模型列表端点作为替代
+        console.log('使用备用端点 /api/models 进行健康检查...');
+        
+        // 重置控制器和超时
+        clearTimeout(timeoutId);
+        const fallbackController = new AbortController();
+        const fallbackTimeoutId = setTimeout(() => fallbackController.abort(), 5000);
+        
+        // 尝试调用模型列表端点
+        const modelsResponse = await fetch('/api/models', {
+          method: 'GET',
+          signal: fallbackController.signal
+        });
+        
+        clearTimeout(fallbackTimeoutId);
+        
+        if (modelsResponse.ok) {
+          console.log('使用 /api/models 端点进行健康检查，服务正常');
+          return { status: 'healthy', message: 'Backend service is running (fallback check)' };
+        }
+        throw new Error(`Fallback health check failed with status: ${modelsResponse.status}`);
+      }
+    } catch (error) {
+      console.warn('健康检查失败:', error.message || error);
+      throw error;
+    }
+  },
+  
+  // 暴露请求重试方法，以便在需要时直接使用
+  requestWithRetry: requestWithRetry,
   // 聊天相关API
   chat: {
     createChat: async (title = '新对话') => {

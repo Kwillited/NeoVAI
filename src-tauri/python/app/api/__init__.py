@@ -5,5 +5,6 @@ from app.api.chats import chat_bp
 from app.api.models import model_bp
 from app.api.mcp import mcp_bp
 from app.api.rag import rag_bp
+from app.api.settings import settings_bp
 
-__all__ = ['chat_bp', 'model_bp', 'mcp_bp', 'rag_bp']
+__all__ = ['chat_bp', 'model_bp', 'mcp_bp', 'rag_bp', 'settings_bp']

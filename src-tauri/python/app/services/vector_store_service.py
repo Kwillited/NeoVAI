@@ -2,8 +2,6 @@
 import os
 import logging
 from typing import List, Dict, Any, Optional
-from langchain_community.embeddings import HuggingFaceEmbeddings
-from langchain_chroma import Chroma
 from app.core.config import config_manager
 
 # 配置日志系统
@@ -140,6 +138,8 @@ class VectorStoreService:
             bool: 是否成功初始化嵌入模型
         """
         try:
+            from langchain_community.embeddings import HuggingFaceEmbeddings
+            
             # 模型路径搜索逻辑 - 优化版：减少不必要的文件系统调用
             model_path = None
             
@@ -217,6 +217,8 @@ class VectorStoreService:
             bool: 是否成功初始化向量存储
         """
         try:
+            from langchain_chroma import Chroma
+            
             # 确保嵌入模型已初始化
             if not self._embeddings:
                 logger.error("无法初始化向量存储：嵌入模型未初始化")

@@ -25,7 +25,7 @@ export function useSearch(options = {}) {
   const searchQuery = ref(initialQuery);
 
   // 过滤后的数据
-  const filteredData = computed(() => {
+  const filteredTools = computed(() => {
     if (!searchQuery.value.trim()) {
       return data.value;
     }
@@ -51,7 +51,7 @@ export function useSearch(options = {}) {
 
   return {
     searchQuery,
-    filteredData,
+    filteredTools,
     handleSearch,
     resetSearch
   };

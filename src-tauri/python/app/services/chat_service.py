@@ -4,7 +4,6 @@ import uuid
 import json
 from datetime import datetime
 from app.core.data_manager import db, save_data, get_db_connection  # 依赖数据管理模块
-from app.models.model_manager import ModelManager  # 导入模型管理器
 from app.services.base_service import BaseService
 
 class ChatService(BaseService):
@@ -42,7 +41,7 @@ class ChatService(BaseService):
                     role = msg_row[2] if len(msg_row) > 2 else 'user'
                     content = msg_row[3] if len(msg_row) > 3 else ''
                     msg_created_at = msg_row[4] if len(msg_row) > 4 else datetime.now().isoformat()
-                    model = msg_row[5] if len(msg_row) > 5 else None
+                    model = msg_row[6] if len(msg_row) > 6 else None
                     
                     message_list.append({
                         'id': msg_id,
@@ -164,12 +163,14 @@ class ChatService(BaseService):
                 role = msg_row[2] if len(msg_row) > 2 else 'user'
                 content = msg_row[3] if len(msg_row) > 3 else ''
                 msg_created_at = msg_row[4] if len(msg_row) > 4 else datetime.now().isoformat()
+                model = msg_row[6] if len(msg_row) > 6 else None
                 
                 message_list.append({
                     'id': msg_id,
                     'role': role,
                     'content': content,
-                    'createdAt': msg_created_at
+                    'createdAt': msg_created_at,
+                    'model': model
                 })
             
             # 关闭数据库连接
@@ -311,19 +312,19 @@ class ChatService(BaseService):
     @staticmethod
     def get_rag_enhanced_prompt(question, rag_config=None):
         """RAG增强提示 - 使用LangChain RAG服务"""
-        # 如果提供了rag_config参数，使用它，否则从数据库设置中获取
+        # 只使用前端传递的enabled状态，其余配置从系统获取
+        enabled = False
         if rag_config and isinstance(rag_config, dict):
-            rag_settings = rag_config
-        else:
-            rag_settings = db['settings'].get('rag', {})
+            enabled = rag_config.get('enabled', False)
         
-        if not rag_settings.get('enabled', False):
+        if not enabled:
             return question
+        
         try:
-            # 使用新的LangChain RAG服务
+            # 使用新的LangChain RAG服务，它会从配置系统获取完整配置
             from app.services.langchain_rag_service import LangChainRAGService
             rag_service = LangChainRAGService.get_instance()
-            return rag_service.get_enhanced_prompt(question, rag_settings)
+            return rag_service.get_enhanced_prompt(question, {'enabled': enabled})
         except Exception as e:
             print(f"RAG调用失败: {str(e)}")
             # 确保即使RAG失败，原始问题也能正常返回
@@ -512,7 +513,7 @@ class ChatService(BaseService):
             return
 
         try:
-            # 使用模型管理器获取流式响应
+            from app.models.model_manager import ModelManager
             stream = ModelManager.chat(model_name, model, version_config, messages, temperature, stream=True)
 
             # 直接迭代并返回流式响应
@@ -635,7 +636,7 @@ class ChatService(BaseService):
             version_id = parsed_version_name
             version_config = ChatService.get_version_config(model, version_id)
 
-            # 使用模型管理器调用模型
+            from app.models.model_manager import ModelManager
             response = ModelManager.chat(parsed_model_name, model, version_config, messages, temperature)
             
             # 获取模型回复内容
@@ -683,8 +684,8 @@ class ChatService(BaseService):
         # 从数据中提取所需参数
         message_text = data.get('message')
         model_name = data.get('model', '')
-        model_params = data.get('modelParams', {})
-        rag_config = data.get('ragConfig', {})
+        user_model_params = data.get('modelParams', {})
+        rag_enabled = data.get('ragConfig', {}).get('enabled', False)
         stream = data.get('stream', False)
         deep_thinking = data.get('deepThinking', False)
         
@@ -705,15 +706,29 @@ class ChatService(BaseService):
         chat['messages'].append(user_message)
         
         # 使用辅助函数解析模型信息
-        # parsed_version_name 目前未直接使用，但为了代码清晰和未来扩展性保留接收
         parsed_model_name, parsed_version_name, model_display_name = ChatService.parse_model_info(model_name)
         
         # 如果没有传递模型，返回错误
         if not parsed_model_name:
             return {'error': '请指定模型'}, 400
         
-        # 调用RAG系统构造增强提示，考虑前端传递的ragConfig配置
-        enhanced_question = ChatService.get_rag_enhanced_prompt(message_text, rag_config) if rag_config.get('enabled', False) else message_text
+        # 获取模型配置
+        model = next((m for m in db['models'] if m['name'] == parsed_model_name), None)
+        if not model:
+            return {'error': f'模型 {parsed_model_name} 不存在'}, 400
+        
+        # 获取模型默认参数
+        model_params = {
+            'temperature': 0.7,
+            'max_tokens': 2000,
+            'top_p': 1,
+            'frequency_penalty': 0
+        }
+        # 合并用户自定义参数
+        model_params.update(user_model_params)
+        
+        # 调用RAG系统构造增强提示，仅根据enabled状态决定是否启用
+        enhanced_question = ChatService.get_rag_enhanced_prompt(message_text, {'enabled': rag_enabled}) if rag_enabled else message_text
         
         # 根据stream参数决定是返回普通响应还是流式响应
         if stream:

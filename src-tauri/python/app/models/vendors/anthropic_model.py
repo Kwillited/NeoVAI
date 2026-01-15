@@ -1,6 +1,5 @@
 # app/models/anthropic_model.py
 from app.models.base_model import BaseModel
-from langchain_anthropic import ChatAnthropic
 import json
 from typing import Dict, Any, Generator, List
 
@@ -9,6 +8,8 @@ class AnthropicModel(BaseModel):
     
     def _initialize_llm(self) -> None:
         """初始化langchain的Anthropic LLM实例"""
+        from langchain_anthropic import ChatAnthropic
+        
         # 检查多个可能的版本名称字段，确保兼容性
         selected_version = self.version_config.get('name') or \
                           self.version_config.get('version_name') or \

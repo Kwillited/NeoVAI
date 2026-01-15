@@ -585,15 +585,10 @@ export const useChatStore = defineStore('chat', {
     async loadChatHistory(manualRetry = false) {
       this.isLoading = true;
       this.clearError();
-      
-      // 如果是手动重试，重置重试计数
-      if (manualRetry) {
-        this.retryCount = 0;
-      }
 
       try {
         console.log('调用API获取对话历史...');
-        // 调用API获取对话历史
+        // 调用API获取对话历史 - 使用统一的requestWithRetry机制
         const response = await apiService.chat.getHistory();
         console.log('API调用成功，响应:', response);
         
@@ -610,29 +605,12 @@ export const useChatStore = defineStore('chat', {
           this.chats = [];
           this.currentChatId = null;
         }
-        
-        // 成功获取后重置重试计数
-        this.retryCount = 0;
       } catch (error) {
         console.error('获取对话历史失败:', error);
         this.setError('获取对话历史失败，请检查后端服务是否运行中');
         this.currentChatId = null;
-        
-        // 自动重试逻辑
-        if (this.retryCount < this.maxRetries) {
-          this.retryCount++;
-          const delay = this.retryInterval * Math.pow(1.5, this.retryCount - 1); // 指数退避
-          console.log(`将在 ${delay}ms 后进行第 ${this.retryCount}/${this.maxRetries} 次重试...`);
-          
-          // 使用setTimeout延迟重试
-          setTimeout(() => {
-            this.loadChatHistory();
-          }, delay);
-        } else {
-          console.error('已达到最大重试次数，停止重试');
-          // 后端服务不可用时，不执行本地加载操作，直接返回报错
-          throw error;
-        }
+        // 统一的重试机制已在apiService中实现，这里不再需要额外的重试逻辑
+        throw error;
       } finally {
         this.isLoading = false;
       }

@@ -27,9 +27,13 @@
           </div>
           
           <!-- 消息内容气泡 - 添加了禁止触发滚动条的样式 -->
-          <div :class="isUserMessage 
-            ? 'bg-primary/20 text-gray-800 rounded-2xl px-5 py-3 shadow-lg overflow-hidden' 
-            : 'bg-white dark:bg-dark-bg-tertiary rounded-2xl rounded-tl-none px-5 py-3 shadow-lg dark:border dark:border-dark-border overflow-hidden'">
+          <div :class="[
+            isUserMessage 
+              ? 'bg-primary/20 text-gray-800 rounded-2xl px-5 py-3 shadow-lg overflow-hidden' 
+              : 'bg-white dark:bg-dark-bg-tertiary rounded-2xl rounded-tl-none px-5 py-3 shadow-lg dark:border dark:border-dark-border overflow-hidden',
+            // 当只有打字动画时，限制气泡宽度
+            { 'w-fit': messageValue.isTyping && !formattedContent && !messageValue.error }
+          ]">
             <div class="markdown-content text-gray-800 dark:text-gray-100 leading-relaxed" v-html="formattedContent" :key="updateKey"></div>
             
             <!-- 错误状态显示 -->

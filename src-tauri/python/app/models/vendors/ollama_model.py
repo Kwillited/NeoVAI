@@ -1,6 +1,5 @@
 # app/models/ollama_model.py
 from app.models.base_model import BaseModel
-from langchain_ollama import ChatOllama
 import json
 from typing import Dict, Any, Generator, List
 
@@ -8,6 +7,8 @@ from typing import Dict, Any, Generator, List
 class OllamaModel(BaseModel):
     def _initialize_llm(self) -> None:
         """初始化langchain的Ollama LLM实例"""
+        from langchain_ollama import ChatOllama
+        
         # 检查多个可能的版本名称字段，解决'name'错误问题
         selected_version = self.version_config.get('version_name') or self.version_config.get('custom_name') or self.version_config.get('name')
         base_url = self.version_config.get('api_base_url', self.version_config.get('base_url', 'http://localhost:11434'))

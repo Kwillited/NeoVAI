@@ -23,6 +23,13 @@ DEFAULT_CONFIG = {
         'server_port': 8080,
         'timeout': 30
     },
+    'notification': {
+        'enabled': True,
+        'newMessage': True,
+        'sound': False,
+        'system': True,
+        'displayTime': '5秒'
+    },
     'app': {
         'debug': True,
         'host': '0.0.0.0',

@@ -121,9 +121,6 @@
         <!-- 错误状态 -->
         <div v-else-if="chatStore.error" id="errorChatState" class="p-6 text-center text-red-500 dark:text-red-400 text-sm transition-colors duration-300">
           <div class="mb-4">{{ chatStore.error }}</div>
-          <div v-if="chatStore.retryCount > 0" class="mb-4 text-sm text-gray-500 dark:text-gray-400">
-            正在尝试自动重试... ({{ chatStore.retryCount }}/{{ chatStore.maxRetries }})
-          </div>
           <button 
             @click="handleRetry" 
             class="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition-colors duration-300 flex items-center justify-center mx-auto"

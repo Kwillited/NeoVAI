@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import { StorageManager, mergeSettings } from './utils';
+import { apiService } from '../services/apiService.js';
 
 
 // 存储键名常量
@@ -304,22 +305,44 @@ export const useSettingsStore = defineStore('settings', {
       this.saveSettings();
     },
 
+    // 从后端API加载设置
+    async loadSettingsFromApi() {
+      try {
+        // 使用现有的apiService来调用后端API
+        const notificationSettings = await apiService.get('/api/settings/notification');
+        this.notificationsConfig = notificationSettings;
+        
+        // 加载基本设置
+        const systemSettings = await apiService.get('/api/settings/basic');
+        if (systemSettings) {
+          this.systemSettings = { ...this.systemSettings, ...systemSettings };
+        }
+      } catch (error) {
+        console.error('从后端加载设置失败:', error);
+      }
+    },
+
     // 从存储中加载设置
-    loadSettings() {
+    async loadSettings() {
       try {
         this.setLoading(true);
+        
+        // 先从localStorage加载设置
         const savedSettings = StorageManager.getItem(STORAGE_KEYS.SETTINGS);
         if (savedSettings) {
           this.mergeSavedSettings(savedSettings);
+        }
+        
+        // 再从后端API加载最新设置，覆盖localStorage的设置
+        await this.loadSettingsFromApi();
 
-          // 应用保存的设置
-          this.applyDarkMode();
-          if (this.systemSettings.fontSize) {
-            document.documentElement.style.fontSize = `${this.systemSettings.fontSize}px`;
-          }
-          if (this.systemSettings.fontFamily) {
-            document.body.style.fontFamily = this.systemSettings.fontFamily;
-          }
+        // 应用保存的设置
+        this.applyDarkMode();
+        if (this.systemSettings.fontSize) {
+          document.documentElement.style.fontSize = `${this.systemSettings.fontSize}px`;
+        }
+        if (this.systemSettings.fontFamily) {
+          document.body.style.fontFamily = this.systemSettings.fontFamily;
         }
 
         // 记录最后使用时间
@@ -372,8 +395,21 @@ export const useSettingsStore = defineStore('settings', {
       }
     },
 
+    // 保存设置到后端API
+    async saveSettingsToApi() {
+      try {
+        // 使用现有的apiService来调用后端API
+        await apiService.post('/api/settings/notification', this.notificationsConfig);
+        
+        // 保存基本设置
+        await apiService.post('/api/settings/basic', this.systemSettings);
+      } catch (error) {
+        console.error('保存设置到后端失败:', error);
+      }
+    },
+
     // 保存设置的核心功能
-    _saveSettingsCore: function() {
+    async _saveSettingsCore() {
       try {
         // 注意：模型设置现在由modelSettingStore单独管理和保存
         
@@ -386,11 +422,17 @@ export const useSettingsStore = defineStore('settings', {
           timestamp: Date.now(),
         };
 
+        // 保存到localStorage
         const saved = StorageManager.setItem(STORAGE_KEYS.SETTINGS, settingsToSave);
+        
+        // 保存到后端API
+        await this.saveSettingsToApi();
+        
         if (saved) {
           // 记录最后保存时间
           this.updateLastUsedTime();
         }
+        
         return saved;
       } catch (error) {
         console.error('保存设置失败:', error);
@@ -399,9 +441,9 @@ export const useSettingsStore = defineStore('settings', {
     },
 
     // 防抖保存设置
-    saveSettings: function() {
+    saveSettings: async function() {
       // 直接调用核心保存功能，确保this上下文正确
-      return this._saveSettingsCore();
+      return await this._saveSettingsCore();
     },
   },
 });

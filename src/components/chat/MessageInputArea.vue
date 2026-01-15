@@ -743,6 +743,30 @@ watch(
   }
 );
 
+// 监听模型列表变化，更新当前模型
+watch(
+  () => modelStore.allModels,
+  () => {
+    // 模型列表更新后，如果当前模型无效或为空，重新设置当前模型
+    if (!currentModel.value || !availableModels.value.includes(currentModel.value)) {
+      currentModel.value = chatStore.currentChat?.model || settingsStore.systemSettings.defaultModel || modelStore.availableModelList[0];
+    }
+  },
+  { deep: true }
+);
+
+// 监听可用模型列表变化，更新当前模型
+watch(
+  () => modelStore.availableModelList,
+  (newList) => {
+    // 可用模型列表更新后，如果当前模型无效或为空，重新设置当前模型
+    if (!currentModel.value || !newList.includes(currentModel.value)) {
+      currentModel.value = chatStore.currentChat?.model || settingsStore.systemSettings.defaultModel || newList[0];
+    }
+  },
+  { deep: true }
+);
+
 // 切换模型下拉菜单显示状态
 const toggleModelDropdown = () => {
   // 只有当可用模型数量大于1时才允许切换下拉菜单
@@ -849,14 +873,12 @@ const toggleKnowledgeBase = () => {
     
     // 关闭知识库功能
     settingsStore.ragConfig.enabled = false;
-    settingsStore.saveSettings();
   } else {
     // 如果当前不是知识库模式，切换到知识库模式
     settingsStore.setActivePanel('rag');
     
     // 开启知识库功能
     settingsStore.ragConfig.enabled = true;
-    settingsStore.saveSettings();
   }
 };
 

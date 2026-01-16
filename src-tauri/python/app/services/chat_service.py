@@ -3,7 +3,9 @@ import sys
 import uuid
 import json
 from datetime import datetime
-from app.core.data_manager import db, save_data, get_db_connection  # 依赖数据管理模块
+from app.services.data_service import DataService
+from app.repositories.chat_repository import ChatRepository
+from app.repositories.message_repository import MessageRepository
 from app.services.base_service import BaseService
 
 class ChatService(BaseService):
@@ -13,13 +15,12 @@ class ChatService(BaseService):
     def get_chats():
         """获取所有对话"""
         try:
-            # 获取数据库连接
-            conn = get_db_connection()
-            cursor = conn.cursor()
+            # 使用Repository获取所有对话
+            chat_repo = ChatRepository()
+            message_repo = MessageRepository()
             
             # 先从数据库加载最新数据
-            cursor.execute("SELECT * FROM chats ORDER BY updated_at DESC")
-            chats = cursor.fetchall()
+            chats = chat_repo.get_all_chats()
             
             chat_list = []
             for chat_row in chats:
@@ -31,8 +32,7 @@ class ChatService(BaseService):
                 updated_at = chat_row[4] if len(chat_row) > 4 else datetime.now().isoformat()
                 
                 # 获取对话的所有消息
-                cursor.execute("SELECT * FROM messages WHERE chat_id = ? ORDER BY created_at", (chat_id,))
-                messages = cursor.fetchall()
+                messages = message_repo.get_messages_by_chat_id(chat_id)
                 
                 # 构建消息列表
                 message_list = []
@@ -40,7 +40,7 @@ class ChatService(BaseService):
                     msg_id = msg_row[0]
                     role = msg_row[2] if len(msg_row) > 2 else 'user'
                     content = msg_row[3] if len(msg_row) > 3 else ''
-                    msg_created_at = msg_row[4] if len(msg_row) > 4 else datetime.now().isoformat()
+                    msg_created_at = msg_row[5] if len(msg_row) > 5 else datetime.now().isoformat()
                     model = msg_row[6] if len(msg_row) > 6 else None
                     
                     message_list.append({
@@ -61,37 +61,30 @@ class ChatService(BaseService):
                     'messages': message_list
                 })
             
-            # 关闭数据库连接
-            conn.close()
-            
             # 更新内存数据库
-            db['chats'] = chat_list
+            DataService.get_chats().clear()
+            DataService.get_chats().extend(chat_list)
             return chat_list
         except Exception as e:
-            print(f"❌ 获取对话列表失败: {str(e)}")
+            # 使用BaseService的日志方法
+            BaseService.log_error(f"获取对话列表失败: {str(e)}")
             # 失败时返回内存数据库中的对话
-            return db['chats']
+            return DataService.get_chats()
 
     @staticmethod
     def create_chat(title=None):
         """创建新对话"""
         try:
-            # 获取数据库连接
-            conn = get_db_connection()
-            cursor = conn.cursor()
+            # 使用Repository创建对话
+            chat_repo = ChatRepository()
             
             chat_id = str(uuid.uuid4())  # 生成唯一对话ID
             now = datetime.now().isoformat()  # 时间戳（ISO格式）
             
             title = title or '新对话'
             
-            # 直接插入到SQLite数据库
-            cursor.execute('''
-            INSERT INTO chats (id, title, preview, created_at, updated_at)
-            VALUES (?, ?, ?, ?, ?)
-            ''', (chat_id, title, '', now, now))
-            conn.commit()
-            conn.close()
+            # 使用Repository插入到SQLite数据库
+            chat_repo.create_chat(chat_id, title, '', now, now)
             
             # 创建对话对象
             new_chat = {
@@ -104,11 +97,12 @@ class ChatService(BaseService):
             }
             
             # 更新内存数据库
-            db['chats'].insert(0, new_chat)  # 新增对话放列表开头（最新优先）
+            DataService.add_chat(new_chat)
             
             return new_chat
         except Exception as e:
-            print(f"❌ 创建对话失败: {str(e)}")
+            # 使用BaseService的日志方法
+            BaseService.log_error(f"创建对话失败: {str(e)}")
             # 回退到内存操作
             chat_id = str(uuid.uuid4())
             now = datetime.now().isoformat()
@@ -121,28 +115,25 @@ class ChatService(BaseService):
                 'updatedAt': now,
                 'messages': []
             }
-            db['chats'].insert(0, new_chat)
-            save_data()
+            DataService.add_chat(new_chat)
             return new_chat
 
     @staticmethod
     def get_chat(chat_id):
         """获取单个对话记录（按ID）"""
         # 先尝试从内存获取
-        chat = next((c for c in db['chats'] if c['id'] == chat_id), None)
+        chat = DataService.get_chat_by_id(chat_id)
         if chat:
             return chat
         
         try:
-            # 获取数据库连接
-            conn = get_db_connection()
-            cursor = conn.cursor()
+            # 使用Repository获取对话
+            chat_repo = ChatRepository()
+            message_repo = MessageRepository()
             
             # 从数据库获取
-            cursor.execute("SELECT * FROM chats WHERE id = ?", (chat_id,))
-            chat_row = cursor.fetchone()
+            chat_row = chat_repo.get_chat_by_id(chat_id)
             if not chat_row:
-                conn.close()
                 return None
             
             # 处理可能的字段缺失情况
@@ -153,8 +144,7 @@ class ChatService(BaseService):
             updated_at = chat_row[4] if len(chat_row) > 4 else datetime.now().isoformat()
             
             # 获取对话的所有消息
-            cursor.execute("SELECT * FROM messages WHERE chat_id = ? ORDER BY created_at", (chat_id,))
-            messages = cursor.fetchall()
+            messages = message_repo.get_messages_by_chat_id(chat_id)
             
             # 构建消息列表
             message_list = []
@@ -162,7 +152,7 @@ class ChatService(BaseService):
                 msg_id = msg_row[0]
                 role = msg_row[2] if len(msg_row) > 2 else 'user'
                 content = msg_row[3] if len(msg_row) > 3 else ''
-                msg_created_at = msg_row[4] if len(msg_row) > 4 else datetime.now().isoformat()
+                msg_created_at = msg_row[5] if len(msg_row) > 5 else datetime.now().isoformat()
                 model = msg_row[6] if len(msg_row) > 6 else None
                 
                 message_list.append({
@@ -172,9 +162,6 @@ class ChatService(BaseService):
                     'createdAt': msg_created_at,
                     'model': model
                 })
-            
-            # 关闭数据库连接
-            conn.close()
             
             # 构建对话对象
             chat = {
@@ -187,61 +174,58 @@ class ChatService(BaseService):
             }
             
             # 更新内存数据库
-            db['chats'].append(chat)
+            existing_chat = DataService.get_chat_by_id(chat_id)
+            if not existing_chat:
+                DataService.get_chats().append(chat)
             return chat
         except Exception as e:
-            print(f"❌ 获取对话失败: {str(e)}")
+            # 使用BaseService的日志方法
+            BaseService.log_error(f"获取对话失败: {str(e)}")
             return None
 
     @staticmethod
     def delete_chat(chat_id):
         """删除单个对话记录（按ID）"""
         try:
-            # 获取数据库连接
-            conn = get_db_connection()
-            cursor = conn.cursor()
+            # 使用Repository删除对话
+            chat_repo = ChatRepository()
+            message_repo = MessageRepository()
             
             # 从数据库中删除对话（级联删除消息）
-            cursor.execute("DELETE FROM chats WHERE id = ?", (chat_id,))
-            conn.commit()
-            conn.close()
+            chat_repo.delete_chat(chat_id)
             
             # 更新内存数据库
-            chat_index = next((i for i, c in enumerate(db['chats']) if c['id'] == chat_id), None)
-            if chat_index is not None:
-                db['chats'].pop(chat_index)
+            DataService.remove_chat(chat_id)
             
             return True
         except Exception as e:
-            print(f"❌ 删除对话失败: {str(e)}")
+            # 使用BaseService的日志方法
+            BaseService.log_error(f"删除对话失败: {str(e)}")
             # 尝试从内存中删除
-            chat_index = next((i for i, c in enumerate(db['chats']) if c['id'] == chat_id), None)
-            if chat_index is not None:
-                db['chats'].pop(chat_index)
-                return True
-            return False
+            DataService.remove_chat(chat_id)
+            return True
 
     @staticmethod
     def delete_all_chats():
         """删除所有对话记录"""
         try:
-            # 获取数据库连接
-            conn = get_db_connection()
-            cursor = conn.cursor()
+            # 使用Repository删除所有对话和消息
+            chat_repo = ChatRepository()
+            message_repo = MessageRepository()
             
             # 从数据库中删除所有对话和消息
-            cursor.execute("DELETE FROM messages")
-            cursor.execute("DELETE FROM chats")
-            conn.commit()
-            conn.close()
+            message_repo.delete_all_messages()
+            chat_repo.delete_all_chats()
             
             # 清空内存中的对话数据
-            db['chats'] = []
+            DataService.clear_chats()
+            
             return True
         except Exception as e:
-            print(f"❌ 删除所有对话失败: {str(e)}")
+            # 使用BaseService的日志方法
+            BaseService.log_error(f"删除所有对话失败: {str(e)}")
             # 尝试清空内存
-            db['chats'] = []
+            DataService.clear_chats()
             return True
     
     @staticmethod
@@ -326,7 +310,8 @@ class ChatService(BaseService):
             rag_service = LangChainRAGService.get_instance()
             return rag_service.get_enhanced_prompt(question, {'enabled': enabled})
         except Exception as e:
-            print(f"RAG调用失败: {str(e)}")
+            # 使用BaseService的日志方法
+            BaseService.log_error(f"RAG调用失败: {str(e)}")
             # 确保即使RAG失败，原始问题也能正常返回
             return question
 
@@ -360,7 +345,7 @@ class ChatService(BaseService):
         验证模型是否存在且已配置
         返回: (model_object, error_response, error_code)
         """
-        model = next((m for m in db['models'] if m['name'] == model_name), None)
+        model = DataService.get_model_by_name(model_name)
         if not model:
             return None, {'error': '模型不存在'}, 404
         if not model['configured']:
@@ -426,32 +411,45 @@ class ChatService(BaseService):
             chat['title'] = new_title
         
         try:
-            # 获取数据库连接
-            conn = get_db_connection()
-            cursor = conn.cursor()
+            # 使用Repository保存对话和消息
+            chat_repo = ChatRepository()
+            message_repo = MessageRepository()
             
             # 保存用户消息到数据库
-            cursor.execute('''
-            INSERT OR REPLACE INTO messages (id, chat_id, role, actual_content, thinking, created_at, model)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
-            ''', (user_message['id'], chat['id'], user_message['role'], user_message['content'], None, user_message['createdAt'], user_message.get('model')))
+            message_repo.create_message(
+                message_id=user_message['id'],
+                chat_id=chat['id'],
+                role=user_message['role'],
+                actual_content=user_message['content'],
+                thinking=None,
+                created_at=user_message['createdAt'],
+                model=user_message.get('model')
+            )
             
             # 保存AI消息到数据库
-            cursor.execute('''
-            INSERT OR REPLACE INTO messages (id, chat_id, role, actual_content, thinking, created_at, model)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
-            ''', (ai_message['id'], chat['id'], ai_message['role'], ai_message['content'], ai_message.get('thinking'), ai_message['createdAt'], ai_message.get('model')))
+            message_repo.create_message(
+                message_id=ai_message['id'],
+                chat_id=chat['id'],
+                role=ai_message['role'],
+                actual_content=ai_message['content'],
+                thinking=ai_message.get('thinking'),
+                created_at=ai_message['createdAt'],
+                model=ai_message.get('model')
+            )
             
             # 更新对话信息
-            cursor.execute('''
-            UPDATE chats SET title = ?, preview = ?, updated_at = ?
-            WHERE id = ?
-            ''', (new_title, preview_text, now, chat['id']))
+            chat_repo.update_chat(
+                chat_id=chat['id'],
+                title=new_title,
+                preview=preview_text,
+                updated_at=now
+            )
             
-            conn.commit()
-            conn.close()
+            # 设置脏标记，确保数据被保存
+            DataService.set_dirty_flag('chats', True)
         except Exception as e:
-            print(f"❌ 更新对话失败: {str(e)}")
+            # 使用BaseService的日志方法
+            BaseService.log_error(f"更新对话失败: {str(e)}")
 
     @staticmethod
     def _prepare_messages_for_model(chat_id, enhanced_question, deep_thinking=False):
@@ -522,7 +520,7 @@ class ChatService(BaseService):
 
         except Exception as e:
             # 捕获所有异常并返回错误信息
-            print(f'调用模型失败: {str(e)}')
+            BaseService.log_error(f'调用模型失败: {str(e)}')
             response_data = {'error': str(e)}
             yield f'data: {json.dumps(response_data, ensure_ascii=False)}\n\n'
 
@@ -570,7 +568,7 @@ class ChatService(BaseService):
                             }
                             yield f'data: {json.dumps(response_data, ensure_ascii=False)}\n\n'
                     except Exception as e:
-                        print(f"处理流式响应块失败: {e}")
+                        BaseService.log_error(f"处理流式响应块失败: {e}")
                         # 尝试作为直接内容处理
                         full_reply += str(chunk)
                         response_data = {
@@ -610,7 +608,7 @@ class ChatService(BaseService):
                 yield f'data: {json.dumps(final_data, ensure_ascii=False)}\n\n'
             except Exception as e:
                 # 捕获所有异常并返回错误信息
-                print(f'流式处理失败: {str(e)}')
+                BaseService.log_error(f'流式处理失败: {str(e)}')
                 response_data = {'error': str(e)}
                 yield f'data: {json.dumps(response_data, ensure_ascii=False)}\n\n'
         
@@ -643,7 +641,7 @@ class ChatService(BaseService):
             ai_reply = response['content']
         except Exception as e:
             # 捕获所有异常并返回错误信息
-            print(f'调用模型失败: {str(e)}')
+            BaseService.log_error(f'调用模型失败: {str(e)}')
             return {'error': f'调用模型失败: {str(e)}'}, 500
         
         # 处理think标签，分离思考内容和实际内容
@@ -713,7 +711,7 @@ class ChatService(BaseService):
             return {'error': '请指定模型'}, 400
         
         # 获取模型配置
-        model = next((m for m in db['models'] if m['name'] == parsed_model_name), None)
+        model = DataService.get_model_by_name(parsed_model_name)
         if not model:
             return {'error': f'模型 {parsed_model_name} 不存在'}, 400
         

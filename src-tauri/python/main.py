@@ -6,11 +6,19 @@ from app.core.data_manager import load_data
 
 # 获取配置管理器单例实例
 config_manager = ConfigManager.get_instance()
+
+# 导入日志模块
+from app.core.logging_config import logger, update_log_config
+
+# 更新日志配置
+update_log_config(config_manager)
+
 # 导入路由模块
 from app.api.chats import chat_bp
 from app.api.models import model_bp
 from app.api.rag import rag_bp
 from app.api.mcp import mcp_bp
+
 
 
 def init_rag():
@@ -36,10 +44,10 @@ def init_rag():
             # 创建向量存储服务实例
             vector_service = VectorStoreService(vector_db_path, embedder_model)
             
-            print(f"✅ RAG系统初始化成功: 模型={embedder_model}, 向量库={vector_db_path}")
+            logger.info(f"RAG系统初始化成功: 模型={embedder_model}, 向量库={vector_db_path}")
             return True
         except Exception as e:
-            print(f"❌ RAG系统初始化失败: {e}")
+            logger.error(f"RAG系统初始化失败: {e}")
             return False
     return False
 

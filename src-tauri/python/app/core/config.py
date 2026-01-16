@@ -76,7 +76,6 @@ class ConfigManager:
         # 创建标准的embedding模型目录 - 确保无论RAG是否启用都会创建
         embedding_models_dir = os.path.join(user_data_dir, 'models', 'embedding')
         os.makedirs(embedding_models_dir, exist_ok=True)
-        print(f"✅ 确保embedding模型目录存在: {embedding_models_dir}")
         
     def get_user_data_dir(self):
         """获取用户数据目录"""

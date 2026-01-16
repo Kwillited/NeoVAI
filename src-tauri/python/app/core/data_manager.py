@@ -19,6 +19,15 @@ dirty_flags = {
     'settings': False
 }
 
+# 自动保存定时器
+import threading
+import time
+AUTO_SAVE_INTERVAL = 5  # 自动保存间隔（秒）
+auto_save_timer = None
+
+# 事务锁，确保数据一致性
+transaction_lock = threading.Lock()
+
 # 加载默认设置
 for key, value in config_manager._config.items():
     db['settings'][key] = value
@@ -127,10 +136,69 @@ def init_db():
     
     conn.commit()
     conn.close()
-    print(f"✅ SQLite数据库初始化成功，数据库文件: {db_path}")
+    from app.core.logging_config import logger
+    logger.info(f"SQLite数据库初始化成功，数据库文件: {db_path}")
 
 # --------------------------
-# 4. 数据加载（从SQLite数据库到内存DB）
+# 4. 事务管理
+# --------------------------
+def begin_transaction():
+    """开始事务，获取锁"""
+    transaction_lock.acquire()
+    from app.core.logging_config import logger
+    logger.debug("事务开始")
+
+
+def commit_transaction():
+    """提交事务，释放锁并保存数据"""
+    try:
+        save_data()
+        from app.core.logging_config import logger
+        logger.debug("事务提交")
+    finally:
+        transaction_lock.release()
+
+
+def rollback_transaction():
+    """回滚事务，释放锁"""
+    transaction_lock.release()
+    from app.core.logging_config import logger
+    logger.debug("事务回滚")
+
+# --------------------------
+# 5. 自动保存功能
+# --------------------------
+def auto_save_task():
+    """自动保存任务，定期检查脏标记并保存数据"""
+    while True:
+        time.sleep(AUTO_SAVE_INTERVAL)
+        with transaction_lock:
+            # 检查是否有脏数据需要保存
+            if any(dirty_flags.values()):
+                save_data()
+
+
+def start_auto_save():
+    """启动自动保存功能"""
+    global auto_save_timer
+    if auto_save_timer is None or not auto_save_timer.is_alive():
+        auto_save_timer = threading.Thread(target=auto_save_task, daemon=True)
+        auto_save_timer.start()
+        from app.core.logging_config import logger
+        logger.info(f"自动保存功能已启动，间隔: {AUTO_SAVE_INTERVAL}秒")
+
+
+def stop_auto_save():
+    """停止自动保存功能"""
+    global auto_save_timer
+    if auto_save_timer is not None:
+        # 由于使用了daemon=True，线程会在主程序结束时自动退出
+        auto_save_timer = None
+        from app.core.logging_config import logger
+        logger.info("自动保存功能已停止")
+
+# --------------------------
+# 6. 数据加载（从SQLite数据库到内存DB）
 # --------------------------
 def load_chats_from_db():
     """从SQLite数据库加载对话数据"""
@@ -192,10 +260,12 @@ def load_chats_from_db():
         # 关闭数据库连接
         conn.close()
         
-        print(f"✅ 从SQLite数据库加载了 {len(db['chats'])} 个对话")
+        from app.core.logging_config import logger
+        logger.info(f"从SQLite数据库加载了 {len(db['chats'])} 个对话")
         return len(db['chats']) > 0
     except Exception as e:
-        print(f"❌ 从SQLite数据库加载对话数据失败: {str(e)}")
+        from app.core.logging_config import logger
+        logger.error(f"从SQLite数据库加载对话数据失败: {str(e)}")
         return False
 
 
@@ -230,14 +300,20 @@ def load_data():
         # 从SQLite加载设置数据
         load_settings_from_db()
         
-        print("✅ 所有数据加载成功")
+        # 启动自动保存功能
+        start_auto_save()
+        
+        from app.core.logging_config import logger
+        logger.info("所有数据加载成功")
     except Exception as e:
-        print(f"❌ 加载数据时出错: {str(e)}")
+        from app.core.logging_config import logger
+        logger.error(f"加载数据时出错: {str(e)}")
 
 # 插入默认模型数据
 def insert_default_models():
     """插入默认模型数据到SQLite数据库"""
-    print("🔄 正在插入默认模型数据...")
+    from app.core.logging_config import logger
+    logger.info("正在插入默认模型数据...")
     
     # 默认模型列表
     default_models = [
@@ -393,7 +469,8 @@ def insert_default_models():
     
     conn.commit()
     conn.close()
-    print("✅ 默认模型数据插入完成")
+    from app.core.logging_config import logger
+    logger.info("默认模型数据插入完成")
     
     # 从数据库加载数据到内存
     load_models_from_db()
@@ -454,9 +531,11 @@ def load_models_from_db():
             })
         
         conn.close()
-        print(f"✅ 从SQLite数据库加载了 {len(db['models'])} 个模型")
+        from app.core.logging_config import logger
+        logger.info(f"从SQLite数据库加载了 {len(db['models'])} 个模型")
     except Exception as e:
-        print(f"❌ 从SQLite数据库加载模型数据失败: {str(e)}")
+        from app.core.logging_config import logger
+        logger.error(f"从SQLite数据库加载模型数据失败: {str(e)}")
 
 # 从SQLite数据库加载设置数据到内存
 def load_settings_from_db():
@@ -484,9 +563,11 @@ def load_settings_from_db():
                 db['settings'][key] = value
         
         conn.close()
-        print(f"✅ 从SQLite数据库加载了 {len(settings)} 个设置")
+        from app.core.logging_config import logger
+        logger.info(f"从SQLite数据库加载了 {len(settings)} 个设置")
     except Exception as e:
-        print(f"❌ 从SQLite数据库加载设置数据失败: {str(e)}")
+        from app.core.logging_config import logger
+        logger.error(f"从SQLite数据库加载设置数据失败: {str(e)}")
         # 保持现有设置不变
 
 # 将设置数据保存到SQLite数据库
@@ -507,11 +588,14 @@ def save_settings_to_db(conn):
                     (key, value_json)
                 )
             except Exception as e:
-                print(f"❌ 保存设置 '{key}' 失败: {str(e)}")
+                from app.core.logging_config import logger
+                logger.error(f"保存设置 '{key}' 失败: {str(e)}")
         
-        print("✅ 设置数据已保存到SQLite数据库")
+        from app.core.logging_config import logger
+        logger.info("设置数据已保存到SQLite数据库")
     except Exception as e:
-        print(f"❌ 保存设置数据到SQLite失败: {str(e)}")
+        from app.core.logging_config import logger
+        logger.error(f"保存设置数据到SQLite失败: {str(e)}")
         raise
 
 # --------------------------
@@ -553,9 +637,11 @@ def save_chats_to_db(conn):
                 VALUES (?, ?, ?, ?, ?, ?, ?)
                 ''', (msg_id, chat_id, role, content, thinking, msg_created_at, model))
         
-        print("✅ 对话数据已保存到SQLite数据库")
+        from app.core.logging_config import logger
+        logger.info("对话数据已保存到SQLite数据库")
     except Exception as e:
-        print(f"❌ 保存对话数据到SQLite失败: {str(e)}")
+        from app.core.logging_config import logger
+        logger.error(f"保存对话数据到SQLite失败: {str(e)}")
         raise
 
 def set_dirty_flag(data_type, is_dirty=True):
@@ -598,13 +684,15 @@ def save_data():
         # 提交事务
         conn.commit()
         
+        from app.core.logging_config import logger
         if saved_types:
-            print(f"✅ 数据已保存到SQLite: {', '.join(saved_types)}")
+            logger.info(f"数据已保存到SQLite: {', '.join(saved_types)}")
         else:
-            print("ℹ️  没有数据需要保存")
+            logger.info("没有数据需要保存")
             
     except Exception as e:
-        print(f"❌ 保存数据时出错: {str(e)}")
+        from app.core.logging_config import logger
+        logger.error(f"保存数据时出错: {str(e)}")
         # 回滚事务
         if conn:
             conn.rollback()
@@ -666,7 +754,9 @@ def save_models_to_db(conn):
                     version.get('streaming_config', False)
                 ))
         
-        print("✅ 模型数据已保存到SQLite数据库")
+        from app.core.logging_config import logger
+        logger.info("模型数据已保存到SQLite数据库")
     except Exception as e:
-        print(f"❌ 保存模型数据到SQLite失败: {str(e)}")
+        from app.core.logging_config import logger
+        logger.error(f"保存模型数据到SQLite失败: {str(e)}")
         raise

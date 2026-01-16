@@ -10,6 +10,7 @@ from app.utils.RagUtils.document_loader import DocumentLoader
 from app.utils.RagUtils.text_splitter import TextSplitter
 from app.utils.RagUtils.vector_service import VectorService
 from app.services.vector_store_service import VectorStoreService
+from app.services.base_service import BaseService
 
 # 使用config_manager获取标准用户数据目录
 user_data_dir = config_manager.get_user_data_dir()
@@ -31,10 +32,10 @@ def get_vector_store_service():
             embedder_model=config_manager.get('rag.embedder_model', 'all-MiniLM-L6-v2')
         )
     except Exception as e:
-        print(f"❌ 获取向量存储服务实例失败: {str(e)}")
+        RAGService.log_error(f"获取向量存储服务实例失败: {str(e)}")
         return None
 
-class RAGService:
+class RAGService(BaseService):
     """RAG服务类 - 封装所有RAG相关的业务逻辑"""
     
     @staticmethod

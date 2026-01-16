@@ -26,17 +26,14 @@ def get_model_icon(filename):
     """
     try:
         # 从数据库获取图片
-        from app.core.data_manager import get_db_connection
-        conn = get_db_connection()
-        cursor = conn.cursor()
+        from app.repositories.model_repository import ModelRepository
+        model_repo = ModelRepository()
         
         # 提取模型名称（去掉文件扩展名）
         model_name = filename.replace('.png', '')
         
         # 查询数据库中的图标
-        cursor.execute("SELECT icon_blob FROM models WHERE name = ?", (model_name,))
-        result = cursor.fetchone()
-        conn.close()
+        result = model_repo.get_model_icon(model_name)
         
         if result and result[0]:
             # 从数据库返回图片

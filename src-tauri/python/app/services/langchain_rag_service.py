@@ -6,9 +6,10 @@ from langchain_classic.chains.combine_documents import create_stuff_documents_ch
 from langchain_core.prompts import ChatPromptTemplate
 from app.services.vector_store_service import VectorStoreService
 from app.core.config import config_manager
+from app.services.base_service import BaseService
 
 
-class LangChainRAGService:
+class LangChainRAGService(BaseService):
     """基于LangChain的RAG服务类 - 提供高级RAG功能"""
     
     _instance = None

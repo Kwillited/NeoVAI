@@ -9,7 +9,23 @@
         // 最大宽度限制
         'max-w-full'
       ]">
-        <div class="markdown-content text-gray-800 dark:text-gray-100 leading-relaxed" v-html="formattedContent" :key="updateKey"></div>
+        <!-- 文字内容 -->
+        <div v-if="messageContent" class="markdown-content text-gray-800 dark:text-gray-100 leading-relaxed mb-3" v-html="formattedContent" :key="updateKey"></div>
+        
+        <!-- 文件列表 -->
+        <div v-if="messageValue.files && messageValue.files.length > 0" class="flex flex-wrap gap-2">
+          <div 
+            v-for="(file, index) in messageValue.files" 
+            :key="index"
+            class="flex items-center justify-between p-2 bg-white/80 dark:bg-dark-600 rounded-lg text-xs group transition-colors duration-300 ease-in-out max-w-[150px]"
+          >
+            <div class="flex items-center gap-1 truncate max-w-[80px]">
+              <i :class="['fa', getFileIcon(file.name), 'text-gray-500']"></i>
+              <span class="truncate">{{ file.name }}</span>
+            </div>
+            <span class="text-gray-400 text-[10px]">{{ formatFileSize(file.size) }}</span>
+          </div>
+        </div>
         
         <!-- 错误状态显示 -->
         <div v-if="messageValue.error" class="chat-error mt-2">
@@ -151,6 +167,39 @@ const handleCodeCopyClick = (event) => {
       copyCodeToClipboard(codeBlockId);
     }
   }
+};
+
+// 获取文件图标
+const getFileIcon = (fileName) => {
+  const extension = fileName.split('.').pop().toLowerCase();
+  
+  const iconMap = {
+    txt: 'fa-file-lines',
+    pdf: 'fa-file-pdf',
+    doc: 'fa-file-word',
+    docx: 'fa-file-word',
+    md: 'fa-file-lines',
+    jpg: 'fa-file-image',
+    jpeg: 'fa-file-image',
+    png: 'fa-file-image',
+    gif: 'fa-file-image',
+    csv: 'fa-file-excel',
+    xlsx: 'fa-file-excel',
+    pptx: 'fa-file-powerpoint'
+  };
+  
+  return iconMap[extension] || 'fa-file';
+};
+
+// 格式化文件大小
+const formatFileSize = (size) => {
+  if (size === 0) return '0 Bytes';
+  
+  const k = 1024;
+  const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+  const i = Math.floor(Math.log(size) / Math.log(k));
+  
+  return parseFloat((size / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 };
 </script>
 

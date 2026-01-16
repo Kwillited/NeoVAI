@@ -169,6 +169,7 @@ export const useChatStore = defineStore('chat', {
         id: generateId('msg'),
         role: 'user',
         content: content.trim(),
+        files: this.uploadedFiles.length > 0 ? [...this.uploadedFiles] : [],
         timestamp: Date.now(),
         status: 'sent',
       });

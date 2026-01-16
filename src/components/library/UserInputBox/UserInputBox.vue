@@ -3,7 +3,7 @@
   <!-- 聊天输入区域 - 在切换到图谱视图时添加顶部padding -->
   <div id="UserInputBox" class="border-t-0 pb-4 px-6 transition-colors duration-300 ease-in-out" :class="{ 'pt-4': activeView !== 'grid' }">
     <div class="relative w-full max-w-4xl mx-auto">
-      <div class="bg-white dark:bg-dark-700 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md focus-within:shadow-md transition-all duration-300 ease-in-out">
+      <div class="bg-white dark:bg-dark-700 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md focus-within:shadow-md transition-all duration-300 ease-in-out relative" ref="dragDropArea" @dragover.prevent="isDragOver = true" @dragleave="isDragOver = false" @drop.prevent="handleDrop">
         <!-- 智能体选择和MCP工具 - 合并到卡片内部 -->
         <div class="px-3 py-1.5 border-b border-gray-200 flex items-center gap-2">
           <div class="flex items-center gap-2">
@@ -245,36 +245,30 @@
         
         <div
           v-if="uploadedFiles.length > 0"
-          class="grid grid-cols-[repeat(auto-fill,minmax(80px,1fr))] gap-2 p-2 border-b border-gray-200 pb-3"
+          class="flex flex-wrap gap-2 p-2 border-b border-gray-200 pb-3"
         >
           <!-- 显示已上传的文件 -->
           <div
             v-for="(file, index) in uploadedFiles"
             :key="index"
-            class="flex items-center justify-between p-2 bg-gray-50 dark:bg-dark-600 rounded-lg text-xs mb-2 group transition-colors duration-300 ease-in-out"
+            class="flex items-center justify-between p-3 bg-gray-50 dark:bg-dark-600 rounded-lg text-xs group transition-colors duration-300 ease-in-out min-w-[120px] max-w-[180px] flex-1"
           >
-            <div class="flex items-center gap-1 truncate max-w-[50px]">
-              <i :class="['fa', getFileIcon(file.name), 'text-gray-500']"></i>
-              <span class="truncate">{{ file.name }}</span>
+            <div class="flex items-start gap-2 truncate max-w-[80px]">
+              <i :class="['fa', getFileIcon(file.name), 'text-gray-500 mt-0 text-xl']"></i>
+              <div class="flex flex-col gap-0.5 truncate">
+                <span class="truncate">{{ file.name }}</span>
+                <span class="text-gray-400 text-[10px]">{{ formatFileSize(file.size) }}</span>
+              </div>
             </div>
-            <div class="flex items-center gap-3">
-              <span class="text-gray-400 text-[10px]">{{ formatFileSize(file.size) }}</span>
-              <button
-                class="text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
-                @click="removeUploadedFile(index)"
-              >
-                <i class="fa-solid fa-circle-xmark"></i>
-              </button>
-            </div>
+            <button
+              class="text-gray-400 hover:text-red-500 opacity-70 hover:opacity-100 transition-all duration-300 ease-in-out ml-1 text-xs"
+              @click="removeUploadedFile(index)"
+            >
+              <i class="fa-solid fa-circle-xmark"></i>
+            </button>
           </div>
         </div>
-        <div
-          ref="dragDropArea"
-          class="p-3 pt-4 pb-1 relative"
-          @dragover.prevent="isDragOver = true"
-          @dragleave="isDragOver = false"
-          @drop.prevent="handleDrop"
-        >
+        <div class="p-3 pt-4 pb-1 relative">
           <textarea
             v-model="messageInput"
             placeholder="Message Or UploadFile For Chato..."
@@ -283,14 +277,15 @@
             @keydown.enter.exact.prevent="handleSendMessage"
 
           ></textarea>
-          <div
-            v-if="isDragOver"
-            class="absolute inset-0 flex flex-col items-center justify-center bg-primary/5 border-2 border-dashed border-primary/30 rounded-lg opacity-100 pointer-events-none transition-all duration-300 z-10"
-          >
-            <i class="fa-solid fa-cloud-arrow-up text-primary text-4xl mb-2"></i>
-            <span class="text-primary font-medium">释放文件以上传</span>
-            <span class="text-sm text-gray-500 mt-1">或点击上传附件按钮</span>
-          </div>
+        </div>
+        <!-- 拖拽提示区域 - 移动到外层，覆盖整个卡片容器 -->
+        <div
+          v-if="isDragOver"
+          class="absolute inset-0 flex flex-col items-center justify-center bg-primary/5 border-2 border-dashed border-primary/30 rounded-xl opacity-100 pointer-events-none transition-all duration-300 z-20"
+        >
+          <i class="fa-solid fa-cloud-arrow-up text-primary text-4xl mb-2"></i>
+          <span class="text-primary font-medium">释放文件以上传</span>
+          <span class="text-sm text-gray-500 mt-1">或点击上传附件按钮</span>
         </div>
         <div class="flex items-center justify-between px-3 py-2 gap-2">
           <div class="flex items-center gap-3">
@@ -643,7 +638,7 @@ const emit = defineEmits(['sendMessage']);
 
 // 处理发送消息事件
 const handleSendMessage = async () => {
-  if (messageInput.value.trim()) {
+  if (messageInput.value.trim() || uploadedFiles.value.length > 0) {
     // 先保存当前需要发送的消息内容和模型
     const messageToSend = messageInput.value;
     const modelToUse = currentModel.value;

@@ -203,7 +203,7 @@ const handleSideMenuToggle = () => {
 
 // 处理发送消息事件
 const handleSendMessage = (message, model, deepThinking, webSearchEnabled) => {
-  if (message.trim()) {
+  if (message.trim() || chatStore.uploadedFiles.length > 0) {
     chatStore.sendMessage(message, model, deepThinking, webSearchEnabled);
 
     // 发送消息后安全滚动到底部

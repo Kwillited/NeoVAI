@@ -163,7 +163,7 @@ onUnmounted(() => {
 
 // 处理发送消息事件
 const handleSendMessage = async (message, model) => {
-  if (message.trim()) {
+  if (message.trim() || chatStore.uploadedFiles.length > 0) {
     // 先确保有当前对话（如果没有则创建）
     if (!chatStore.currentChatId) {
       await chatStore.createNewChat(model);

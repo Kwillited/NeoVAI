@@ -1510,7 +1510,9 @@ textarea:focus {
 
 /* 特别针对聊天输入框的样式 */
 #MessageInputArea textarea,
-#MessageInputArea textarea:focus {
+#MessageInputArea textarea:focus,
+#UserInputBox textarea,
+#UserInputBox textarea:focus {
   outline: none !important;
   border: none !important;
   box-shadow: none !important;

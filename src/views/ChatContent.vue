@@ -99,7 +99,7 @@
       />
 
     <!-- 消息输入区域 - 传递当前视图状态 -->
-      <MessageInputArea @sendMessage="handleSendMessage" :activeView="chatStore.activeView" />
+      <UserInputBox @sendMessage="handleSendMessage" :activeView="chatStore.activeView" />
   </div>
 </template>
 
@@ -114,7 +114,7 @@ import { formatDate } from '../store/utils.js';
 import ChatMessagesContainer from '../components/chat/ChatMessagesContainer.vue';
 import KnowledgeGraphContent from './KnowledgeGraphContent.vue';
 import ScrollToBottomButton from '../components/chat/ScrollToBottomButton.vue';
-import MessageInputArea from '../components/chat/MessageInputArea.vue';
+import { UserInputBox } from '../components/library';
 import ActionButton from '../components/common/ActionButton.vue';
 
 // 初始化stores

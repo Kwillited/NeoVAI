@@ -289,8 +289,8 @@
         </div>
         <div class="flex items-center justify-between px-3 py-2 gap-2">
           <div class="flex items-center gap-3">
-            <!-- 上传文件按钮 -->
-            <Tooltip content="上传文件">
+            <!-- 上传附件按钮 -->
+            <Tooltip content="上传附件">
               <button
                   class="btn-secondary w-8 h-8 flex items-center justify-center rounded-lg transition-all duration-300 ease-in-out"
                   :class="{
@@ -312,7 +312,7 @@
               accept=".txt,.pdf,.doc,.docx,.md,.jpg,.jpeg,.png,.gif,.csv,.xlsx,.pptx"
             >
             <!-- 深度思考切换按钮 -->
-            <Tooltip content="深度思考模式">
+            <Tooltip content="深度思考">
               <button
                 class="btn-secondary flex items-center justify-center w-8 h-8 rounded-lg transition-all duration-300 ease-in-out"
                 :class="{

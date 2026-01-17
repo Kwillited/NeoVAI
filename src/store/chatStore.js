@@ -690,10 +690,11 @@ export const useChatStore = defineStore('chat', {
     },
 
     // 切换对话置顶状态
-    togglePinChat(chatId) {
+    async togglePinChat(chatId) {
       const chat = this.chats.find((chat) => chat.id === chatId);
       if (chat) {
-        chat.pinned = !chat.pinned;
+        const newPinnedState = !chat.pinned;
+        chat.pinned = newPinnedState;
 
         // 重新排序对话列表，置顶的对话在前
         this.chats.sort((a, b) => {
@@ -702,7 +703,20 @@ export const useChatStore = defineStore('chat', {
           return b.updatedAt - a.updatedAt;
         });
 
-        // 不再需要本地保存，所有数据已通过API同步到后端
+        // 调用API同步到后端
+        try {
+          await apiService.chat.updateChatPin(chatId, newPinnedState);
+        } catch (error) {
+          console.error('更新对话置顶状态失败:', error);
+          // 如果API调用失败，恢复原始状态
+          chat.pinned = !newPinnedState;
+          // 重新排序对话列表
+          this.chats.sort((a, b) => {
+            if (a.pinned && !b.pinned) return -1;
+            if (!a.pinned && b.pinned) return 1;
+            return b.updatedAt - a.updatedAt;
+          });
+        }
       }
     },
 

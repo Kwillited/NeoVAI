@@ -30,6 +30,7 @@ class ChatService(BaseService):
                 preview = chat_row[2] if len(chat_row) > 2 else ''
                 created_at = chat_row[3] if len(chat_row) > 3 else datetime.now().isoformat()
                 updated_at = chat_row[4] if len(chat_row) > 4 else datetime.now().isoformat()
+                pinned = bool(chat_row[5] if len(chat_row) > 5 else 0)
                 
                 # 获取对话的所有消息
                 messages = message_repo.get_messages_by_chat_id(chat_id)
@@ -58,6 +59,7 @@ class ChatService(BaseService):
                     'preview': preview,
                     'createdAt': created_at,
                     'updatedAt': updated_at,
+                    'pinned': pinned,
                     'messages': message_list
                 })
             
@@ -227,6 +229,43 @@ class ChatService(BaseService):
             # 尝试清空内存
             DataService.clear_chats()
             return True
+    
+    @staticmethod
+    def update_chat_pin(chat_id, pinned):
+        """更新对话置顶状态"""
+        try:
+            # 使用Repository更新对话置顶状态
+            chat_repo = ChatRepository()
+            message_repo = MessageRepository()
+            
+            # 获取当前对话信息
+            chat_row = chat_repo.get_chat_by_id(chat_id)
+            if not chat_row:
+                return False
+            
+            # 处理可能的字段缺失情况
+            chat_id = chat_row[0]
+            title = chat_row[1] if len(chat_row) > 1 else '未命名对话'
+            preview = chat_row[2] if len(chat_row) > 2 else ''
+            created_at = chat_row[3] if len(chat_row) > 3 else datetime.now().isoformat()
+            updated_at = datetime.now().isoformat()
+            
+            # 更新数据库中的对话置顶状态
+            chat_repo.update_chat(chat_id, title, preview, updated_at, int(pinned))
+            
+            # 更新内存数据库中的对话
+            chats = DataService.get_chats()
+            for chat in chats:
+                if chat['id'] == chat_id:
+                    chat['pinned'] = bool(pinned)
+                    chat['updatedAt'] = updated_at
+                    break
+            
+            return True
+        except Exception as e:
+            # 使用BaseService的日志方法
+            BaseService.log_error(f"更新对话置顶状态失败: {str(e)}")
+            return False
     
     @staticmethod
     def get_chat_context(chat_id, max_messages=10, deep_thinking=False):

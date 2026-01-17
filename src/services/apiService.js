@@ -455,6 +455,15 @@ export const apiService = {
         url: '/api/chats/delete-all',
       });
     },
+    
+    // 更新对话置顶状态
+    updateChatPin: async (chatId, pinned) => {
+      return await requestWithRetry({
+        method: 'PATCH',
+        url: `/api/chats/${chatId}/pin`,
+        data: { pinned },
+      });
+    },
   },
   
   // RAG相关API

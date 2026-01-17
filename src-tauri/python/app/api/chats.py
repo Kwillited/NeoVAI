@@ -46,6 +46,19 @@ def delete_all_chats():
     ChatService.delete_all_chats()
     return jsonify({'success': True, 'message': '所有对话已删除'})
 
+# 更新对话置顶状态
+@chat_bp.route('/<chat_id>/pin', methods=['PATCH'])
+def update_chat_pin(chat_id):
+    data = request.json
+    pinned = data.get('pinned', 0)
+    
+    # 使用服务层更新对话置顶状态
+    success = ChatService.update_chat_pin(chat_id, pinned)
+    if not success:
+        return jsonify({'error': '对话不存在'}), 404
+    
+    return jsonify({'success': True, 'message': f'对话已{"置顶" if pinned else "取消置顶"}'})
+
 # 发送消息（应用层）
 @chat_bp.route('/<chat_id>/messages', methods=['POST'])
 def send_message(chat_id):

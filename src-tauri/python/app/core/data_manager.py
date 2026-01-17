@@ -108,9 +108,17 @@ def init_db():
         title TEXT NOT NULL,
         preview TEXT,
         created_at TEXT NOT NULL,
-        updated_at TEXT NOT NULL
+        updated_at TEXT NOT NULL,
+        pinned INTEGER DEFAULT 0
     )
     ''')
+    
+    # 为已存在的表添加pinned字段（如果不存在）
+    try:
+        cursor.execute('ALTER TABLE chats ADD COLUMN pinned INTEGER DEFAULT 0')
+    except Exception as e:
+        # 忽略字段已存在的错误
+        pass
     
     # 创建消息表
     cursor.execute('''

@@ -22,13 +22,12 @@ class ChatRepository(BaseRepository):
         '''
         return self.execute(query, (chat_id, title, preview, created_at, updated_at))
     
-    def update_chat(self, chat_id, title, preview, updated_at):
-        """更新对话"""
-        query = '''
-        UPDATE chats SET title = ?, preview = ?, updated_at = ?
+    def update_chat(self, chat_id, title, preview, updated_at, pinned=0):
+        query = """
+        UPDATE chats SET title = ?, preview = ?, updated_at = ?, pinned = ?
         WHERE id = ?
-        '''
-        return self.execute(query, (title, preview, updated_at, chat_id))
+        """
+        return self.execute(query, (title, preview, updated_at, pinned, chat_id))
     
     def delete_chat(self, chat_id):
         """删除对话"""

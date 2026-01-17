@@ -2,7 +2,7 @@ import { defineStore } from 'pinia';
 
 // 定义节点和连接的类型
 /**
- * @typedef {Object} KnowledgeNode
+ * @typedef {Object} ContextNode
  * @property {number} id - 节点ID
  * @property {string} name - 节点名称
  * @property {number} group - 节点分组
@@ -11,15 +11,15 @@ import { defineStore } from 'pinia';
  */
 
 /**
- * @typedef {Object} KnowledgeLink
+ * @typedef {Object} ContextLink
  * @property {number} source - 源节点ID
  * @property {number} target - 目标节点ID
  * @property {number} value - 连接权重
  */
 
-export const useKnowledgeGraphStore = defineStore('knowledgeGraph', {
+export const useContextVisualizationStore = defineStore('contextVisualization', {
   state: () => ({
-    // 知识图谱数据（硬编码，暂时未接入数据库）
+    // 上下文可视化数据（硬编码，暂时未接入数据库）
     graphData: {
       nodes: [
         { id: 1, name: "人工智能", group: 1, size: 25, description: "研究如何使计算机模拟人类智能的科学与工程" },

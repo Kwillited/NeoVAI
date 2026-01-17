@@ -176,7 +176,7 @@
       
       <!-- 知识图谱可视化视图 -->
       <div v-else class="w-full h-full relative">
-        <KnowledgeGraphCanvas 
+        <KnowledgeGraphVisualization 
           :nodes="knowledgeGraphNodes"
           :links="knowledgeGraphLinks"
           :visible="!isSliderActive"
@@ -209,7 +209,7 @@ import { useChatStore } from '../store/chatStore.js';
 import { eventBus } from '../services/eventBus.js';
 import { generateId, formatFileSize } from '../store/utils.js';
 import ActionButton from '../components/common/ActionButton.vue';
-import KnowledgeGraphCanvas from '../components/knowledge-graph/KnowledgeGraphCanvas.vue';
+import { KnowledgeGraphVisualization } from '../components/library';
 import ConfirmationModal from '../components/common/ConfirmationModal.vue';
 import { showNotification } from '../services/notificationUtils.js';
 

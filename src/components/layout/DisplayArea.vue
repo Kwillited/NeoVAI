@@ -31,7 +31,7 @@
       <ChatContent v-if="activeContent === 'chat'" />
       <SettingsContent v-if="activeContent === 'settings'" />
       <RagManagementContent v-if="activeContent === 'ragManagement'" />
-      <KnowledgeGraphContent v-if="activeContent === 'knowledgeGraph'" />
+      <ContextVisualizationContent v-if="activeContent === 'contextVisualization'" />
       <SendMessageContent v-if="activeContent === 'sendMessage'" />
 
     </div>
@@ -57,7 +57,7 @@ import PanelContent from '../panel/PanelContent.vue'; // 使用PanelContent复�
 import ChatContent from '../../views/ChatContent.vue'; // 移动到views目录
 import SettingsContent from '../../views/SettingsContent.vue'; // 移动到views目录
 import RagManagementContent from '../../views/RagManagementContent.vue'; // 移动到views目录
-import KnowledgeGraphContent from '../../views/KnowledgeGraphContent.vue'; // 新增视图组件
+import { ContextVisualizationContent } from '../library';
 import SendMessageContent from '../../views/SendMessageContent.vue'; // 新增发送消息视图组件
 
 import RightPanel from '../panel/RightPanel.vue';

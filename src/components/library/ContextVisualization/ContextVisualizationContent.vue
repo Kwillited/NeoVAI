@@ -1,8 +1,8 @@
 <template>
   <!-- 上下文可视化主容器 - 调整样式使其与ChatMessagesContainer风格一致 -->
-  <div ref="knowledgeGraphContainer" class="relative flex-1 w-full bg-gradient-subtle text-light overflow-hidden font-inter scrollbar-thin">
+  <div ref="contextVisualizationContainer" class="relative flex-1 w-full bg-gradient-subtle text-light overflow-hidden font-inter scrollbar-thin">
     <!-- 左侧设置面板组件 -->
-    <KnowledgeGraphSettingsPanel
+    <ContextVisualizationSettingsPanel
       :showSettingsPanel="showSettingsPanel"
       :settings="settings"
       :activeTooltip="activeTooltip"
@@ -17,17 +17,17 @@
       @hideTooltip="hideTooltip"
     />
       <!-- 导航栏组件 -->
-      <KnowledgeGraphNavigation 
+      <ContextVisualizationNavigation 
         :selectedNode="selectedNode" 
         @settingsClick="toggleSettingsPanel" 
         @menuClick="selectedNode ? closeModal() : showNodeDetails(contextStore.graphData.nodes[0])" 
       />
       
       <!-- 3D上下文可视化渲染组件 -->
-      <KnowledgeGraphRenderer />
+      <ContextVisualizationRenderer />
       
       <!-- 右侧信息面板组件 -->
-      <KnowledgeGraphNodeInfoPanel
+      <ContextVisualizationNodeInfoPanel
         :selectedNode="selectedNode"
         :relatedNodes="relatedNodes"
         :nodeMaterials="nodeMaterials"
@@ -43,20 +43,20 @@
 import { ref, onMounted, onUnmounted, reactive, provide } from 'vue';
 
 // 导入本地存储管理工具
-import { StorageManager } from '../store/utils.js';
+import { StorageManager } from '../../../store/utils.js';
 
 // 引入上下文可视化相关组件
-import KnowledgeGraphNavigation from './knowledgeGraph/KnowledgeGraphNavigation.vue';
-import KnowledgeGraphSettingsPanel from './knowledgeGraph/KnowledgeGraphSettingsPanel.vue';
-import KnowledgeGraphNodeInfoPanel from './knowledgeGraph/KnowledgeGraphNodeInfoPanel.vue';
+import ContextVisualizationNavigation from './ContextVisualizationNavigation.vue';
+import ContextVisualizationSettingsPanel from './ContextVisualizationSettingsPanel.vue';
+import ContextVisualizationNodeInfoPanel from './ContextVisualizationNodeInfoPanel.vue';
 
-import KnowledgeGraphRenderer from './knowledgeGraph/KnowledgeGraphRenderer.vue';
+import ContextVisualizationRenderer from './ContextVisualizationRenderer.vue';
 
 // 引入 Three.js 库（仅用于材质定义）
 import * as THREE from 'three';
 
 // 导入上下文存储
-import { useKnowledgeGraphStore } from '../store/knowledgeGraphStore.js';
+import { useContextVisualizationStore } from '../../../store/contextVisualizationStore.js';
 
 // 创建星空背景函数
 const createStars = (scene, config) => {
@@ -96,13 +96,13 @@ const createStars = (scene, config) => {
 };
 
 // 初始化上下文存储
-const contextStore = useKnowledgeGraphStore();
+const contextStore = useContextVisualizationStore();
 
 // 响应式状态
 const selectedNode = ref(null);
 const relatedNodes = ref([]);
 const nodeMaterials = ref([]);
-const knowledgeGraphContainer = ref(null);
+const contextVisualizationContainer = ref(null);
 const infoPanel = ref(null);
 const showSettingsPanel = ref(false);
 const activeTooltip = ref('');
@@ -408,7 +408,7 @@ provide('nodeMaterials', nodeMaterials);
 provide('settings', settings);
 provide('starsConfig', starsConfig);
 provide('hiddenNodes', hiddenNodes);
-provide('knowledgeGraphContainer', knowledgeGraphContainer);
+provide('contextVisualizationContainer', contextVisualizationContainer);
 provide('starsRef', starsRef);
 provide('graphData', contextStore.graphData);
 provide('showNodeDetails', showNodeDetails);

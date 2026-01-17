@@ -85,8 +85,8 @@
         class="w-full h-full"
       />
       
-      <!-- 知识图谱容器 -->
-      <KnowledgeGraphContent 
+      <!-- 上下文可视化容器 -->
+      <ContextVisualizationContent 
         v-else
         class="w-full h-full"
       />
@@ -112,7 +112,7 @@ import { formatDate } from '../store/utils.js';
 
 // 导入子组件
 import ChatMessagesContainer from '../components/chat/ChatMessagesContainer.vue';
-import KnowledgeGraphContent from './KnowledgeGraphContent.vue';
+import { ContextVisualizationContent } from '../components/library';
 import ScrollToBottomButton from '../components/chat/ScrollToBottomButton.vue';
 import { UserInputBox } from '../components/library';
 import ActionButton from '../components/common/ActionButton.vue';

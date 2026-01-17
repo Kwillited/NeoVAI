@@ -16,7 +16,7 @@ const settings = inject('settings');
 const starsConfig = inject('starsConfig');
 const showNodeDetails = inject('showNodeDetails');
 const starsRef = inject('starsRef');
-const containerRef = inject('knowledgeGraphContainer');
+const containerRef = inject('contextVisualizationContainer');
 const contextData = inject('graphData');
 
 // 响应式状态

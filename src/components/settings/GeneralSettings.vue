@@ -44,7 +44,6 @@
             title="启用流式输出"
             description="启用后，对话将以流式方式输出，而不是等待全部生成完成"
             v-model="settingsStore.systemSettings.streamingEnabled"
-            @change="toggleStreaming"
           />
 
           <div class="setting-item p-3 rounded-lg">
@@ -302,10 +301,5 @@ const toggleDarkMode = () => {
   settingsStore.toggleDarkMode();
 };
 
-// 切换流式输出设置
-const toggleStreaming = () => {
-  settingsStore.updateSystemSettings({
-    streamingEnabled: !settingsStore.systemSettings.streamingEnabled
-  });
-};
+
 </script>

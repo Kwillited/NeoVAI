@@ -237,3 +237,93 @@ def paginate_list(items, page=1, page_size=10):
     pagination_metadata = create_pagination_metadata(page, page_size, len(items))
     
     return paginated_items, pagination_metadata
+
+
+def build_message_list(messages):
+    """
+    构建消息列表
+    
+    Args:
+        messages: 数据库查询返回的消息列表（支持ORM对象或元组）
+    
+    Returns:
+        list: 格式化后的消息列表
+    """
+    message_list = []
+    for msg in messages:
+        # 处理ORM对象
+        if hasattr(msg, 'id'):
+            msg_id = msg.id
+            role = msg.role
+            content = msg.actual_content
+            thinking = msg.thinking
+            msg_created_at = msg.created_at
+            model = msg.model
+            files = msg.files
+        # 处理元组
+        else:
+            msg_id = msg[0]
+            role = msg[2] if len(msg) > 2 else 'user'
+            content = msg[3] if len(msg) > 3 else ''
+            thinking = msg[4] if len(msg) > 4 else None
+            msg_created_at = msg[5] if len(msg) > 5 else datetime.now().isoformat()
+            model = msg[6] if len(msg) > 6 else None
+            files = msg[7] if len(msg) > 7 else None
+        
+        # 解析files字段（JSON字符串转列表）
+        files_list = []
+        if files:
+            try:
+                files_list = json.loads(files)
+            except json.JSONDecodeError:
+                files_list = []
+        
+        message_list.append({
+            'id': msg_id,
+            'role': role,
+            'content': content,
+            'thinking': thinking,
+            'createdAt': msg_created_at,
+            'model': model,
+            'files': files_list
+        })
+    return message_list
+
+
+def build_chat_dict(chat, messages):
+    """
+    构建对话字典
+    
+    Args:
+        chat: 数据库查询返回的对话（支持ORM对象或元组）
+        messages: 格式化后的消息列表
+    
+    Returns:
+        dict: 格式化后的对话字典
+    """
+    # 处理ORM对象
+    if hasattr(chat, 'id'):
+        chat_id = chat.id
+        title = chat.title
+        preview = chat.preview
+        created_at = chat.created_at
+        updated_at = chat.updated_at
+        pinned = bool(chat.pinned)
+    # 处理元组
+    else:
+        chat_id = chat[0]
+        title = chat[1] if len(chat) > 1 else '未命名对话'
+        preview = chat[2] if len(chat) > 2 else ''
+        created_at = chat[3] if len(chat) > 3 else datetime.now().isoformat()
+        updated_at = chat[4] if len(chat) > 4 else datetime.now().isoformat()
+        pinned = bool(chat[5] if len(chat) > 5 else 0)
+    
+    return {
+        'id': chat_id,
+        'title': title,
+        'preview': preview,
+        'createdAt': created_at,
+        'updatedAt': updated_at,
+        'pinned': pinned,
+        'messages': messages
+    }

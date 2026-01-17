@@ -1,5 +1,5 @@
 """数据服务层 - 封装内存数据管理和脏标记机制"""
-from app.core.data_manager import db, save_data, set_dirty_flag, get_db_connection
+from app.core.data_manager import db, save_data, set_dirty_flag
 from app.services.base_service import BaseService
 
 class DataService(BaseService):
@@ -7,22 +7,20 @@ class DataService(BaseService):
     
     @staticmethod
     def begin_transaction():
-        """开始事务"""
-        conn = get_db_connection()
-        conn.execute("BEGIN TRANSACTION")
-        return conn
+        """开始事务 - 不再需要直接使用SQLite连接，使用SQLAlchemy的会话管理"""
+        from app.core.database import get_db
+        db_session = next(get_db())
+        return db_session
     
     @staticmethod
-    def commit_transaction(conn):
+    def commit_transaction(db_session):
         """提交事务"""
-        conn.commit()
-        conn.close()
+        db_session.commit()
     
     @staticmethod
-    def rollback_transaction(conn):
+    def rollback_transaction(db_session):
         """回滚事务"""
-        conn.rollback()
-        conn.close()
+        db_session.rollback()
     
     @staticmethod
     def get_chats():

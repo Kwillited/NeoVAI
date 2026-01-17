@@ -8,18 +8,23 @@ ChaTo是一个AI聊天应用，支持多种AI模型和RAG（检索增强生成�
 
 ### 2.1 核心技术
 - **语言**: Python 3.13
-- **Web框架**: Flask
+- **Web框架**: FastAPI
 - **数据库**: SQLite
+- **ORM框架**: SQLAlchemy
 - **向量数据库**: Chroma
 - **AI集成**: LangChain, 各种AI模型SDK
+- **数据验证**: Pydantic
 
 ### 2.2 主要依赖
-- Flask: Web框架
-- Flask-CORS: 跨域支持
-- uuid: 生成唯一ID
+- fastapi: Web框架
+- uvicorn: ASGI服务器
+- sqlalchemy: ORM框架
+- pydantic: 数据验证
+- python-multipart: 文件上传支持
 - langchain_classic: 构建RAG应用
 - chromadb: 向量数据库
 - platformdirs: 跨平台目录管理
+- uuid: 生成唯一ID
 
 ## 3. 分层架构
 
@@ -33,31 +38,37 @@ API层 → 服务层 → DataService层 → Repository层 → 数据层
 
 #### 3.2.1 API层
 - 处理HTTP请求和响应
-- 参数验证
+- 使用Pydantic进行参数验证
 - 返回格式统一
 - 路由定义
+- 依赖注入管理
 
 #### 3.2.2 服务层
 - 封装业务逻辑
 - 处理业务规则
 - 调用DataService层和Repository层
 - 所有服务类继承自BaseService
+- 使用依赖注入获取所需资源
 
 #### 3.2.3 DataService层
 - 管理内存数据
 - 处理脏标记机制
 - 提供事务管理功能
 - 封装db对象的访问
+- 调用Repository层进行数据库操作
 
 #### 3.2.4 Repository层
-- 封装数据库访问
-- 处理SQL查询
+- 基于SQLAlchemy ORM封装数据库访问
 - 提供CRUD操作
+- 处理数据库会话管理
+- 实现数据访问逻辑
+- 所有Repository类继承自BaseRepository
 
 #### 3.2.5 数据层
-- 数据持久化
-- 数据库连接管理
-- 数据同步
+- 基于SQLAlchemy的数据持久化
+- 数据库连接池管理
+- ORM模型定义
+- 数据迁移支持
 
 ## 4. 主要模块说明
 
@@ -149,13 +160,15 @@ API层 → 服务层 → DataService层 → Repository层 → 数据层
 - 函数和类名采用驼峰命名法
 - 变量名采用下划线命名法
 - 每个函数和类都需要添加文档注释
+- 使用类型提示（Type Hints）
 
 ### 6.2 分层架构规范
-- API层只依赖服务层
+- API层只依赖服务层和Pydantic模型
 - 服务层只依赖DataService层和Repository层
-- DataService层只依赖数据层
-- Repository层只依赖数据层
+- DataService层只依赖Repository层
+- Repository层只依赖SQLAlchemy ORM模型
 - 禁止跨层访问
+- 使用依赖注入管理依赖关系
 
 ### 6.3 日志规范
 - 使用统一的日志记录器
@@ -167,6 +180,19 @@ API层 → 服务层 → DataService层 → Repository层 → 数据层
 - 使用BaseService提供的handle_exception方法统一处理异常
 - API层返回统一的错误格式
 - 错误信息应该友好，便于前端处理
+- 使用FastAPI的HTTPException统一处理API错误
+
+### 6.5 数据验证规范
+- 使用Pydantic V2进行数据验证
+- 为所有API请求和响应定义Pydantic模型
+- 为内部数据传输定义Pydantic模型
+- 使用严格的类型验证
+
+### 6.6 ORM使用规范
+- 所有数据库操作通过Repository层进行
+- 避免在服务层直接使用SQLAlchemy会话
+- 使用Repository层提供的方法进行CRUD操作
+- 遵循Repository模式，将数据访问逻辑与业务逻辑分离
 
 ## 7. 部署说明
 
@@ -177,7 +203,7 @@ API层 → 服务层 → DataService层 → Repository层 → 数据层
 pip install -r requirements.txt
 
 # 启动服务
-python main.py
+python -m uvicorn main:app --reload --port 8000
 ```
 
 ### 7.2 生产环境部署
@@ -186,8 +212,11 @@ python main.py
 # 安装依赖
 pip install -r requirements.txt
 
-# 使用gunicorn启动服务
-gunicorn -w 4 -b 0.0.0.0:5000 main:app
+# 使用uvicorn启动服务（单进程）
+uvicorn main:app --host 0.0.0.0 --port 8000 --workers 4
+
+# 或使用gunicorn作为WSGI服务器（如果需要）
+gunicorn -w 4 -b 0.0.0.0:8000 -k uvicorn.workers.UvicornWorker main:app
 ```
 
 ### 7.3 配置管理
@@ -207,11 +236,13 @@ gunicorn -w 4 -b 0.0.0.0:5000 main:app
 | model_versions | 存储模型版本信息 |
 | settings | 存储应用设置 |
 
-### 8.2 内存数据管理
-- 应用启动时加载数据到内存
+### 8.2 数据管理架构
+- 基于SQLAlchemy ORM的数据持久化
+- 应用启动时通过Repository层加载数据到内存
 - 内存数据变更时设置脏标记
 - 定期自动保存脏数据到数据库
-- 支持事务管理
+- 支持基于SQLAlchemy的事务管理
+- Repository层封装所有数据库操作
 
 ## 9. 后续迭代建议
 
@@ -227,10 +258,11 @@ gunicorn -w 4 -b 0.0.0.0:5000 main:app
 - 支持模型微调
 
 ### 9.3 架构优化
-- 考虑使用异步框架（如FastAPI）
-- 考虑使用ORM框架
+- 优化异步处理机制
 - 增加分布式支持
 - 考虑使用消息队列
+- 实现更完善的依赖注入系统
+- 增加API版本管理
 
 ### 9.4 安全性增强
 - 增加API密钥验证
@@ -254,5 +286,5 @@ ChaTo后端采用了分层架构设计，便于维护和扩展。各层职责明
 
 ---
 
-**更新时间**: 2026-01-16
-**版本**: 1.0
+**更新时间**: 2026-01-18
+**版本**: 2.0

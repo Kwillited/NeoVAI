@@ -1,41 +1,53 @@
 """消息数据访问类"""
 from app.repositories.base_repository import BaseRepository
+from app.models.models import Message
 
 class MessageRepository(BaseRepository):
     """消息数据访问类，处理消息相关的数据访问"""
     
     def get_messages_by_chat_id(self, chat_id):
         """根据对话ID获取所有消息"""
-        query = "SELECT * FROM messages WHERE chat_id = ? ORDER BY created_at"
-        return self.fetch_all(query, (chat_id,))
+        return self.db.query(Message).filter(Message.chat_id == chat_id).order_by(Message.created_at).all()
     
     def get_message_by_id(self, message_id):
         """根据ID获取消息"""
-        query = "SELECT * FROM messages WHERE id = ?"
-        return self.fetch_one(query, (message_id,))
+        return self.db.query(Message).filter(Message.id == message_id).first()
     
     def create_message(self, message_id, chat_id, role, actual_content, thinking, created_at, model, files=None):
         """创建新消息"""
-        query = '''
-        INSERT OR REPLACE INTO messages (id, chat_id, role, actual_content, thinking, created_at, model, files)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-        '''
-        return self.execute(query, (message_id, chat_id, role, actual_content, thinking, created_at, model, files))
+        message = Message(
+            id=message_id,
+            chat_id=chat_id,
+            role=role,
+            actual_content=actual_content,
+            thinking=thinking,
+            created_at=created_at,
+            model=model,
+            files=files
+        )
+        return self.add(message)
     
     def update_message(self, message_id, role, actual_content, thinking, created_at, model):
         """更新消息"""
-        query = '''
-        UPDATE messages SET role = ?, actual_content = ?, thinking = ?, created_at = ?, model = ?
-        WHERE id = ?
-        '''
-        return self.execute(query, (role, actual_content, thinking, created_at, model, message_id))
+        message = self.get_message_by_id(message_id)
+        if message:
+            message.role = role
+            message.actual_content = actual_content
+            message.thinking = thinking
+            message.created_at = created_at
+            message.model = model
+            return self.update(message)
+        return None
     
     def delete_messages_by_chat_id(self, chat_id):
         """根据对话ID删除所有消息"""
-        query = "DELETE FROM messages WHERE chat_id = ?"
-        return self.execute(query, (chat_id,))
+        # 批量删除，利用SQLAlchemy的删除API
+        result = self.db.query(Message).filter(Message.chat_id == chat_id).delete()
+        self.db.commit()
+        return result
     
     def delete_all_messages(self):
         """删除所有消息"""
-        query = "DELETE FROM messages"
-        return self.execute(query)
+        result = self.db.query(Message).delete()
+        self.db.commit()
+        return result

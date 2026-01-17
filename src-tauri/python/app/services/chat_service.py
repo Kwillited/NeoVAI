@@ -7,71 +7,42 @@ from app.services.data_service import DataService
 from app.repositories.chat_repository import ChatRepository
 from app.repositories.message_repository import MessageRepository
 from app.services.base_service import BaseService
+from app.utils.data_utils import build_message_list, build_chat_dict
 
 class ChatService(BaseService):
     """对话服务类，封装所有对话相关的业务逻辑"""
-
-    @staticmethod
-    def get_chats():
+    
+    def __init__(self, chat_repo=None, message_repo=None):
+        """初始化对话服务
+        
+        Args:
+            chat_repo: 对话仓库实例，用于依赖注入
+            message_repo: 消息仓库实例，用于依赖注入
+        """
+        self.chat_repo = chat_repo or ChatRepository()
+        self.message_repo = message_repo or MessageRepository()
+    
+    def get_chats(self):
         """获取所有对话"""
         try:
-            # 使用Repository获取所有对话
-            chat_repo = ChatRepository()
-            message_repo = MessageRepository()
-            
             # 先从数据库加载最新数据
-            chats = chat_repo.get_all_chats()
+            chats = self.chat_repo.get_all_chats()
             
             chat_list = []
             for chat_row in chats:
-                # 处理可能的字段缺失情况
                 chat_id = chat_row[0]
-                title = chat_row[1] if len(chat_row) > 1 else '未命名对话'
-                preview = chat_row[2] if len(chat_row) > 2 else ''
-                created_at = chat_row[3] if len(chat_row) > 3 else datetime.now().isoformat()
-                updated_at = chat_row[4] if len(chat_row) > 4 else datetime.now().isoformat()
-                pinned = bool(chat_row[5] if len(chat_row) > 5 else 0)
                 
                 # 获取对话的所有消息
-                messages = message_repo.get_messages_by_chat_id(chat_id)
+                messages = self.message_repo.get_messages_by_chat_id(chat_id)
                 
-                # 构建消息列表
-                message_list = []
-                for msg_row in messages:
-                    msg_id = msg_row[0]
-                    role = msg_row[2] if len(msg_row) > 2 else 'user'
-                    content = msg_row[3] if len(msg_row) > 3 else ''
-                    msg_created_at = msg_row[5] if len(msg_row) > 5 else datetime.now().isoformat()
-                    model = msg_row[6] if len(msg_row) > 6 else None
-                    files = msg_row[7] if len(msg_row) > 7 else None
-                    
-                    # 解析files字段（JSON字符串转列表）
-                    files_list = []
-                    if files:
-                        try:
-                            files_list = json.loads(files)
-                        except json.JSONDecodeError:
-                            files_list = []
-                    
-                    message_list.append({
-                        'id': msg_id,
-                        'role': role,
-                        'content': content,
-                        'createdAt': msg_created_at,
-                        'model': model,
-                        'files': files_list
-                    })
+                # 使用公共函数构建消息列表
+                formatted_messages = build_message_list(messages)
+                
+                # 使用公共函数构建对话字典
+                chat_dict = build_chat_dict(chat_row, formatted_messages)
                 
                 # 添加对话到列表
-                chat_list.append({
-                    'id': chat_id,
-                    'title': title,
-                    'preview': preview,
-                    'createdAt': created_at,
-                    'updatedAt': updated_at,
-                    'pinned': pinned,
-                    'messages': message_list
-                })
+                chat_list.append(chat_dict)
             
             # 更新内存数据库
             DataService.get_chats().clear()
@@ -83,20 +54,16 @@ class ChatService(BaseService):
             # 失败时返回内存数据库中的对话
             return DataService.get_chats()
 
-    @staticmethod
-    def create_chat(title=None):
+    def create_chat(self, title=None):
         """创建新对话"""
         try:
-            # 使用Repository创建对话
-            chat_repo = ChatRepository()
-            
             chat_id = str(uuid.uuid4())  # 生成唯一对话ID
             now = datetime.now().isoformat()  # 时间戳（ISO格式）
             
             title = title or '新对话'
             
             # 使用Repository插入到SQLite数据库
-            chat_repo.create_chat(chat_id, title, '', now, now)
+            self.chat_repo.create_chat(chat_id, title, '', now, now)
             
             # 创建对话对象
             new_chat = {
@@ -130,8 +97,7 @@ class ChatService(BaseService):
             DataService.add_chat(new_chat)
             return new_chat
 
-    @staticmethod
-    def get_chat(chat_id):
+    def get_chat(self, chat_id):
         """获取单个对话记录（按ID）"""
         # 先尝试从内存获取
         chat = DataService.get_chat_by_id(chat_id)
@@ -139,61 +105,19 @@ class ChatService(BaseService):
             return chat
         
         try:
-            # 使用Repository获取对话
-            chat_repo = ChatRepository()
-            message_repo = MessageRepository()
-            
             # 从数据库获取
-            chat_row = chat_repo.get_chat_by_id(chat_id)
+            chat_row = self.chat_repo.get_chat_by_id(chat_id)
             if not chat_row:
                 return None
             
-            # 处理可能的字段缺失情况
-            chat_id = chat_row[0]
-            title = chat_row[1] if len(chat_row) > 1 else '未命名对话'
-            preview = chat_row[2] if len(chat_row) > 2 else ''
-            created_at = chat_row[3] if len(chat_row) > 3 else datetime.now().isoformat()
-            updated_at = chat_row[4] if len(chat_row) > 4 else datetime.now().isoformat()
-            
             # 获取对话的所有消息
-            messages = message_repo.get_messages_by_chat_id(chat_id)
+            messages = self.message_repo.get_messages_by_chat_id(chat_id)
             
-            # 构建消息列表
-            message_list = []
-            for msg_row in messages:
-                msg_id = msg_row[0]
-                role = msg_row[2] if len(msg_row) > 2 else 'user'
-                content = msg_row[3] if len(msg_row) > 3 else ''
-                msg_created_at = msg_row[5] if len(msg_row) > 5 else datetime.now().isoformat()
-                model = msg_row[6] if len(msg_row) > 6 else None
-                files = msg_row[7] if len(msg_row) > 7 else None
-                
-                # 解析files字段（JSON字符串转列表）
-                files_list = []
-                if files:
-                    try:
-                        files_list = json.loads(files)
-                    except json.JSONDecodeError:
-                        files_list = []
-                
-                message_list.append({
-                    'id': msg_id,
-                    'role': role,
-                    'content': content,
-                    'createdAt': msg_created_at,
-                    'model': model,
-                    'files': files_list
-                })
+            # 使用公共函数构建消息列表
+            formatted_messages = build_message_list(messages)
             
-            # 构建对话对象
-            chat = {
-                'id': chat_id,
-                'title': title,
-                'preview': preview,
-                'createdAt': created_at,
-                'updatedAt': updated_at,
-                'messages': message_list
-            }
+            # 使用公共函数构建对话字典
+            chat = build_chat_dict(chat_row, formatted_messages)
             
             # 更新内存数据库
             existing_chat = DataService.get_chat_by_id(chat_id)
@@ -205,16 +129,11 @@ class ChatService(BaseService):
             BaseService.log_error(f"获取对话失败: {str(e)}")
             return None
 
-    @staticmethod
-    def delete_chat(chat_id):
+    def delete_chat(self, chat_id):
         """删除单个对话记录（按ID）"""
         try:
-            # 使用Repository删除对话
-            chat_repo = ChatRepository()
-            message_repo = MessageRepository()
-            
             # 从数据库中删除对话（级联删除消息）
-            chat_repo.delete_chat(chat_id)
+            self.chat_repo.delete_chat(chat_id)
             
             # 更新内存数据库
             DataService.remove_chat(chat_id)
@@ -227,17 +146,12 @@ class ChatService(BaseService):
             DataService.remove_chat(chat_id)
             return True
 
-    @staticmethod
-    def delete_all_chats():
+    def delete_all_chats(self):
         """删除所有对话记录"""
         try:
-            # 使用Repository删除所有对话和消息
-            chat_repo = ChatRepository()
-            message_repo = MessageRepository()
-            
             # 从数据库中删除所有对话和消息
-            message_repo.delete_all_messages()
-            chat_repo.delete_all_chats()
+            self.message_repo.delete_all_messages()
+            self.chat_repo.delete_all_chats()
             
             # 清空内存中的对话数据
             DataService.clear_chats()
@@ -250,16 +164,11 @@ class ChatService(BaseService):
             DataService.clear_chats()
             return True
     
-    @staticmethod
-    def update_chat_pin(chat_id, pinned):
+    def update_chat_pin(self, chat_id, pinned):
         """更新对话置顶状态"""
         try:
-            # 使用Repository更新对话置顶状态
-            chat_repo = ChatRepository()
-            message_repo = MessageRepository()
-            
             # 获取当前对话信息
-            chat_row = chat_repo.get_chat_by_id(chat_id)
+            chat_row = self.chat_repo.get_chat_by_id(chat_id)
             if not chat_row:
                 return False
             
@@ -271,7 +180,7 @@ class ChatService(BaseService):
             updated_at = datetime.now().isoformat()
             
             # 更新数据库中的对话置顶状态
-            chat_repo.update_chat(chat_id, title, preview, updated_at, int(pinned))
+            self.chat_repo.update_chat(chat_id, title, preview, updated_at, int(pinned))
             
             # 更新内存数据库中的对话
             chats = DataService.get_chats()
@@ -287,8 +196,7 @@ class ChatService(BaseService):
             BaseService.log_error(f"更新对话置顶状态失败: {str(e)}")
             return False
     
-    @staticmethod
-    def get_chat_context(chat_id, max_messages=10, deep_thinking=False):
+    def get_chat_context(self, chat_id, max_messages=10, deep_thinking=False):
         """
         获取对话上下文历史
         
@@ -301,7 +209,7 @@ class ChatService(BaseService):
             格式化的上下文消息列表，或者None（如果对话不存在）
         """
         # 查找匹配ID的对话
-        chat = ChatService.get_chat(chat_id)
+        chat = self.get_chat(chat_id)
         if not chat:
             return None
         
@@ -352,8 +260,7 @@ class ChatService(BaseService):
         
         return formatted_messages
 
-    @staticmethod
-    def get_rag_enhanced_prompt(question, rag_config=None):
+    def get_rag_enhanced_prompt(self, question, rag_config=None):
         """RAG增强提示 - 使用LangChain RAG服务"""
         # 只使用前端传递的enabled状态，其余配置从系统获取
         enabled = False
@@ -374,8 +281,7 @@ class ChatService(BaseService):
             # 确保即使RAG失败，原始问题也能正常返回
             return question
 
-    @staticmethod
-    def parse_model_info(model_name):
+    def parse_model_info(self, model_name):
         """
         解析前端发送的模型格式 "Ollama-qwen3:0.6b"
         返回: (模型名称, 版本名称, 模型显示名称)
@@ -398,8 +304,7 @@ class ChatService(BaseService):
         
         return parsed_model_name, parsed_version_name, model_display_name
 
-    @staticmethod
-    def validate_model(model_name):
+    def validate_model(self, model_name):
         """
         验证模型是否存在且已配置
         返回: (model_object, error_response, error_code)
@@ -411,8 +316,7 @@ class ChatService(BaseService):
             return None, {'error': '模型未配置，无法调用'}, 400
         return model, None, None
     
-    @staticmethod
-    def get_version_config(model, version_id):
+    def get_version_config(self, model, version_id):
         """
         获取模型的版本配置
         
@@ -438,8 +342,7 @@ class ChatService(BaseService):
 
 
 
-    @staticmethod
-    def create_ai_message(now, content, model_display_name):
+    def create_ai_message(self, now, content, model_display_name):
         """创建标准格式的AI回复消息"""
         return {
             'id': str(uuid.uuid4()),
@@ -449,8 +352,7 @@ class ChatService(BaseService):
             'model': model_display_name
         }
 
-    @staticmethod
-    def update_chat_and_save(chat, message_text, user_message, ai_message, now):
+    def update_chat_and_save(self, chat, message_text, user_message, ai_message, now):
         """更新对话并保存"""
         # 添加AI回复到对话（内存）
         chat['messages'].append(ai_message)
@@ -473,12 +375,8 @@ class ChatService(BaseService):
             # 先设置脏标记，确保数据会被保存
             DataService.set_dirty_flag('chats', True)
             
-            # 使用Repository保存对话和消息
-            chat_repo = ChatRepository()
-            message_repo = MessageRepository()
-            
             # 保存用户消息到数据库
-            message_repo.create_message(
+            self.message_repo.create_message(
                 message_id=user_message['id'],
                 chat_id=chat['id'],
                 role=user_message['role'],
@@ -490,7 +388,7 @@ class ChatService(BaseService):
             )
             
             # 保存AI消息到数据库
-            message_repo.create_message(
+            self.message_repo.create_message(
                 message_id=ai_message['id'],
                 chat_id=chat['id'],
                 role=ai_message['role'],
@@ -502,7 +400,7 @@ class ChatService(BaseService):
             )
             
             # 更新对话信息
-            chat_repo.update_chat(
+            self.chat_repo.update_chat(
                 chat_id=chat['id'],
                 title=new_title,
                 preview=preview_text,
@@ -519,8 +417,7 @@ class ChatService(BaseService):
             from app.core.logging_config import logger
             logger.info(f"Direct save failed, relying on auto-save: chat_id={chat['id']}, error={str(e)}")
 
-    @staticmethod
-    def _prepare_messages_for_model(chat_id, enhanced_question, deep_thinking=False):
+    def _prepare_messages_for_model(self, chat_id, enhanced_question, deep_thinking=False):
         """
         准备发送给模型的消息格式
         
@@ -533,7 +430,7 @@ class ChatService(BaseService):
             格式化的消息列表
         """
         # 获取对话上下文历史
-        context_messages = ChatService.get_chat_context(chat_id, deep_thinking=deep_thinking)
+        context_messages = self.get_chat_context(chat_id, deep_thinking=deep_thinking)
         
         # 准备消息格式，如果有上下文则使用上下文，否则使用当前问题
         if context_messages and len(context_messages) > 0:
@@ -547,8 +444,7 @@ class ChatService(BaseService):
         
         return messages
     
-    @staticmethod
-    def chat_with_model_stream(model_name, messages, parsed_version_name, temperature=0.7):
+    def chat_with_model_stream(self, model_name, messages, parsed_version_name, temperature=0.7):
         """
         直接调用的流式模型回复函数
         
@@ -562,7 +458,7 @@ class ChatService(BaseService):
             生成器，产生流式响应块
         """
         # 使用通用验证函数验证模型
-        model, error_response, _ = ChatService.validate_model(model_name)
+        model, error_response, _ = self.validate_model(model_name)
         if error_response:
             error_data = error_response
             yield f'data: {json.dumps(error_data, ensure_ascii=False)}\n\n'
@@ -570,7 +466,7 @@ class ChatService(BaseService):
         
         # 检查是否启用了流式传输
         version_id = parsed_version_name
-        version_config = ChatService.get_version_config(model, version_id)
+        version_config = self.get_version_config(model, version_id)
         
         streaming_config = version_config.get('streaming_config', False)
         if not streaming_config:
@@ -592,14 +488,76 @@ class ChatService(BaseService):
             response_data = {'error': str(e)}
             yield f'data: {json.dumps(response_data, ensure_ascii=False)}\n\n'
 
-    @staticmethod
-    def handle_streaming_response(chat, message_text, user_message, now,
+    def _prepare_streaming_messages(self, chat_id, enhanced_question, deep_thinking):
+        """准备流式消息格式"""
+        return self._prepare_messages_for_model(chat_id, enhanced_question, deep_thinking)
+    
+    def _process_streaming_chunk(self, chunk, full_reply):
+        """处理单个流式响应块"""
+        # 检查是否是错误消息格式
+        if isinstance(chunk, str) and chunk.startswith('data: {"error"'):
+            return chunk, full_reply
+        
+        # 尝试解析chunk数据
+        try:
+            # 如果chunk已经是格式化的字符串，直接处理
+            if isinstance(chunk, str) and chunk.startswith('data: '):
+                chunk_str = chunk[6:].strip()
+                chunk_data = json.loads(chunk_str)
+                
+                if 'chunk' in chunk_data:
+                    actual_chunk = chunk_data['chunk']
+                    full_reply += actual_chunk
+                    return chunk, full_reply  # 直接传递格式化的chunk
+                elif 'error' in chunk_data:
+                    return chunk, full_reply  # 直接传递错误信息
+            else:
+                # 假设chunk是直接的内容块
+                full_reply += chunk
+                response_data = {
+                    'chunk': chunk,
+                    'done': False
+                }
+                formatted_chunk = f'data: {json.dumps(response_data, ensure_ascii=False)}\n\n'
+                return formatted_chunk, full_reply
+        except Exception as e:
+            BaseService.log_error(f"处理流式响应块失败: {e}")
+            # 尝试作为直接内容处理
+            full_reply += str(chunk)
+            response_data = {
+                'chunk': str(chunk),
+                'done': False
+            }
+            formatted_chunk = f'data: {json.dumps(response_data, ensure_ascii=False)}\n\n'
+            return formatted_chunk, full_reply
+    
+    def _process_full_reply(self, full_reply, now, model_display_name):
+        """处理完整回复，分离思考内容和实际内容"""
+        import re
+        think_pattern = re.compile(r'\s*<think>([\s\S]*?)</think>\s*', re.IGNORECASE)
+        match = think_pattern.match(full_reply)
+        
+        thinking_content = None
+        actual_content = full_reply
+        
+        if match:
+            thinking_content = match.group(1)
+            actual_content = think_pattern.sub('', full_reply).strip()
+        
+        # 创建AI回复，确保包含完整的模型和版本信息
+        ai_message = self.create_ai_message(now, actual_content, model_display_name)
+        # 添加思考内容到AI消息
+        ai_message['thinking'] = thinking_content
+        
+        return ai_message
+    
+    def handle_streaming_response(self, chat, message_text, user_message, now,
                                  enhanced_question, parsed_model_name, parsed_version_name, model_params, model_display_name, deep_thinking=False):
         """处理流式响应"""
         def generate():
             try:
                 # 准备消息格式
-                messages = ChatService._prepare_messages_for_model(chat['id'], enhanced_question, deep_thinking)
+                messages = self._prepare_streaming_messages(chat['id'], enhanced_question, deep_thinking)
                 
                 # 获取temperature参数
                 temperature = model_params.get('temperature', 0.7)
@@ -608,62 +566,15 @@ class ChatService(BaseService):
                 full_reply = ""
                 
                 # 使用流式模型回复函数获取响应，传入parsed_version_name
-                for chunk in ChatService.chat_with_model_stream(parsed_model_name, messages, parsed_version_name, temperature):
-                    # 检查是否是错误消息格式
-                    if isinstance(chunk, str) and chunk.startswith('data: {"error"'):
-                        yield chunk
-                        continue
-                    
-                    # 尝试解析chunk数据
-                    try:
-                        # 如果chunk已经是格式化的字符串，直接处理
-                        if isinstance(chunk, str) and chunk.startswith('data: '):
-                            chunk_str = chunk[6:].strip()
-                            chunk_data = json.loads(chunk_str)
-                            
-                            if 'chunk' in chunk_data:
-                                actual_chunk = chunk_data['chunk']
-                                full_reply += actual_chunk
-                                yield chunk  # 直接传递格式化的chunk
-                            elif 'error' in chunk_data:
-                                yield chunk  # 直接传递错误信息
-                        else:
-                            # 假设chunk是直接的内容块
-                            full_reply += chunk
-                            response_data = {
-                                'chunk': chunk,
-                                'done': False
-                            }
-                            yield f'data: {json.dumps(response_data, ensure_ascii=False)}\n\n'
-                    except Exception as e:
-                        BaseService.log_error(f"处理流式响应块失败: {e}")
-                        # 尝试作为直接内容处理
-                        full_reply += str(chunk)
-                        response_data = {
-                            'chunk': str(chunk),
-                            'done': False
-                        }
-                        yield f'data: {json.dumps(response_data, ensure_ascii=False)}\n\n'
+                for chunk in self.chat_with_model_stream(parsed_model_name, messages, parsed_version_name, temperature):
+                    formatted_chunk, full_reply = self._process_streaming_chunk(chunk, full_reply)
+                    yield formatted_chunk
                 
-                # 处理think标签，分离思考内容和实际内容
-                import re
-                think_pattern = re.compile(r'\s*<think>([\s\S]*?)</think>\s*', re.IGNORECASE)
-                match = think_pattern.match(full_reply)
-                
-                thinking_content = None
-                actual_content = full_reply
-                
-                if match:
-                    thinking_content = match.group(1)
-                    actual_content = think_pattern.sub('', full_reply).strip()
-                
-                # 创建AI回复，确保包含完整的模型和版本信息
-                ai_message = ChatService.create_ai_message(now, actual_content, model_display_name)
-                # 添加思考内容到AI消息
-                ai_message['thinking'] = thinking_content
+                # 处理完整回复
+                ai_message = self._process_full_reply(full_reply, now, model_display_name)
                 
                 # 更新对话并保存
-                ChatService.update_chat_and_save(chat, message_text, user_message, ai_message, now)
+                self.update_chat_and_save(chat, message_text, user_message, ai_message, now)
                 
                 # 发送最终完成信号
                 final_data = {
@@ -682,25 +593,24 @@ class ChatService(BaseService):
         
         return generate
 
-    @staticmethod
-    def handle_regular_response(chat, message_text, user_message, now,
+    def handle_regular_response(self, chat, message_text, user_message, now,
                               enhanced_question, parsed_model_name, parsed_version_name, model_params, model_display_name, deep_thinking=False):
         """处理普通响应"""
         try:
             # 使用通用验证函数验证模型
-            model, error_response, error_code = ChatService.validate_model(parsed_model_name)
+            model, error_response, error_code = self.validate_model(parsed_model_name)
             if error_response:
                 return error_response, error_code
 
             # 准备消息格式
-            messages = ChatService._prepare_messages_for_model(chat['id'], enhanced_question, deep_thinking)
+            messages = self._prepare_messages_for_model(chat['id'], enhanced_question, deep_thinking)
             
             # 获取temperature参数
             temperature = model_params.get('temperature', 0.7)
             
             # 获取版本配置
             version_id = parsed_version_name
-            version_config = ChatService.get_version_config(model, version_id)
+            version_config = self.get_version_config(model, version_id)
 
             from app.models.model_manager import ModelManager
             response = ModelManager.chat(parsed_model_name, model, version_config, messages, temperature)
@@ -725,12 +635,12 @@ class ChatService(BaseService):
             actual_content = think_pattern.sub('', ai_reply).strip()
         
         # 创建AI回复，确保包含完整的模型和版本信息
-        ai_message = ChatService.create_ai_message(now, actual_content, model_display_name)
+        ai_message = self.create_ai_message(now, actual_content, model_display_name)
         # 添加思考内容到AI消息
         ai_message['thinking'] = thinking_content
         
         # 更新对话并保存
-        ChatService.update_chat_and_save(chat, message_text, user_message, ai_message, now)
+        self.update_chat_and_save(chat, message_text, user_message, ai_message, now)
         
         return {
             'success': True,
@@ -739,8 +649,76 @@ class ChatService(BaseService):
             'ai_message': ai_message
         }, 201
 
-    @staticmethod
-    def process_uploaded_files(files):
+    def _save_uploaded_file(self, file, temp_dir):
+        """保存上传的文件到临时目录"""
+        import os
+        import base64
+        
+        file_name = file['name']
+        file_content_base64 = file['content']
+        
+        try:
+            # 解码base64内容
+            file_content = base64.b64decode(file_content_base64)
+            
+            # 保存到临时文件
+            file_path = os.path.join(temp_dir, file_name)
+            with open(file_path, 'wb') as f:
+                f.write(file_content)
+            
+            return file_path
+        except Exception as decode_error:
+            BaseService.log_error(f"解码文件 {file_name} 失败: {str(decode_error)}")
+            return None
+    
+    def _process_text_file(self, file_path, file_name):
+        """处理文本类文件"""
+        with open(file_path, 'r', encoding='utf-8') as f:
+            return f.read()
+    
+    def _process_pdf_file(self, file_path, file_name):
+        """处理PDF文件"""
+        try:
+            from PyPDF2 import PdfReader
+            reader = PdfReader(file_path)
+            content = ""
+            for page in reader.pages:
+                content += page.extract_text() + '\n'
+            return content
+        except ImportError:
+            return f"[PDF文件内容，无法提取，请安装PyPDF2库]"
+    
+    def _process_word_file(self, file_path, file_name):
+        """处理Word文件"""
+        try:
+            from docx import Document
+            doc = Document(file_path)
+            content = ""
+            for para in doc.paragraphs:
+                content += para.text + '\n'
+            return content
+        except ImportError:
+            return f"[Word文件内容，无法提取，请安装python-docx库]"
+    
+    def _extract_file_content(self, file_path, file_name):
+        """根据文件类型提取内容"""
+        import os
+        
+        # 根据文件扩展名选择提取方式
+        file_ext = os.path.splitext(file_name)[1].lower()
+        
+        # 只处理文本类文件
+        if file_ext in ['.txt', '.md', '.json', '.csv', '.py', '.js', '.html', '.css', '.xml', '.yaml', '.yml']:
+            return self._process_text_file(file_path, file_name)
+        elif file_ext in ['.pdf']:
+            return self._process_pdf_file(file_path, file_name)
+        elif file_ext in ['.doc', '.docx']:
+            return self._process_word_file(file_path, file_name)
+        else:
+            # 其他文件类型，只显示文件信息
+            return f"[无法提取该类型文件的内容：{file_name}]"
+    
+    def process_uploaded_files(self, files):
         """处理上传的文件，保存到临时目录并提取内容
         
         参数:
@@ -757,7 +735,6 @@ class ChatService(BaseService):
         try:
             import os
             import tempfile
-            import base64
             import mimetypes
             
             # 创建临时目录
@@ -766,68 +743,27 @@ class ChatService(BaseService):
             for file in files:
                 # 检查文件结构
                 if isinstance(file, dict) and 'name' in file and 'content' in file:
-                    # 这是一个base64编码的文件
-                    file_name = file['name']
-                    file_content_base64 = file['content']
-                    
-                    try:
-                        # 解码base64内容
-                        file_content = base64.b64decode(file_content_base64)
-                        
-                        # 保存到临时文件
-                        file_path = os.path.join(temp_dir, file_name)
-                        with open(file_path, 'wb') as f:
-                            f.write(file_content)
-                        
-                        # 简单的文件内容提取
-                        content = ""
-                        
-                        # 根据文件扩展名选择提取方式
-                        file_ext = os.path.splitext(file_name)[1].lower()
-                        
-                        # 只处理文本类文件
-                        if file_ext in ['.txt', '.md', '.json', '.csv', '.py', '.js', '.html', '.css', '.xml', '.yaml', '.yml']:
-                            with open(file_path, 'r', encoding='utf-8') as f:
-                                content = f.read()
-                        elif file_ext in ['.pdf']:
-                            # 简单处理PDF，只提取文本
-                            try:
-                                from PyPDF2 import PdfReader
-                                reader = PdfReader(file_path)
-                                for page in reader.pages:
-                                    content += page.extract_text() + '\n'
-                            except ImportError:
-                                content = f"[PDF文件内容，无法提取，请安装PyPDF2库]"
-                        elif file_ext in ['.doc', '.docx']:
-                            # 简单处理Word文档
-                            try:
-                                from docx import Document
-                                doc = Document(file_path)
-                                for para in doc.paragraphs:
-                                    content += para.text + '\n'
-                            except ImportError:
-                                content = f"[Word文件内容，无法提取，请安装python-docx库]"
-                        else:
-                            # 其他文件类型，只显示文件信息
-                            content = f"[无法提取该类型文件的内容：{file_name}]"
-                        
+                    # 保存到临时文件
+                    file_path = self._save_uploaded_file(file, temp_dir)
+                    if file_path:
+                        # 提取文件内容
+                        content = self._extract_file_content(file_path, file['name'])
                         if content:
-                            extracted_contents.append(f"文件 {file_name} 内容：\n{content}")
-                    except Exception as decode_error:
-                        BaseService.log_error(f"解码文件 {file_name} 失败: {str(decode_error)}")
+                            extracted_contents.append(f"文件 {file['name']} 内容：\n{content}")
         except Exception as e:
             # 记录错误但不中断流程
             BaseService.log_error(f"处理上传文件失败: {str(e)}")
         
         return extracted_contents
     
-    @staticmethod
-    def send_message(chat_id, data):
-        """发送消息（应用层）
+    def _parse_request_data(self, data):
+        """解析请求数据
         
         参数:
-            chat_id: 对话ID
             data: 包含所有必要信息的请求数据对象
+        
+        返回:
+            解析后的请求参数
         """
         # 从数据中提取所需参数
         message_text = data.get('message')
@@ -838,10 +774,62 @@ class ChatService(BaseService):
         deep_thinking = data.get('deepThinking', False)
         files = data.get('files', [])
         
+        return {
+            'message_text': message_text,
+            'model_name': model_name,
+            'user_model_params': user_model_params,
+            'rag_enabled': rag_enabled,
+            'stream': stream,
+            'deep_thinking': deep_thinking,
+            'files': files
+        }
+    
+    def _validate_request(self, chat_id, parsed_model_name, model):
+        """验证请求参数
+        
+        参数:
+            chat_id: 对话ID
+            parsed_model_name: 解析后的模型名称
+            model: 模型配置
+        
+        返回:
+            (is_valid, error_response, error_code)
+        """
         # 查找匹配ID的对话
-        chat = ChatService.get_chat(chat_id)
+        chat = self.get_chat(chat_id)
         if not chat:
-            return {'error': '对话不存在'}, 404
+            return False, {'error': '对话不存在'}, 404
+        
+        # 如果没有传递模型，返回错误
+        if not parsed_model_name:
+            return False, {'error': '请指定模型'}, 400
+        
+        # 获取模型配置
+        if not model:
+            return False, {'error': f'模型 {parsed_model_name} 不存在'}, 400
+        
+        return True, None, None
+    
+    def _process_message(self, chat_id, parsed_data):
+        """处理消息发送逻辑
+        
+        参数:
+            chat_id: 对话ID
+            parsed_data: 解析后的请求参数
+        
+        返回:
+            响应结果
+        """
+        message_text = parsed_data['message_text']
+        model_name = parsed_data['model_name']
+        user_model_params = parsed_data['user_model_params']
+        rag_enabled = parsed_data['rag_enabled']
+        stream = parsed_data['stream']
+        deep_thinking = parsed_data['deep_thinking']
+        files = parsed_data['files']
+        
+        # 查找匹配ID的对话
+        chat = self.get_chat(chat_id)
         
         now = datetime.now().isoformat()
         
@@ -856,16 +844,10 @@ class ChatService(BaseService):
         chat['messages'].append(user_message)
         
         # 使用辅助函数解析模型信息
-        parsed_model_name, parsed_version_name, model_display_name = ChatService.parse_model_info(model_name)
-        
-        # 如果没有传递模型，返回错误
-        if not parsed_model_name:
-            return {'error': '请指定模型'}, 400
+        parsed_model_name, parsed_version_name, model_display_name = self.parse_model_info(model_name)
         
         # 获取模型配置
         model = DataService.get_model_by_name(parsed_model_name)
-        if not model:
-            return {'error': f'模型 {parsed_model_name} 不存在'}, 400
         
         # 获取模型默认参数
         model_params = {
@@ -878,7 +860,7 @@ class ChatService(BaseService):
         model_params.update(user_model_params)
         
         # 处理上传的文件
-        file_contents = ChatService.process_uploaded_files(files)
+        file_contents = self.process_uploaded_files(files)
         
         # 合并文件内容到消息文本
         full_message_text = message_text
@@ -886,18 +868,38 @@ class ChatService(BaseService):
             full_message_text += "\n\n" + "\n\n".join(file_contents)
         
         # 调用RAG系统构造增强提示，仅根据enabled状态决定是否启用
-        enhanced_question = ChatService.get_rag_enhanced_prompt(full_message_text, {'enabled': rag_enabled}) if rag_enabled else full_message_text
+        enhanced_question = self.get_rag_enhanced_prompt(full_message_text, {'enabled': rag_enabled}) if rag_enabled else full_message_text
         
         # 根据stream参数决定是返回普通响应还是流式响应
         if stream:
             # 流式响应处理
-            return ChatService.handle_streaming_response(
-                chat, full_message_text, user_message, now,
-                enhanced_question, parsed_model_name, parsed_version_name, model_params, model_display_name, deep_thinking
-            )
+            return self.handle_streaming_response(chat, full_message_text, user_message, now,
+                                                enhanced_question, parsed_model_name, parsed_version_name, model_params, model_display_name, deep_thinking)
         else:
             # 普通响应处理
-            return ChatService.handle_regular_response(
-                chat, full_message_text, user_message, now,
-                enhanced_question, parsed_model_name, parsed_version_name, model_params, model_display_name, deep_thinking
-            )
+            return self.handle_regular_response(chat, full_message_text, user_message, now,
+                                            enhanced_question, parsed_model_name, parsed_version_name, model_params, model_display_name, deep_thinking)
+    
+    def send_message(self, chat_id, data):
+        """发送消息（应用层）
+        
+        参数:
+            chat_id: 对话ID
+            data: 包含所有必要信息的请求数据对象
+        """
+        # 解析请求数据
+        parsed_data = self._parse_request_data(data)
+        
+        # 使用辅助函数解析模型信息
+        parsed_model_name, _, _ = self.parse_model_info(parsed_data['model_name'])
+        
+        # 获取模型配置
+        model = DataService.get_model_by_name(parsed_model_name)
+        
+        # 验证请求参数
+        is_valid, error_response, error_code = self._validate_request(chat_id, parsed_model_name, model)
+        if not is_valid:
+            return error_response, error_code
+        
+        # 处理消息发送逻辑
+        return self._process_message(chat_id, parsed_data)

@@ -13,12 +13,6 @@ from app.core.logging_config import logger, update_log_config
 # 更新日志配置
 update_log_config(config_manager)
 
-# 导入路由模块
-from app.api.chats import chat_bp
-from app.api.models import model_bp
-from app.api.rag import rag_bp
-from app.api.mcp import mcp_bp
-
 
 
 def init_rag():
@@ -51,9 +45,6 @@ def init_rag():
             return False
     return False
 
-# 创建应用实例
-app = create_app()
-
 def setup():
     """应用初始化"""
     # 加载初始数据
@@ -61,20 +52,29 @@ def setup():
     # 初始化RAG
     init_rag()
 
+# 创建应用实例
+app = create_app()
+
+# 添加健康检查端点
+@app.get('/api/health')
+def health_check():
+    """健康检查端点"""
+    return {"status": "ok"}
+
+# 在应用启动前执行初始化
+setup()
+
 if __name__ == '__main__':
     # 从配置中获取应用设置
     debug = config_manager.get('app.debug', True)
     host = config_manager.get('app.host', '0.0.0.0')
     port = config_manager.get('app.port', 5000)
     
-    # 仅在作为主程序运行时执行初始化
-    # 这样可以避免Flask调试模式下初始化被执行两次
-    if not debug or os.environ.get('WERKZEUG_RUN_MAIN') == 'true':
-        setup()
-    
-    # 启动服务
-    app.run(
-        debug=debug,
+    # 导入uvicorn并启动FastAPI应用
+    import uvicorn
+    uvicorn.run(
+        'main:app',
         host=host,
-        port=port
+        port=port,
+        reload=debug
     )

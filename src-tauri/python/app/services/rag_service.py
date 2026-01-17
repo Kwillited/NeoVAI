@@ -22,24 +22,30 @@ VECTOR_DB_PATH = os.path.join(RAG_DIR, 'vectorDb')  # 与其他地方保持一�
 # 确保目录存在
 os.makedirs(DATA_DIR, exist_ok=True)
 
-# 获取向量存储服务实例
-def get_vector_store_service():
-    """获取或创建向量存储服务实例"""
-    # 直接使用 VectorStoreService 的单例模式
-    try:
-        return VectorStoreService.get_instance(
-            vector_db_path=VECTOR_DB_PATH,
-            embedder_model=config_manager.get('rag.embedder_model', 'all-MiniLM-L6-v2')
-        )
-    except Exception as e:
-        RAGService.log_error(f"获取向量存储服务实例失败: {str(e)}")
-        return None
-
 class RAGService(BaseService):
     """RAG服务类 - 封装所有RAG相关的业务逻辑"""
     
-    @staticmethod
-    def upload_document(file, folder_id=''):
+    def __init__(self, vector_store_service=None):
+        """初始化RAG服务
+        
+        Args:
+            vector_store_service: 向量存储服务实例，用于依赖注入
+        """
+        self.vector_store_service = vector_store_service or self._get_vector_store_service()
+    
+    def _get_vector_store_service(self):
+        """获取或创建向量存储服务实例"""
+        # 直接使用 VectorStoreService 的单例模式
+        try:
+            return VectorStoreService.get_instance(
+                vector_db_path=VECTOR_DB_PATH,
+                embedder_model=config_manager.get('rag.embedder_model', 'all-MiniLM-L6-v2')
+            )
+        except Exception as e:
+            self.log_error(f"获取向量存储服务实例失败: {str(e)}")
+            return None
+    
+    def upload_document(self, file, folder_id=''):
         """上传文档到RAG系统并进行向量化处理"""
         # 检查文件名是否为空
         if file.filename == '':
@@ -58,67 +64,64 @@ class RAGService(BaseService):
         folder_name = ''
         if folder_id:
             # 如果提供了folder_id，查找对应的文件夹
-            folders = RAGService.get_folders()
+            folders = self.get_folders()
             for folder in folders:
                 if folder.get('id') == folder_id:
                     folder_name = folder['name']
                     break
         
         # 构建完整文件路径
-        file_path = RAGService._get_file_save_path(filename, folder_name)
+        file_path = self._get_file_save_path(filename, folder_name)
         
         # 保存文件
         file.save(file_path)
         
         # 执行RAG处理流程
-        document_info, chunk_info, vector_info = RAGService._process_document_for_rag(file_path)
+        document_info, chunk_info, vector_info = self._process_document_for_rag(file_path)
         
-        # 打印向量后的文本信息
-        print(f"\n=== 向量处理后的文本信息 ===")
-        print(f"文件名: {filename}")
-        print(f"文档ID: {document_info.get('document_id')}")
-        print(f"分割后的文档数量: {document_info.get('split_documents_count', 0)}")
+        # 记录向量后的文本信息
+        self.log_info(f"\n=== 向量处理后的文本信息 ===")
+        self.log_info(f"文件名: {filename}")
+        self.log_info(f"文档ID: {document_info.get('document_id')}")
+        self.log_info(f"分割后的文档数量: {document_info.get('split_documents_count', 0)}")
         if 'sample_chunks' in document_info and document_info['sample_chunks']:
-            print(f"前2个文本片段示例:")
+            self.log_info(f"前2个文本片段示例:")
             for i, chunk in enumerate(document_info['sample_chunks'][:2]):
-                print(f"\n片段 {i+1}:")
+                self.log_info(f"\n片段 {i+1}:")
                 # 只打印前100个字符作为预览
                 preview = chunk[:100] + '...' if len(chunk) > 100 else chunk
-                print(f"{preview}")
+                self.log_info(f"{preview}")
         
         # 检查向量数据库数据
-        print(f"\n=== 向量数据库数据检查 ===")
+        self.log_info(f"\n=== 向量数据库数据检查 ===")
         
-        # 获取向量存储服务实例
-        vector_service = get_vector_store_service()
-        print(f"向量存储服务状态: {'已初始化' if vector_service else '未初始化'}")
-        
-        if vector_service:
-            print(f"向量存储服务类型: {type(vector_service).__name__}")
-            print(f"嵌入模型: {vector_service.embedder_model}")
+        if self.vector_store_service:
+            self.log_info(f"向量存储服务状态: 已初始化")
+            self.log_info(f"向量存储服务类型: {type(self.vector_store_service).__name__}")
+            self.log_info(f"嵌入模型: {self.vector_store_service.embedder_model}")
             
             # 获取向量库统计信息
             try:
-                stats = vector_service.get_vector_statistics()
-                print(f"向量库状态: {stats.get('status')}")
-                print(f"向量总数: {stats.get('total_vectors', 0)}")
-                print(f"向量存储类型: {stats.get('vector_store_type', '未知')}")
-                print(f"向量存储路径: {stats.get('vector_store_path', '未知')}")
+                stats = self.vector_store_service.get_vector_statistics()
+                self.log_info(f"向量库状态: {stats.get('status')}")
+                self.log_info(f"向量总数: {stats.get('total_vectors', 0)}")
+                self.log_info(f"向量存储类型: {stats.get('vector_store_type', '未知')}")
+                self.log_info(f"向量存储路径: {stats.get('vector_store_path', '未知')}")
                 
                 if stats['total_vectors'] > 0:
-                    print(f"\n✅ 向量库中包含 {stats['total_vectors']} 个向量，文档已成功存储！")
+                    self.log_info(f"\n✅ 向量库中包含 {stats['total_vectors']} 个向量，文档已成功存储！")
                 else:
-                    print(f"\n⚠️  向量库中暂无向量数据")
+                    self.log_info(f"\n⚠️  向量库中暂无向量数据")
                     
             except Exception as stats_error:
-                print(f"获取向量库统计信息时出错: {str(stats_error)}")
+                self.log_error(f"获取向量库统计信息时出错: {str(stats_error)}")
         else:
-            print("未找到有效的向量存储服务实例")
+            self.log_error("未找到有效的向量存储服务实例")
             # 尝试检查全局向量数据库路径
-            print(f"向量数据库路径: {VECTOR_DB_PATH}")
-            print(f"向量数据库路径存在: {os.path.exists(VECTOR_DB_PATH)}")
+            self.log_info(f"向量数据库路径: {VECTOR_DB_PATH}")
+            self.log_info(f"向量数据库路径存在: {os.path.exists(VECTOR_DB_PATH)}")
             if os.path.exists(VECTOR_DB_PATH):
-                print(f"向量数据库目录内容: {os.listdir(VECTOR_DB_PATH)}")
+                self.log_info(f"向量数据库目录内容: {os.listdir(VECTOR_DB_PATH)}")
         
         return {
             'filename': filename,
@@ -131,8 +134,7 @@ class RAGService(BaseService):
             'vector_info': vector_info
         }
     
-    @staticmethod
-    def _get_file_save_path(filename, folder_name):
+    def _get_file_save_path(self, filename, folder_name):
         """构建文件保存路径"""
         if folder_name:
             # 如果指定了文件夹，保存到该文件夹
@@ -143,8 +145,7 @@ class RAGService(BaseService):
             # 否则保存到根目录
             return os.path.join(DATA_DIR, filename)
     
-    @staticmethod
-    def _process_document_for_rag(file_path):
+    def _process_document_for_rag(self, file_path):
         """处理文档并执行RAG相关操作（加载、分割、向量化）"""
         # 加载文档
         document_info = DocumentLoader.load_document(file_path)
@@ -166,7 +167,7 @@ class RAGService(BaseService):
         # 检查是否有文档数据
         if 'documents' in document_info and document_info['documents']:
             # 执行文本分割
-            split_result = RAGService._split_document(document_info['documents'], chunk_info)
+            split_result = self._split_document(document_info['documents'], chunk_info)
             
             # 更新document_info
             document_info['split_documents_count'] = split_result['split_documents_count']
@@ -177,10 +178,10 @@ class RAGService(BaseService):
             # 如果分割失败，记录错误
             if not split_result['success']:
                 document_info['split_error'] = split_result['error']
-                print(f"文本分割失败: {split_result['error']}")
+                self.log_error(f"文本分割失败: {split_result['error']}")
             else:
                 # 执行向量化处理
-                RAGService._vectorize_documents(
+                self._vectorize_documents(
                     split_result['split_documents'],
                     split_result['document_id'],
                     file_path,
@@ -194,12 +195,11 @@ class RAGService(BaseService):
         # 如果向量化失败，记录错误
         if not vector_info['vectorized']:
             document_info['vector_info'] = vector_info
-            print(f"⚠️  文档向量化失败，将在后续批量处理中尝试重新加载")
+            self.log_warning(f"⚠️  文档向量化失败，将在后续批量处理中尝试重新加载")
         
         return document_info, chunk_info, vector_info
     
-    @staticmethod
-    def _split_document(documents, chunk_info):
+    def _split_document(self, documents, chunk_info):
         """执行文档分割操作"""
         # 使用文本分割工具类进行分割
         split_result = TextSplitter.split_documents(
@@ -214,8 +214,7 @@ class RAGService(BaseService):
         
         return split_result
     
-    @staticmethod
-    def _vectorize_documents(split_documents, document_id, source_file, document_info, vector_info):
+    def _vectorize_documents(self, split_documents, document_id, source_file, document_info, vector_info):
         """执行文档向量化操作"""
         try:
             # 验证文档是否适合向量化
@@ -224,23 +223,20 @@ class RAGService(BaseService):
                 document_info['validation_errors'] = validation['errors']
                 if validation['errors']:
                     vector_info['error'] = f"文档验证失败: {', '.join(validation['errors'][:3])}"
-                    print(f"文档验证失败: {validation['errors']}")
+                    self.log_error(f"文档验证失败: {validation['errors']}")
                 else:
                     # 只有警告，继续向量化
                     document_info['validation_warnings'] = validation['warnings']
                     if validation['warnings']:
-                        print(f"文档验证警告: {validation['warnings']}")
-            
-            # 获取向量存储服务实例
-            vector_service = get_vector_store_service()
+                        self.log_warning(f"文档验证警告: {validation['warnings']}")
             
             # 执行向量化操作
-            vectorized = vector_service.add_documents(split_documents)
+            vectorized = self.vector_store_service.add_documents(split_documents)
             
             # 更新向量化信息
             vector_info['vectorized'] = vectorized
             vector_info['vector_count'] = len(split_documents) if vectorized else 0
-            vector_info['embedding_model'] = vector_service.embedder_model
+            vector_info['embedding_model'] = self.vector_store_service.embedder_model
             vector_info['vector_store_type'] = 'chroma'
             
             # 创建并添加向量化元数据
@@ -255,10 +251,9 @@ class RAGService(BaseService):
         except Exception as e:
             vector_info['error'] = str(e)
             document_info['vector_info'] = vector_info
-            print(f"向量化处理失败: {str(e)}")
+            self.log_error(f"向量化处理失败: {str(e)}")
     
-    @staticmethod
-    def get_documents():
+    def get_documents(self):
         """获取文档列表"""
         # 直接读取目录获取文档列表
         documents = []
@@ -279,8 +274,7 @@ class RAGService(BaseService):
                         })
         return documents
     
-    @staticmethod
-    def delete_document(filename, folder_name=''):
+    def delete_document(self, filename, folder_name=''):
         """删除指定文档/文件
         
         Args:
@@ -318,7 +312,7 @@ class RAGService(BaseService):
         DocumentLoader.remove_from_cache(file_path)
         
         # 重新加载向量库
-        RAGService.reload_documents()
+        self.reload_documents()
         
         # 返回结果
         return {
@@ -327,8 +321,7 @@ class RAGService(BaseService):
             'message': f'文档 {filename} 已成功删除'
         }
     
-    @staticmethod
-    def get_folders():
+    def get_folders(self):
         """获取文件夹列表"""
         # 读取DATA_DIR目录下的所有文件夹
         folders = []
@@ -354,8 +347,7 @@ class RAGService(BaseService):
                     })
         return folders
     
-    @staticmethod
-    def create_folder(folder_name):
+    def create_folder(self, folder_name):
         """创建文件夹/知识库"""
         if not folder_name:
             raise ValueError('文件夹名称不能为空')
@@ -390,8 +382,7 @@ class RAGService(BaseService):
             'message': f'文件夹 {folder_name} 创建成功'
         }
     
-    @staticmethod
-    def get_files_in_folder(folder_name):
+    def get_files_in_folder(self, folder_name):
         """获取指定文件夹中的文件"""
         # 构建文件夹路径
         folder_path = os.path.join(DATA_DIR, folder_name)
@@ -413,11 +404,10 @@ class RAGService(BaseService):
                 })
         return files
     
-    @staticmethod
-    def get_files_in_folder_by_id(folder_id):
+    def get_files_in_folder_by_id(self, folder_id):
         """通过folder_id获取指定文件夹中的文件"""
         # 重用get_folders方法查找文件夹
-        folders = RAGService.get_folders()
+        folders = self.get_folders()
         target_folder_name = None
         for folder in folders:
             if folder.get('id') == folder_id:
@@ -429,16 +419,15 @@ class RAGService(BaseService):
             raise ValueError('指定ID的文件夹不存在')
         
         # 调用现有的方法获取文件列表
-        return RAGService.get_files_in_folder(target_folder_name)
+        return self.get_files_in_folder(target_folder_name)
     
-    @staticmethod
-    def delete_all_documents():
+    def delete_all_documents(self):
         """删除所有文档，包括所有文件夹和文件，并清空向量数据库"""
         # 先检查DATA_DIR是否存在
         if not os.path.exists(DATA_DIR):
             # 即使目录不存在，也执行清空向量库操作
-            vector_service = get_vector_store_service()
-            vector_service.clear_vector_store()
+            if self.vector_store_service:
+                self.vector_store_service.clear_vector_store()
             return {'deleted_count': 0, 'message': '没有文档需要删除，但已清空向量数据库'}
         
         # 统计删除的文件数量
@@ -454,7 +443,7 @@ class RAGService(BaseService):
                         os.remove(file_path)
                         deleted_count += 1
                     except Exception as e:
-                        print(f"删除文件 {file_path} 时出错: {e}")
+                        self.log_error(f"删除文件 {file_path} 时出错: {e}")
             
             # 然后删除所有子目录
             for dir in dirs:
@@ -462,11 +451,11 @@ class RAGService(BaseService):
                 try:
                     shutil.rmtree(dir_path)
                 except Exception as e:
-                    print(f"删除目录 {dir_path} 时出错: {e}")
+                    self.log_error(f"删除目录 {dir_path} 时出错: {e}")
         
         # 直接清空向量库，而不是依赖reload_documents
-        vector_service = get_vector_store_service()
-        vector_service.clear_vector_store()
+        if self.vector_store_service:
+            self.vector_store_service.clear_vector_store()
         
         # 清除文档缓存
         DocumentLoader.clear_cache()
@@ -479,8 +468,7 @@ class RAGService(BaseService):
             'message': f'已删除 {deleted_count} 个文件和所有文件夹，并清空了向量数据库'
         }
     
-    @staticmethod
-    def search_file_content(query):
+    def search_file_content(self, query):
         """搜索文件内容"""
         if not query or not query.strip():
             raise ValueError('搜索关键词不能为空')
@@ -515,12 +503,11 @@ class RAGService(BaseService):
                             'folder': os.path.relpath(root, DATA_DIR)
                         })
                 except Exception as file_error:
-                    print(f"读取文件 {file} 时出错: {file_error}")
+                    self.log_error(f"读取文件 {file} 时出错: {file_error}")
         
         return results
     
-    @staticmethod
-    def get_document_details(file_id):
+    def get_document_details(self, file_id):
         """获取文件详情"""
         # 这里简化处理，直接将file_id视为文件名
         file_name = file_id
@@ -553,8 +540,7 @@ class RAGService(BaseService):
         
         return file_details
     
-    @staticmethod
-    def delete_folder_by_id(folder_id):
+    def delete_folder_by_id(self, folder_id):
         """通过folder_id删除文件夹/知识库"""
         if not folder_id:
             raise ValueError('文件夹ID不能为空')
@@ -581,10 +567,9 @@ class RAGService(BaseService):
             raise ValueError('文件夹不存在')
         
         # 调用原有的delete_folder方法进行删除
-        return RAGService.delete_folder(found_folder)
+        return self.delete_folder(found_folder)
     
-    @staticmethod
-    def delete_folder(folder_name):
+    def delete_folder(self, folder_name):
         """删除文件夹/知识库"""
         if not folder_name:
             raise ValueError('文件夹名称不能为空')
@@ -603,21 +588,20 @@ class RAGService(BaseService):
         shutil.rmtree(folder_path)
         
         # 重新加载向量库
-        RAGService.reload_documents()
+        self.reload_documents()
         
         return {
             'deleted_folder': folder_name,
             'message': f'文件夹 {folder_name} 已成功删除'
         }
     
-    @staticmethod
-    def reload_documents():
+    def reload_documents(self):
         """重新加载文档到向量库 - 使用LangChain DirectoryLoader优化"""
         try:
             # 获取向量存储服务实例
-            vector_service = get_vector_store_service()
+            vector_service = self.vector_store_service
             if not vector_service:
-                print("❌ 向量存储服务未初始化")
+                self.log_error("❌ 向量存储服务未初始化")
                 return False
             
             # 先清空向量库
@@ -636,7 +620,7 @@ class RAGService(BaseService):
                     if 'documents' in doc_info and doc_info['documents']:
                         # 分割文档
                         chunk_info = {'chunk_size': 1000, 'chunk_overlap': 200}
-                        split_result = RAGService._split_document(doc_info['documents'], chunk_info)
+                        split_result = self._split_document(doc_info['documents'], chunk_info)
                         
                         if split_result['success']:
                             # 向量化并添加到向量库
@@ -646,20 +630,20 @@ class RAGService(BaseService):
                             else:
                                 failed_files += 1
                                 file_name = os.path.basename(doc_info['file_path'])
-                                print(f"⚠️  向量化文件 {file_name} 失败")
+                                self.log_warning(f"⚠️  向量化文件 {file_name} 失败")
                 except Exception as file_error:
                     failed_files += 1
                     file_name = os.path.basename(doc_info['file_path'])
-                    print(f"❌ 处理文件 {file_name} 时出错: {file_error}")
+                    self.log_error(f"❌ 处理文件 {file_name} 时出错: {file_error}")
             
             # 输出统计信息
-            print(f"✅ 重新加载文档完成:")
-            print(f"   - 处理文件数: {processed_files}")
-            print(f"   - 成功加载: {processed_files - failed_files}")
-            print(f"   - 加载失败: {failed_files}")
-            print(f"   - 总向量数: {loaded_chunks}")
+            self.log_info(f"✅ 重新加载文档完成:")
+            self.log_info(f"   - 处理文件数: {processed_files}")
+            self.log_info(f"   - 成功加载: {processed_files - failed_files}")
+            self.log_info(f"   - 加载失败: {failed_files}")
+            self.log_info(f"   - 总向量数: {loaded_chunks}")
             
             return True
         except Exception as e:
-            print(f"❌ 重新加载文档失败: {e}")
+            self.log_error(f"❌ 重新加载文档失败: {e}")
             return False

@@ -1,5 +1,6 @@
 """设置数据访问类"""
 from app.repositories.base_repository import BaseRepository
+from app.models.models import Setting
 import json
 
 class SettingRepository(BaseRepository):
@@ -7,30 +8,38 @@ class SettingRepository(BaseRepository):
     
     def get_all_settings(self):
         """获取所有设置"""
-        query = "SELECT * FROM settings"
-        return self.fetch_all(query)
+        return self.db.query(Setting).all()
     
     def get_setting_by_key(self, key):
         """根据键获取设置"""
-        query = "SELECT * FROM settings WHERE key = ?"
-        return self.fetch_one(query, (key,))
+        return self.db.query(Setting).filter(Setting.key == key).first()
     
     def create_or_update_setting(self, key, value):
         """创建或更新设置"""
         # 将设置值转换为JSON字符串
         value_json = json.dumps(value)
-        query = '''
-        INSERT OR REPLACE INTO settings (key, value)
-        VALUES (?, ?)
-        '''
-        return self.execute(query, (key, value_json))
+        
+        # 查找是否已存在该设置
+        existing_setting = self.get_setting_by_key(key)
+        if existing_setting:
+            # 更新现有设置
+            existing_setting.value = value_json
+            return self.update(existing_setting)
+        else:
+            # 创建新设置
+            new_setting = Setting(key=key, value=value_json)
+            return self.add(new_setting)
     
     def delete_setting(self, key):
         """根据键删除设置"""
-        query = "DELETE FROM settings WHERE key = ?"
-        return self.execute(query, (key,))
+        setting = self.get_setting_by_key(key)
+        if setting:
+            self.delete(setting)
+            return True
+        return False
     
     def delete_all_settings(self):
         """删除所有设置"""
-        query = "DELETE FROM settings"
-        return self.execute(query)
+        result = self.db.query(Setting).delete()
+        self.db.commit()
+        return result

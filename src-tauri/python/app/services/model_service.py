@@ -9,13 +9,19 @@ from app.services.base_service import BaseService
 class ModelService(BaseService):
     """模型服务类，封装所有模型相关的业务逻辑"""
 
-    @staticmethod
-    def get_all_models():
+    def __init__(self, model_repo=None):
+        """初始化模型服务
+        
+        Args:
+            model_repo: 模型仓库实例，用于依赖注入
+        """
+        self.model_repo = model_repo or ModelRepository()
+
+    def get_all_models(self):
         """获取所有模型供应商以及模型版本"""
         try:
             # 从数据库加载最新数据
-            model_repo = ModelRepository()
-            db_models = model_repo.get_all_models()
+            db_models = self.model_repo.get_all_models()
             
             # 从数据库加载所有模型版本
             models = []
@@ -32,7 +38,7 @@ class ModelService(BaseService):
                 icon_blob = model_row[9]
                 
                 # 获取模型版本
-                versions = model_repo.get_model_versions(model_id)
+                versions = self.model_repo.get_model_versions(model_id)
                 version_list = []
                 for version_row in versions:
                     version_list.append({
@@ -73,7 +79,7 @@ class ModelService(BaseService):
             return models
         except Exception as e:
             # 使用BaseService的日志方法
-            BaseService.log_error(f"获取模型列表失败: {str(e)}")
+            self.log_error(f"获取模型列表失败: {str(e)}")
             # 失败时返回内存数据库中的模型
             models = []
             for model in DataService.get_models():
@@ -81,8 +87,7 @@ class ModelService(BaseService):
                 models.append(filtered_model)
             return models
 
-    @staticmethod
-    def configure_model(model_name, data):
+    def configure_model(self, model_name, data):
         """
         配置特定模型
         
@@ -95,8 +100,7 @@ class ModelService(BaseService):
         """
         try:
             # 从数据库获取模型信息，确保使用最新数据
-            model_repo = ModelRepository()
-            model_row = model_repo.get_model_by_name(model_name)
+            model_row = self.model_repo.get_model_by_name(model_name)
             if not model_row:
                 return False, '模型不存在', None
             
@@ -106,27 +110,27 @@ class ModelService(BaseService):
             # 如果内存数据库中找不到模型，从数据库构建模型对象并添加到内存数据库
             if not model:
                 # 构建模型对象
-                model_id = model_row[0]
-                name = model_row[1]
-                description = model_row[2]
-                configured = bool(model_row[3])
-                enabled = bool(model_row[4])
-                icon_class = model_row[5]
-                icon_bg = model_row[6]
-                icon_color = model_row[7]
-                icon_url = model_row[8]
-                icon_blob = model_row[9]
+                model_id = model_row.id
+                name = model_row.name
+                description = model_row.description
+                configured = bool(model_row.configured)
+                enabled = bool(model_row.enabled)
+                icon_class = model_row.icon_class
+                icon_bg = model_row.icon_bg
+                icon_color = model_row.icon_color
+                icon_url = model_row.icon_url
+                icon_blob = model_row.icon_blob
                 
                 # 获取模型版本
-                versions = model_repo.get_model_versions(model_id)
+                versions = self.model_repo.get_model_versions(model_id)
                 version_list = []
                 for version_row in versions:
                     version_list.append({
-                        'version_name': version_row[3],
-                        'custom_name': version_row[4],
-                        'api_key': version_row[5],
-                        'api_base_url': version_row[6],
-                        'streaming_config': bool(version_row[7])
+                        'version_name': version_row.version_name,
+                        'custom_name': version_row.custom_name,
+                        'api_key': version_row.api_key,
+                        'api_base_url': version_row.api_base_url,
+                        'streaming_config': bool(version_row.streaming_config)
                     })
                 
                 # 创建模型对象
@@ -189,7 +193,7 @@ class ModelService(BaseService):
                 model['enabled'] = True
             
             # 更新数据库中的模型信息
-            model_repo.update_model(
+            self.model_repo.update_model(
                 name=model['name'],
                 description=model['description'],
                 configured=model['configured'],
@@ -202,8 +206,8 @@ class ModelService(BaseService):
             )
             
             # 更新或创建模型版本
-            model_id = model_row[0]  # 从数据库行获取模型ID
-            model_repo.update_model_version(
+            model_id = model_row.id  # 从SQLAlchemy模型对象获取模型ID
+            self.model_repo.update_model_version(
                 model_id=model_id,
                 version_name=version['version_name'],
                 custom_name=version.get('custom_name', ''),
@@ -220,11 +224,10 @@ class ModelService(BaseService):
             return True, f'模型 {model_name} 已配置', filtered_model
         except Exception as e:
             # 使用BaseService的日志方法
-            BaseService.log_error(f"配置模型失败: {str(e)}")
+            self.log_error(f"配置模型失败: {str(e)}")
             return False, f'配置模型失败: {str(e)}', None
 
-    @staticmethod
-    def delete_model(model_name):
+    def delete_model(self, model_name):
         """
         删除特定模型配置
         
@@ -236,8 +239,7 @@ class ModelService(BaseService):
         """
         try:
             # 从数据库获取模型信息，确保使用最新数据
-            model_repo = ModelRepository()
-            model_row = model_repo.get_model_by_name(model_name)
+            model_row = self.model_repo.get_model_by_name(model_name)
             if not model_row:
                 return False, '模型不存在'
             
@@ -257,7 +259,7 @@ class ModelService(BaseService):
             })
             
             # 更新数据库中的模型信息
-            model_repo.update_model(
+            self.model_repo.update_model(
                 name=model['name'],
                 description=model['description'],
                 configured=model['configured'],
@@ -270,10 +272,10 @@ class ModelService(BaseService):
             )
             
             # 删除所有相关的模型版本
-            model_id = model_row[0]  # 从数据库行获取模型ID
-            versions = model_repo.get_model_versions(model_id)
+            model_id = model_row.id  # 从SQLAlchemy模型对象获取模型ID
+            versions = self.model_repo.get_model_versions(model_id)
             for version in versions:
-                model_repo.delete_model_version(model_id, version[3])
+                self.model_repo.delete_model_version(model_id, version.version_name)
             
             # 设置脏标记，确保数据被保存
             DataService.set_dirty_flag('models')
@@ -281,11 +283,10 @@ class ModelService(BaseService):
             return True, f'模型 {model_name} 配置已删除'
         except Exception as e:
             # 使用BaseService的日志方法
-            BaseService.log_error(f"删除模型配置失败: {str(e)}")
+            self.log_error(f"删除模型配置失败: {str(e)}")
             return False, f'删除模型配置失败: {str(e)}'
 
-    @staticmethod
-    def update_model_enabled(model_name, enabled):
+    def update_model_enabled(self, model_name, enabled):
         """
         更新模型启用状态
         
@@ -298,8 +299,7 @@ class ModelService(BaseService):
         """
         try:
             # 从数据库获取模型信息，确保使用最新数据
-            model_repo = ModelRepository()
-            model_row = model_repo.get_model_by_name(model_name)
+            model_row = self.model_repo.get_model_by_name(model_name)
             if not model_row:
                 return False, '模型不存在'
             
@@ -312,7 +312,7 @@ class ModelService(BaseService):
             model['enabled'] = enabled
             
             # 更新数据库中的模型信息
-            model_repo.update_model(
+            self.model_repo.update_model(
                 name=model['name'],
                 description=model['description'],
                 configured=model['configured'],
@@ -330,11 +330,10 @@ class ModelService(BaseService):
             return True, f'模型 {model_name} 启用状态已更新'
         except Exception as e:
             # 使用BaseService的日志方法
-            BaseService.log_error(f"更新模型启用状态失败: {str(e)}")
+            self.log_error(f"更新模型启用状态失败: {str(e)}")
             return False, f'更新模型启用状态失败: {str(e)}'
 
-    @staticmethod
-    def delete_version(model_name, version_name):
+    def delete_version(self, model_name, version_name):
         """
         删除特定模型的特定版本
         
@@ -347,8 +346,7 @@ class ModelService(BaseService):
         """
         try:
             # 从数据库获取模型信息，确保使用最新数据
-            model_repo = ModelRepository()
-            model_row = model_repo.get_model_by_name(model_name)
+            model_row = self.model_repo.get_model_by_name(model_name)
             if not model_row:
                 return False, '模型不存在', None
             
@@ -375,7 +373,7 @@ class ModelService(BaseService):
                 model['enabled'] = False
             
             # 更新数据库中的模型信息
-            model_repo.update_model(
+            self.model_repo.update_model(
                 name=model['name'],
                 description=model['description'],
                 configured=model['configured'],
@@ -388,8 +386,8 @@ class ModelService(BaseService):
             )
             
             # 从数据库中删除模型版本
-            model_id = model_row[0]  # 从数据库行获取模型ID
-            model_repo.delete_model_version(model_id, version_name)
+            model_id = model_row.id  # 从SQLAlchemy模型对象获取模型ID
+            self.model_repo.delete_model_version(model_id, version_name)
             
             # 设置脏标记，确保数据被保存
             DataService.set_dirty_flag('models')
@@ -399,5 +397,5 @@ class ModelService(BaseService):
             return True, f'版本 {version_name} 已成功删除', filtered_model
         except Exception as e:
             # 使用BaseService的日志方法
-            BaseService.log_error(f"删除模型版本失败: {str(e)}")
+            self.log_error(f"删除模型版本失败: {str(e)}")
             return False, f'删除模型版本失败: {str(e)}', None

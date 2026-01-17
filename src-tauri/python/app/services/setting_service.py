@@ -7,8 +7,15 @@ import json
 class SettingService(BaseService):
     """设置服务类，封装所有设置相关的业务逻辑"""
     
-    @staticmethod
-    def get_notification_settings():
+    def __init__(self, setting_repo=None):
+        """初始化设置服务
+        
+        Args:
+            setting_repo: 设置仓库实例，用于依赖注入
+        """
+        self.setting_repo = setting_repo or SettingRepository()
+    
+    def get_notification_settings(self):
         """获取通知设置"""
         return DataService.get_settings().get('notification', {
             'enabled': True,
@@ -18,8 +25,7 @@ class SettingService(BaseService):
             'displayTime': '5秒'
         })
     
-    @staticmethod
-    def save_notification_settings(data):
+    def save_notification_settings(self, data):
         """保存通知设置"""
         # 确保notification设置键存在
         if 'notification' not in DataService.get_settings():
@@ -34,16 +40,14 @@ class SettingService(BaseService):
         DataService.get_settings()['notification'].update(data)
         
         # 使用Repository保存设置到数据库
-        setting_repo = SettingRepository()
-        setting_repo.create_or_update_setting('notification', DataService.get_settings()['notification'])
+        self.setting_repo.create_or_update_setting('notification', DataService.get_settings()['notification'])
         
         # 设置脏标记
         DataService.set_dirty_flag('settings')
         
         return DataService.get_settings()['notification']
     
-    @staticmethod
-    def get_mcp_settings():
+    def get_mcp_settings(self):
         """获取MCP设置"""
         return DataService.get_settings().get('mcp', {
             'enabled': False,
@@ -52,8 +56,7 @@ class SettingService(BaseService):
             'timeout': 30
         })
     
-    @staticmethod
-    def save_mcp_settings(data):
+    def save_mcp_settings(self, data):
         """保存MCP设置"""
         # 确保mcp设置键存在
         if 'mcp' not in DataService.get_settings():
@@ -67,51 +70,57 @@ class SettingService(BaseService):
         DataService.get_settings()['mcp'].update(data)
         
         # 使用Repository保存设置到数据库
-        setting_repo = SettingRepository()
-        setting_repo.create_or_update_setting('mcp', DataService.get_settings()['mcp'])
+        self.setting_repo.create_or_update_setting('mcp', DataService.get_settings()['mcp'])
         
         # 设置脏标记
         DataService.set_dirty_flag('settings')
         
         return DataService.get_settings()['mcp']
     
-    @staticmethod
-    def get_basic_settings():
+    def get_basic_settings(self):
         """获取基本设置"""
         return DataService.get_settings().get('system', {})
     
-    @staticmethod
-    def save_basic_settings(data):
+    def save_basic_settings(self, data):
         """保存基本设置"""
         # 确保system设置键存在
         if 'system' not in DataService.get_settings():
-            DataService.get_settings()['system'] = {}
+            DataService.get_settings()['system'] = {
+                'theme': 'light',
+                'language': 'zh-CN',
+                'autoSave': True,
+                'showPreview': True,
+                'maxMessages': 100
+            }
         # 合并基本设置
         DataService.get_settings()['system'].update(data)
         
         # 使用Repository保存设置到数据库
-        setting_repo = SettingRepository()
-        setting_repo.create_or_update_setting('system', DataService.get_settings()['system'])
+        self.setting_repo.create_or_update_setting('system', DataService.get_settings()['system'])
         
         # 设置脏标记
         DataService.set_dirty_flag('settings')
         
         return DataService.get_settings()['system']
     
-    @staticmethod
-    def get_all_settings():
+    def get_all_settings(self):
         """获取所有设置"""
         return DataService.get_settings()
     
-    @staticmethod
-    def load_settings_from_db():
+    def load_settings_from_db(self):
         """从数据库加载设置到内存"""
-        setting_repo = SettingRepository()
-        settings = setting_repo.get_all_settings()
+        settings = self.setting_repo.get_all_settings()
         
         for setting in settings:
-            key = setting[0]
-            value_json = setting[1]
+            if hasattr(setting, 'key'):
+                # 处理ORM对象
+                key = setting.key
+                value_json = setting.value
+            else:
+                # 处理元组
+                key = setting[0]
+                value_json = setting[1]
+            
             try:
                 # 尝试将JSON字符串转换为字典
                 setting_value = json.loads(value_json)

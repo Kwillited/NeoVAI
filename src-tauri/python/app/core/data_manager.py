@@ -1,9 +1,9 @@
 """数据管理模块"""
 import json
 import os
-import sqlite3
 from datetime import datetime
 from app.core.config import config_manager
+from app.utils.data_utils import build_message_list
 
 # 1. 初始化内存数据库（全局唯一）
 db = {
@@ -32,18 +32,6 @@ transaction_lock = threading.Lock()
 for key, value in config_manager._config.items():
     db['settings'][key] = value
 
-# 获取数据库连接（线程安全）
-def get_db_connection():
-    """获取数据库连接（为每个线程创建独立连接）"""
-    user_data_dir = ensure_data_dir()
-    # 将数据库文件名从neovai.db改为chato.db
-    db_path = os.path.join(user_data_dir, 'config', 'chato.db')
-    # 创建新的数据库连接
-    conn = sqlite3.connect(db_path)
-    # 启用外键约束
-    conn.execute('PRAGMA foreign_keys = ON')
-    return conn
-
 # --------------------------
 # 2. 数据目录管理（确保data目录存在）
 # --------------------------
@@ -64,94 +52,14 @@ def init_db():
     # 确保config目录存在
     os.makedirs(os.path.dirname(db_path), exist_ok=True)
     
-    # 连接数据库
-    conn = sqlite3.connect(db_path)
-    # 启用外键约束
-    conn.execute('PRAGMA foreign_keys = ON')
-    cursor = conn.cursor()
+    # 使用SQLAlchemy的自动创建表功能，不再需要手动执行SQL语句
+    # 表结构将由SQLAlchemy的模型定义自动创建
+    from app.core.database import engine
+    from app.models.models import Base
     
-    # 创建模型表
-    cursor.execute('''
-    CREATE TABLE IF NOT EXISTS models (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT UNIQUE NOT NULL,
-        description TEXT,
-        configured BOOLEAN DEFAULT FALSE,
-        enabled BOOLEAN DEFAULT FALSE,
-        icon_class TEXT,
-        icon_bg TEXT,
-        icon_color TEXT,
-        icon_url TEXT,
-        icon_blob BLOB
-    )
-    ''')
+    # 创建所有表
+    Base.metadata.create_all(bind=engine)
     
-    # 创建模型版本表
-    cursor.execute('''
-    CREATE TABLE IF NOT EXISTS model_versions (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        model_id INTEGER NOT NULL,
-        version_name TEXT NOT NULL,
-        custom_name TEXT,
-        api_key TEXT,
-        api_base_url TEXT,
-        streaming_config BOOLEAN DEFAULT FALSE,
-        FOREIGN KEY (model_id) REFERENCES models (id) ON DELETE CASCADE,
-        UNIQUE(model_id, version_name)
-    )
-    ''')
-    
-    # 创建对话表
-    cursor.execute('''
-    CREATE TABLE IF NOT EXISTS chats (
-        id TEXT PRIMARY KEY,
-        title TEXT NOT NULL,
-        preview TEXT,
-        created_at TEXT NOT NULL,
-        updated_at TEXT NOT NULL,
-        pinned INTEGER DEFAULT 0
-    )
-    ''')
-    
-    # 为已存在的表添加pinned字段（如果不存在）
-    try:
-        cursor.execute('ALTER TABLE chats ADD COLUMN pinned INTEGER DEFAULT 0')
-    except Exception as e:
-        # 忽略字段已存在的错误
-        pass
-    
-    # 创建消息表
-    cursor.execute('''
-    CREATE TABLE IF NOT EXISTS messages (
-        id TEXT PRIMARY KEY,
-        chat_id TEXT NOT NULL,
-        role TEXT NOT NULL,
-        actual_content TEXT NOT NULL,
-        thinking TEXT,
-        created_at TEXT NOT NULL,
-        model TEXT,
-        files TEXT,
-        FOREIGN KEY (chat_id) REFERENCES chats (id) ON DELETE CASCADE
-    )
-    ''')
-    
-    # 为已存在的表添加files字段（如果不存在）
-    try:
-        cursor.execute('ALTER TABLE messages ADD COLUMN files TEXT')
-    except Exception as e:
-        # 忽略字段已存在的错误
-        pass
-    
-    # 创建设置表
-    cursor.execute('''
-    CREATE TABLE IF NOT EXISTS settings (
-        key TEXT PRIMARY KEY,
-        value TEXT NOT NULL
-    )
-    ''')
-    
-    conn.commit()
-    conn.close()
     from app.core.logging_config import logger
     logger.info(f"SQLite数据库初始化成功，数据库文件: {db_path}")
 
@@ -223,71 +131,50 @@ def load_chats_from_db():
     """从SQLite数据库加载对话数据"""
     global db
     
-    # 清空内存中的对话数据
-    db['chats'] = []
-    
     try:
-        # 获取数据库连接
-        conn = get_db_connection()
-        cursor = conn.cursor()
+        # 使用Repository层加载对话数据
+        from app.repositories.chat_repository import ChatRepository
+        from app.repositories.message_repository import MessageRepository
+        from app.core.database import get_db
+        
+        # 获取数据库会话
+        db_session = next(get_db())
+        chat_repo = ChatRepository(db_session)
+        message_repo = MessageRepository(db_session)
+        
+        # 清空内存中的对话数据
+        db['chats'] = []
         
         # 获取所有对话
-        cursor.execute("SELECT * FROM chats")
-        chats = cursor.fetchall()
+        chats = chat_repo.get_all_chats()
         
-        for chat_row in chats:
-            # 处理可能的字段缺失情况
-            chat_id = chat_row[0]
-            title = chat_row[1] if len(chat_row) > 1 else '未命名对话'
-            preview = chat_row[2] if len(chat_row) > 2 else ''
-            created_at = chat_row[3] if len(chat_row) > 3 else datetime.now().isoformat()
-            updated_at = chat_row[4] if len(chat_row) > 4 else datetime.now().isoformat()
-            
+        for chat in chats:
             # 获取对话的所有消息
-            cursor.execute("SELECT * FROM messages WHERE chat_id = ? ORDER BY created_at", (chat_id,))
-            messages = cursor.fetchall()
+            messages = message_repo.get_messages_by_chat_id(chat.id)
             
             # 构建消息列表
             message_list = []
-            for msg_row in messages:
-                msg_id = msg_row[0]
-                role = msg_row[2] if len(msg_row) > 2 else 'user'
-                actual_content = msg_row[3] if len(msg_row) > 3 else ''
-                thinking = msg_row[4] if len(msg_row) > 4 else None
-                msg_created_at = msg_row[5] if len(msg_row) > 5 else datetime.now().isoformat()
-                model = msg_row[6] if len(msg_row) > 6 else None
-                files = msg_row[7] if len(msg_row) > 7 else None
-                
-                # 解析files字段（JSON字符串转列表）
-                files_list = []
-                if files:
-                    try:
-                        files_list = json.loads(files)
-                    except json.JSONDecodeError:
-                        files_list = []
-                
+            for msg in messages:
                 message_list.append({
-                    'id': msg_id,
-                    'role': role,
-                    'content': actual_content,
-                    'thinking': thinking,
-                    'createdAt': msg_created_at,
-                    'model': model,
-                    'files': files_list
+                    'id': msg.id,
+                    'role': msg.role,
+                    'content': msg.actual_content,
+                    'thinking': msg.thinking,
+                    'createdAt': msg.created_at,
+                    'model': msg.model,
+                    'files': json.loads(msg.files) if msg.files else []
                 })
             
             # 添加对话到内存数据库
             db['chats'].append({
-                'id': chat_id,
-                'title': title,
-                'preview': preview,
-                'createdAt': created_at,
-                'updatedAt': updated_at,
+                'id': chat.id,
+                'title': chat.title,
+                'preview': chat.preview,
+                'createdAt': chat.created_at,
+                'updatedAt': chat.updated_at,
+                'pinned': chat.pinned,
                 'messages': message_list
             })
-        
-        # 关闭数据库连接
-        conn.close()
         
         from app.core.logging_config import logger
         logger.info(f"从SQLite数据库加载了 {len(db['chats'])} 个对话")
@@ -296,6 +183,7 @@ def load_chats_from_db():
         from app.core.logging_config import logger
         logger.error(f"从SQLite数据库加载对话数据失败: {str(e)}")
         return False
+
 
 
 
@@ -308,20 +196,21 @@ def load_data():
         # 初始化数据库
         init_db()
         
-        # 获取数据库连接
-        conn = get_db_connection()
-        cursor = conn.cursor()
+        # 使用Repository层检查模型表是否为空
+        from app.repositories.model_repository import ModelRepository
+        from app.core.database import get_db
+        
+        # 获取数据库会话
+        db_session = next(get_db())
+        model_repo = ModelRepository(db_session)
         
         # 检查模型表是否为空
-        cursor.execute("SELECT COUNT(*) FROM models")
-        if cursor.fetchone()[0] == 0:
+        if model_repo.is_model_table_empty():
             # 数据库为空，插入默认模型数据
             insert_default_models()
         else:
             # 从SQLite加载模型数据
             load_models_from_db()
-        
-        conn.close()
         
         # 从SQLite加载对话数据
         load_chats_from_db()
@@ -339,6 +228,7 @@ def load_data():
         logger.error(f"加载数据时出错: {str(e)}")
 
 # 插入默认模型数据
+
 def insert_default_models():
     """插入默认模型数据到SQLite数据库"""
     from app.core.logging_config import logger
@@ -387,6 +277,7 @@ def insert_default_models():
             'icon_class': 'fa-github',
             'icon_bg': 'bg-gray-100',
             'icon_color': 'text-gray-600',
+            'icon_url': '/api/models/icons/GitHubModel.png',
             'versions': []
         },
         {
@@ -457,109 +348,102 @@ def insert_default_models():
         }
     ]
     
-    # 获取数据库连接
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    
-    # 将模型数据插入到SQLite数据库
-    for model in default_models:
-        # 插入模型
-        cursor.execute('''
-        INSERT OR REPLACE INTO models (name, description, configured, enabled, icon_class, icon_bg, icon_color, icon_url, icon_blob)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-        ''', (
-            model['name'],
-            model['description'],
-            model['configured'],
-            model['enabled'],
-            model['icon_class'],
-            model['icon_bg'],
-            model['icon_color'],
-            model.get('icon_url', ''),
-            model.get('icon_blob', None)
-        ))
+    try:
+        # 使用Repository层插入默认模型数据
+        from app.repositories.model_repository import ModelRepository
+        from app.core.database import get_db
         
-        # 获取模型ID
-        model_id = cursor.lastrowid
+        # 获取数据库会话
+        db_session = next(get_db())
+        model_repo = ModelRepository(db_session)
         
-        # 插入模型版本
-        for version in model.get('versions', []):
-            cursor.execute('''
-            INSERT INTO model_versions (model_id, version_name, custom_name, api_key, api_base_url, streaming_config)
-            VALUES (?, ?, ?, ?, ?, ?)
-            ''', (
-                model_id,
-                version['version_name'],
-                version.get('custom_name', ''),
-                version.get('api_key', ''),
-                version.get('api_base_url', ''),
-                version.get('streaming_config', False)
-            ))
-    
-    conn.commit()
-    conn.close()
-    from app.core.logging_config import logger
-    logger.info("默认模型数据插入完成")
-    
-    # 从数据库加载数据到内存
-    load_models_from_db()
+        # 将模型数据插入到数据库
+        for model in default_models:
+            # 创建或更新模型
+            model_obj = model_repo.create_or_update_model(
+                name=model['name'],
+                description=model['description'],
+                configured=model['configured'],
+                enabled=model['enabled'],
+                icon_class=model['icon_class'],
+                icon_bg=model['icon_bg'],
+                icon_color=model['icon_color'],
+                icon_url=model.get('icon_url', ''),
+                icon_blob=model.get('icon_blob', None)
+            )
+            
+            # 获取模型ID
+            model_id = model_obj.id
+            
+            # 插入模型版本
+            for version in model.get('versions', []):
+                model_repo.create_or_update_model_version(
+                    model_id=model_id,
+                    version_name=version['version_name'],
+                    custom_name=version.get('custom_name', ''),
+                    api_key=version.get('api_key', ''),
+                    api_base_url=version.get('api_base_url', ''),
+                    streaming_config=version.get('streaming_config', False)
+                )
+        
+        logger.info("默认模型数据插入完成")
+        
+        # 从数据库加载数据到内存
+        load_models_from_db()
+    except Exception as e:
+        logger.error(f"插入默认模型数据失败: {str(e)}")
+        raise
 
 # 从SQLite数据库加载模型数据到内存
+
 def load_models_from_db():
     """从SQLite数据库加载模型数据到内存"""
     global db
     
-    # 清空内存中的模型数据
-    db['models'] = []
-    
     try:
-        # 获取数据库连接
-        conn = get_db_connection()
-        cursor = conn.cursor()
+        # 使用Repository层加载模型数据
+        from app.repositories.model_repository import ModelRepository
+        from app.core.database import get_db
+        
+        # 获取数据库会话
+        db_session = next(get_db())
+        model_repo = ModelRepository(db_session)
+        
+        # 清空内存中的模型数据
+        db['models'] = []
         
         # 获取所有模型
-        cursor.execute("SELECT * FROM models")
-        models = cursor.fetchall()
+        models = model_repo.get_all_models()
         
-        for model_row in models:
-            # 处理可能的字段缺失，确保icon_blob字段被正确读取
-            if len(model_row) == 9:
-                model_id, name, description, configured, enabled, icon_class, icon_bg, icon_color, icon_url = model_row
-                icon_blob = None
-            elif len(model_row) >= 10:
-                model_id, name, description, configured, enabled, icon_class, icon_bg, icon_color, icon_url, icon_blob = model_row
-            
+        for model in models:
             # 获取模型的所有版本
-            cursor.execute("SELECT * FROM model_versions WHERE model_id = ?", (model_id,))
-            versions = cursor.fetchall()
+            versions = model_repo.get_model_versions(model.id)
             
             # 构建版本列表
             version_list = []
-            for version_row in versions:
-                _, _, version_name, custom_name, api_key, api_base_url, streaming_config = version_row
+            for version in versions:
                 version_list.append({
-                    'version_name': version_name,
-                    'custom_name': custom_name,
-                    'api_key': api_key,
-                    'api_base_url': api_base_url,
-                    'streaming_config': streaming_config
+                    'version_name': version.version_name,
+                    'custom_name': version.custom_name,
+                    'api_key': version.api_key,
+                    'api_base_url': version.api_base_url,
+                    'streaming_config': version.streaming_config
                 })
             
             # 添加模型到内存数据库
             db['models'].append({
-                'name': name,
-                'description': description,
-                'configured': bool(configured),
-                'enabled': bool(enabled),
-                'icon_class': icon_class,
-                'icon_bg': icon_bg,
-                'icon_color': icon_color,
-                'icon_url': icon_url,
-                'icon_blob': icon_blob,
+                'name': model.name,
+                'description': model.description,
+                'configured': bool(model.configured),
+                'enabled': bool(model.enabled),
+                'icon_class': model.icon_class,
+                'icon_bg': model.icon_bg,
+                'icon_color': model.icon_color,
+                'icon_url': model.icon_url,
+                'icon_blob': model.icon_blob,
                 'versions': version_list
             })
         
-        conn.close()
         from app.core.logging_config import logger
         logger.info(f"从SQLite数据库加载了 {len(db['models'])} 个模型")
     except Exception as e:
@@ -567,22 +451,27 @@ def load_models_from_db():
         logger.error(f"从SQLite数据库加载模型数据失败: {str(e)}")
 
 # 从SQLite数据库加载设置数据到内存
+
 def load_settings_from_db():
     """从SQLite数据库加载设置数据到内存"""
     global db
     
     try:
-        # 获取数据库连接
-        conn = get_db_connection()
-        cursor = conn.cursor()
+        # 使用Repository层加载设置数据
+        from app.repositories.setting_repository import SettingRepository
+        from app.core.database import get_db
+        
+        # 获取数据库会话
+        db_session = next(get_db())
+        setting_repo = SettingRepository(db_session)
         
         # 获取所有设置
-        cursor.execute("SELECT * FROM settings")
-        settings = cursor.fetchall()
+        settings = setting_repo.get_all_settings()
         
         # 加载设置到内存
         for setting in settings:
-            key, value = setting
+            key = setting.key
+            value = setting.value
             try:
                 # 尝试将JSON字符串转换为字典
                 setting_value = json.loads(value)
@@ -591,7 +480,6 @@ def load_settings_from_db():
                 # 如果不是JSON格式，直接保存为字符串
                 db['settings'][key] = value
         
-        conn.close()
         from app.core.logging_config import logger
         logger.info(f"从SQLite数据库加载了 {len(settings)} 个设置")
     except Exception as e:
@@ -600,19 +488,26 @@ def load_settings_from_db():
         # 保持现有设置不变
 
 # 将设置数据保存到SQLite数据库
-def save_settings_to_db(conn):
+
+def save_settings_to_db(conn=None):
     """将设置数据保存到SQLite数据库"""
     global db
     
     try:
-        cursor = conn.cursor()
+        # 使用Repository层保存设置数据
+        from app.repositories.setting_repository import SettingRepository
+        from app.core.database import get_db
+        
+        # 获取数据库会话
+        db_session = next(get_db())
+        setting_repo = SettingRepository(db_session)
+        
+        # 获取SQLite中所有设置键
+        all_settings = setting_repo.get_all_settings()
+        sqlite_setting_keys = {setting.key for setting in all_settings}
         
         # 获取内存中所有设置键
         memory_setting_keys = set(db['settings'].keys())
-        
-        # 获取SQLite中所有设置键
-        cursor.execute("SELECT key FROM settings")
-        sqlite_setting_keys = {row[0] for row in cursor.fetchall()}
         
         # 找出需要删除的设置键
         setting_keys_to_delete = sqlite_setting_keys - memory_setting_keys
@@ -622,17 +517,13 @@ def save_settings_to_db(conn):
             from app.core.logging_config import logger
             logger.info(f"删除不存在于内存的设置: {len(setting_keys_to_delete)} 个")
             for key in setting_keys_to_delete:
-                cursor.execute("DELETE FROM settings WHERE key = ?", (key,))
+                setting_repo.delete_setting(key)
         
         # 保存所有设置
         for key, value in db['settings'].items():
             try:
-                # 将设置值转换为JSON字符串
-                value_json = json.dumps(value)
-                cursor.execute(
-                    "INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)",
-                    (key, value_json)
-                )
+                # 使用Repository层创建或更新设置
+                setting_repo.create_or_update_setting(key, value)
             except Exception as e:
                 from app.core.logging_config import logger
                 logger.error(f"保存设置 '{key}' 失败: {str(e)}")
@@ -647,19 +538,27 @@ def save_settings_to_db(conn):
 # --------------------------
 # 5. 数据保存（从内存DB到SQLite和JSON文件）
 # --------------------------
-def save_chats_to_db(conn):
+def save_chats_to_db(conn=None):
     """将对话数据保存到SQLite数据库"""
     global db
     
     try:
-        cursor = conn.cursor()
+        # 使用Repository层保存对话数据
+        from app.repositories.chat_repository import ChatRepository
+        from app.repositories.message_repository import MessageRepository
+        from app.core.database import get_db
+        
+        # 获取数据库会话
+        db_session = next(get_db())
+        chat_repo = ChatRepository(db_session)
+        message_repo = MessageRepository(db_session)
+        
+        # 获取SQLite中所有对话ID
+        all_chats = chat_repo.get_all_chats()
+        sqlite_chat_ids = {chat.id for chat in all_chats}
         
         # 获取内存中所有对话ID
         memory_chat_ids = {chat['id'] for chat in db['chats']}
-        
-        # 获取SQLite中所有对话ID
-        cursor.execute("SELECT id FROM chats")
-        sqlite_chat_ids = {row[0] for row in cursor.fetchall()}
         
         # 找出需要删除的对话ID
         chat_ids_to_delete = sqlite_chat_ids - memory_chat_ids
@@ -669,28 +568,26 @@ def save_chats_to_db(conn):
             from app.core.logging_config import logger
             logger.info(f"删除不存在于内存的对话: {len(chat_ids_to_delete)} 个")
             for chat_id in chat_ids_to_delete:
-                cursor.execute("DELETE FROM chats WHERE id = ?", (chat_id,))
+                chat_repo.delete_chat(chat_id)
         
-        # 使用INSERT OR REPLACE保存对话和消息，只更新或插入需要的记录
+        # 保存所有对话和消息
         for chat in db['chats']:
             chat_id = chat['id']
             title = chat['title']
             preview = chat.get('preview', '')
             created_at = chat['createdAt']
             updated_at = chat['updatedAt']
+            pinned = chat.get('pinned', 0)
             
-            # 使用INSERT OR REPLACE插入或更新对话
-            cursor.execute('''
-            INSERT OR REPLACE INTO chats (id, title, preview, created_at, updated_at)
-            VALUES (?, ?, ?, ?, ?)
-            ''', (chat_id, title, preview, created_at, updated_at))
+            # 创建或更新对话
+            chat_repo.update_chat(chat_id, title, preview, updated_at, pinned)
+            
+            # 获取SQLite中该对话的所有消息ID
+            sqlite_messages = message_repo.get_messages_by_chat_id(chat_id)
+            sqlite_msg_ids = {msg.id for msg in sqlite_messages}
             
             # 获取内存中该对话的所有消息ID
             memory_msg_ids = {msg['id'] for msg in chat.get('messages', [])}
-            
-            # 获取SQLite中该对话的所有消息ID
-            cursor.execute("SELECT id FROM messages WHERE chat_id = ?", (chat_id,))
-            sqlite_msg_ids = {row[0] for row in cursor.fetchall()}
             
             # 找出需要删除的消息ID
             msg_ids_to_delete = sqlite_msg_ids - memory_msg_ids
@@ -698,7 +595,7 @@ def save_chats_to_db(conn):
             # 删除不再存在于内存中的消息
             if msg_ids_to_delete:
                 for msg_id in msg_ids_to_delete:
-                    cursor.execute("DELETE FROM messages WHERE id = ?", (msg_id,))
+                    message_repo.delete_message(msg_id)
             
             # 保存对话中的消息
             for msg in chat.get('messages', []):
@@ -714,10 +611,10 @@ def save_chats_to_db(conn):
                 # 将files列表转换为JSON字符串
                 files_json = json.dumps(files)
                 
-                cursor.execute('''
-                INSERT OR REPLACE INTO messages (id, chat_id, role, actual_content, thinking, created_at, model, files)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-                ''', (msg_id, chat_id, role, content, thinking, msg_created_at, model, files_json))
+                # 创建或更新消息
+                message_repo.create_or_update_message(
+                    msg_id, chat_id, role, content, thinking, msg_created_at, model, files_json
+                )
         
         from app.core.logging_config import logger
         logger.info("对话数据已保存到SQLite数据库")
@@ -739,32 +636,27 @@ def set_dirty_flag(data_type, is_dirty=True):
 
 def save_data():
     """保存数据到SQLite数据库，只保存有脏标记的数据"""
-    conn = None
     try:
-        # 使用单个数据库连接执行所有保存操作，避免数据库锁定
-        conn = get_db_connection()
-        
         # 记录需要保存的数据类型
         saved_types = []
         
         # 只保存有脏标记的数据
         if dirty_flags['chats']:
-            save_chats_to_db(conn)
+            save_chats_to_db()
             saved_types.append('chats')
             dirty_flags['chats'] = False
         
         if dirty_flags['models']:
-            save_models_to_db(conn)
+            save_models_to_db()
             saved_types.append('models')
             dirty_flags['models'] = False
         
         if dirty_flags['settings']:
-            save_settings_to_db(conn)
+            save_settings_to_db()
             saved_types.append('settings')
             dirty_flags['settings'] = False
         
-        # 提交事务
-        conn.commit()
+        # 不需要提交事务，Repository层会处理
         
         from app.core.logging_config import logger
         if saved_types:
@@ -775,26 +667,26 @@ def save_data():
     except Exception as e:
         from app.core.logging_config import logger
         logger.error(f"保存数据时出错: {str(e)}")
-        # 回滚事务
-        if conn:
-            conn.rollback()
-    finally:
-        # 确保连接关闭
-        if conn:
-            conn.close()
 
 # 将模型数据保存到SQLite数据库
-def save_models_to_db(conn):
+
+def save_models_to_db(conn=None):
     """将模型数据保存到SQLite数据库"""
     try:
-        cursor = conn.cursor()
+        # 使用Repository层保存模型数据
+        from app.repositories.model_repository import ModelRepository
+        from app.core.database import get_db
+        
+        # 获取数据库会话
+        db_session = next(get_db())
+        model_repo = ModelRepository(db_session)
+        
+        # 获取SQLite中所有模型
+        all_models = model_repo.get_all_models()
+        sqlite_model_names = {model.name for model in all_models}
         
         # 获取内存中所有模型名称
         memory_model_names = {model['name'] for model in db['models']}
-        
-        # 获取SQLite中所有模型名称
-        cursor.execute("SELECT name FROM models")
-        sqlite_model_names = {row[0] for row in cursor.fetchall()}
         
         # 找出需要删除的模型名称
         model_names_to_delete = sqlite_model_names - memory_model_names
@@ -804,54 +696,53 @@ def save_models_to_db(conn):
             from app.core.logging_config import logger
             logger.info(f"删除不存在于内存的模型: {len(model_names_to_delete)} 个")
             for model_name in model_names_to_delete:
-                cursor.execute("DELETE FROM models WHERE name = ?", (model_name,))
+                # 获取模型并删除
+                model = model_repo.get_model_by_name(model_name)
+                if model:
+                    model_repo.delete(model)
         
+        # 保存所有模型及其版本
         for model in db['models']:
-            # 使用INSERT OR REPLACE插入或更新模型
-            cursor.execute('''
-            INSERT OR REPLACE INTO models (name, description, configured, enabled, icon_class, icon_bg, icon_color, icon_url, icon_blob)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-            ''', (
-                model['name'],
-                model['description'],
-                model['configured'],
-                model['enabled'],
-                model['icon_class'],
-                model['icon_bg'],
-                model['icon_color'],
-                model.get('icon_url', ''),
-                model.get('icon_blob', None)
-            ))
+            # 更新模型
+            model_repo.update_model(
+                name=model['name'],
+                description=model['description'],
+                configured=model['configured'],
+                enabled=model['enabled'],
+                icon_class=model['icon_class'],
+                icon_bg=model['icon_bg'],
+                icon_color=model['icon_color'],
+                icon_url=model.get('icon_url', ''),
+                icon_blob=model.get('icon_blob', None)
+            )
             
             # 获取模型ID
-            cursor.execute("SELECT id FROM models WHERE name = ?", (model['name'],))
-            model_id = cursor.fetchone()[0]
+            model_obj = model_repo.get_model_by_name(model['name'])
+            model_id = model_obj.id
             
             # 获取现有版本名称列表
-            cursor.execute("SELECT version_name FROM model_versions WHERE model_id = ?", (model_id,))
-            existing_versions = set(row[0] for row in cursor.fetchall())
+            existing_versions = model_repo.get_model_versions(model_id)
+            existing_version_names = {version.version_name for version in existing_versions}
             
             # 要保存的版本名称集合
-            new_versions = set(version['version_name'] for version in model.get('versions', []))
+            new_versions = model.get('versions', [])
+            new_version_names = {version['version_name'] for version in new_versions}
             
             # 删除不再存在的版本
-            versions_to_delete = existing_versions - new_versions
+            versions_to_delete = existing_version_names - new_version_names
             for version_name in versions_to_delete:
-                cursor.execute("DELETE FROM model_versions WHERE model_id = ? AND version_name = ?", (model_id, version_name))
+                model_repo.delete_model_version(model_id, version_name)
             
             # 插入或更新版本
-            for version in model.get('versions', []):
-                cursor.execute('''
-                INSERT OR REPLACE INTO model_versions (model_id, version_name, custom_name, api_key, api_base_url, streaming_config)
-                VALUES (?, ?, ?, ?, ?, ?)
-                ''', (
-                    model_id,
-                    version['version_name'],
-                    version.get('custom_name', ''),
-                    version.get('api_key', ''),
-                    version.get('api_base_url', ''),
-                    version.get('streaming_config', False)
-                ))
+            for version in new_versions:
+                model_repo.update_model_version(
+                    model_id=model_id,
+                    version_name=version['version_name'],
+                    custom_name=version.get('custom_name', ''),
+                    api_key=version.get('api_key', ''),
+                    api_base_url=version.get('api_base_url', ''),
+                    streaming_config=version.get('streaming_config', False)
+                )
         
         from app.core.logging_config import logger
         logger.info("模型数据已保存到SQLite数据库")

@@ -1,31 +1,36 @@
 """Chato应用主包"""
 
-# Flask应用实例
+# FastAPI应用实例
 def create_app():
-    """创建Flask应用实例"""
-    from flask import Flask
-    from flask_cors import CORS
+    """创建FastAPI应用实例"""
+    from fastapi import FastAPI
+    from fastapi.middleware.cors import CORSMiddleware
     
-    app = Flask(__name__)
+    app = FastAPI(
+        title="ChaTo API",
+        description="ChaTo后端API服务",
+        version="1.0.0",
+        docs_url="/api/docs",
+        redoc_url="/api/redoc"
+    )
+    
     # 配置CORS
-    CORS(app, resources={r"/api/*": {"origins": "*"}})
-    
-    # 注册蓝图
-    from app.api import chat_bp, model_bp, mcp_bp, rag_bp, settings_bp
-    app.register_blueprint(chat_bp)
-    app.register_blueprint(model_bp)
-    app.register_blueprint(mcp_bp)
-    app.register_blueprint(rag_bp)
-    app.register_blueprint(settings_bp)
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
     
     # 添加健康检查端点
-    @app.route('/api/health')
+    @app.get('/api/health')
     def health_check():
         """健康检查端点"""
-        return app.response_class(
-            response='{"status": "healthy", "message": "Chato backend service is running"}',
-            status=200,
-            mimetype='application/json'
-        )
+        return {"status": "ok"}
+    
+    # 注册路由
+    from app.api import register_routes
+    register_routes(app)
     
     return app

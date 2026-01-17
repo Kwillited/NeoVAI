@@ -1,61 +1,68 @@
 """系统设置相关API路由"""
-from flask import Blueprint, request, jsonify
-import json
+from fastapi import APIRouter, Body, Depends
 
 # 导入相关服务类
 from app.services.setting_service import SettingService
+from app.utils.decorators import handle_exception
+from app.dependencies import get_setting_service
+from app.models.pydantic_models import (
+    NotificationSettings, MCPSettings, BasicSettings, SettingResponse
+)
 
-# 创建设置API蓝图（前缀统一为 /api/settings）
-settings_bp = Blueprint('settings', __name__, url_prefix='/api/settings')
+# 创建设置API路由（前缀统一为 /api/settings）
+router = APIRouter(prefix='/api/settings')
 
 # 获取通知设置
-@settings_bp.route('/notification', methods=['GET'])
-def get_notification_settings():
+@router.get('/notification', response_model=NotificationSettings)
+@handle_exception
+def get_notification_settings(setting_service: SettingService = Depends(get_setting_service)):
     """获取通知设置"""
-    return jsonify(SettingService.get_notification_settings())
+    return setting_service.get_notification_settings()
 
 # 保存通知设置
-@settings_bp.route('/notification', methods=['POST'])
-def save_notification_settings():
+@router.post('/notification', response_model=SettingResponse)
+@handle_exception
+def save_notification_settings(data: NotificationSettings = Body(...), setting_service: SettingService = Depends(get_setting_service)):
     """保存通知设置"""
-    data = request.json
-    settings = SettingService.save_notification_settings(data)
-    return jsonify({
-        'message': '通知设置已保存',
-        'settings': settings
-    })
+    settings = setting_service.save_notification_settings(data.dict())
+    return SettingResponse(
+        message='通知设置已保存',
+        settings=settings
+    )
 
 # 获取MCP设置
-@settings_bp.route('/mcp', methods=['GET'])
-def get_mcp_settings():
+@router.get('/mcp', response_model=MCPSettings)
+@handle_exception
+def get_mcp_settings(setting_service: SettingService = Depends(get_setting_service)):
     """获取MCP设置"""
-    return jsonify(SettingService.get_mcp_settings())
+    return setting_service.get_mcp_settings()
 
 # 保存MCP设置
-@settings_bp.route('/mcp', methods=['POST'])
-def save_mcp_settings():
+@router.post('/mcp', response_model=SettingResponse)
+@handle_exception
+def save_mcp_settings(data: MCPSettings = Body(...), setting_service: SettingService = Depends(get_setting_service)):
     """保存MCP设置"""
-    data = request.json
-    settings = SettingService.save_mcp_settings(data)
-    return jsonify({
-        'message': 'MCP设置已保存',
-        'settings': settings
-    })
+    settings = setting_service.save_mcp_settings(data.dict())
+    return SettingResponse(
+        message='MCP设置已保存',
+        settings=settings
+    )
 
 # 获取基本设置
-@settings_bp.route('/basic', methods=['GET'])
-def get_basic_settings():
+@router.get('/basic', response_model=BasicSettings)
+@handle_exception
+def get_basic_settings(setting_service: SettingService = Depends(get_setting_service)):
     """获取基本设置"""
-    return jsonify(SettingService.get_basic_settings())
+    return setting_service.get_basic_settings()
 
 # 保存基本设置
-@settings_bp.route('/basic', methods=['POST'])
-def save_basic_settings():
+@router.post('/basic', response_model=SettingResponse)
+@handle_exception
+def save_basic_settings(data: BasicSettings = Body(...), setting_service: SettingService = Depends(get_setting_service)):
     """保存基本设置"""
-    data = request.json
-    settings = SettingService.save_basic_settings(data)
-    return jsonify({
-        'message': '基本设置已保存',
-        'settings': settings
-    })
+    settings = setting_service.save_basic_settings(data.dict())
+    return SettingResponse(
+        message='基本设置已保存',
+        settings=settings
+    )
 

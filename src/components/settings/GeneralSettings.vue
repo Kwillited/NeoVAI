@@ -277,6 +277,23 @@ onMounted(async () => {
   eventBus.on('modelsUpdated', handleModelsUpdated);
 });
 
+// 监听流式输出设置变化，自动保存
+watch(
+  () => settingsStore.systemSettings.streamingEnabled,
+  (newValue) => {
+    settingsStore.saveSettings();
+  }
+);
+
+// 监听其他系统设置变化，自动保存
+watch(
+  () => settingsStore.systemSettings,
+  (newValue) => {
+    settingsStore.saveSettings();
+  },
+  { deep: true }
+);
+
 onUnmounted(() => {
   // 移除事件监听
   eventBus.off('modelsUpdated', handleModelsUpdated);

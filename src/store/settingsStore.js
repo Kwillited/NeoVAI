@@ -128,6 +128,17 @@ export const useSettingsStore = defineStore('settings', {
   },
 
   actions: {
+    // 初始化设置监听
+    initSettingsWatch() {
+      // 监听systemSettings变化，自动保存设置
+      this.$subscribe((mutation, state) => {
+        // 检查是否是systemSettings相关的变化
+        if (mutation.events && mutation.events.some(event => event.key.startsWith('systemSettings.'))) {
+          this.saveSettings();
+        }
+      });
+    },
+    
     // 设置默认模型
     setDefaultModel(model) {
       this.systemSettings.defaultModel = model;

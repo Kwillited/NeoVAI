@@ -102,8 +102,49 @@ class ModelService(BaseService):
             
             # 查找匹配名称的模型
             model = DataService.get_model_by_name(model_name)
+            
+            # 如果内存数据库中找不到模型，从数据库构建模型对象并添加到内存数据库
             if not model:
-                return False, '模型不存在', None
+                # 构建模型对象
+                model_id = model_row[0]
+                name = model_row[1]
+                description = model_row[2]
+                configured = bool(model_row[3])
+                enabled = bool(model_row[4])
+                icon_class = model_row[5]
+                icon_bg = model_row[6]
+                icon_color = model_row[7]
+                icon_url = model_row[8]
+                icon_blob = model_row[9]
+                
+                # 获取模型版本
+                versions = model_repo.get_model_versions(model_id)
+                version_list = []
+                for version_row in versions:
+                    version_list.append({
+                        'version_name': version_row[3],
+                        'custom_name': version_row[4],
+                        'api_key': version_row[5],
+                        'api_base_url': version_row[6],
+                        'streaming_config': bool(version_row[7])
+                    })
+                
+                # 创建模型对象
+                model = {
+                    'name': name,
+                    'description': description,
+                    'configured': configured,
+                    'enabled': enabled,
+                    'icon_class': icon_class,
+                    'icon_bg': icon_bg,
+                    'icon_color': icon_color,
+                    'icon_url': icon_url,
+                    'icon_blob': icon_blob,
+                    'versions': version_list
+                }
+                
+                # 添加到内存数据库
+                DataService.get_models().append(model)
             
             # 确保模型有versions数组
             if 'versions' not in model:
@@ -134,7 +175,7 @@ class ModelService(BaseService):
             if 'api_base_url' in data:
                 version['api_base_url'] = data['api_base_url']
             version['streaming_config'] = data.get('streaming_config', False)  # 流式配置
-        
+            
             # 更新模型的顶级配置字段
             # 对于首次配置的模型，默认设置为启用状态
             is_first_configuration = not model.get('configured')

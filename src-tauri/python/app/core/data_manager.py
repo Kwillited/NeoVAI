@@ -578,6 +578,23 @@ def save_settings_to_db(conn):
     try:
         cursor = conn.cursor()
         
+        # 获取内存中所有设置键
+        memory_setting_keys = set(db['settings'].keys())
+        
+        # 获取SQLite中所有设置键
+        cursor.execute("SELECT key FROM settings")
+        sqlite_setting_keys = {row[0] for row in cursor.fetchall()}
+        
+        # 找出需要删除的设置键
+        setting_keys_to_delete = sqlite_setting_keys - memory_setting_keys
+        
+        # 删除不再存在于内存中的设置
+        if setting_keys_to_delete:
+            from app.core.logging_config import logger
+            logger.info(f"删除不存在于内存的设置: {len(setting_keys_to_delete)} 个")
+            for key in setting_keys_to_delete:
+                cursor.execute("DELETE FROM settings WHERE key = ?", (key,))
+        
         # 保存所有设置
         for key, value in db['settings'].items():
             try:
@@ -608,6 +625,23 @@ def save_chats_to_db(conn):
     try:
         cursor = conn.cursor()
         
+        # 获取内存中所有对话ID
+        memory_chat_ids = {chat['id'] for chat in db['chats']}
+        
+        # 获取SQLite中所有对话ID
+        cursor.execute("SELECT id FROM chats")
+        sqlite_chat_ids = {row[0] for row in cursor.fetchall()}
+        
+        # 找出需要删除的对话ID
+        chat_ids_to_delete = sqlite_chat_ids - memory_chat_ids
+        
+        # 删除不再存在于内存中的对话（会级联删除消息）
+        if chat_ids_to_delete:
+            from app.core.logging_config import logger
+            logger.info(f"删除不存在于内存的对话: {len(chat_ids_to_delete)} 个")
+            for chat_id in chat_ids_to_delete:
+                cursor.execute("DELETE FROM chats WHERE id = ?", (chat_id,))
+        
         # 使用INSERT OR REPLACE保存对话和消息，只更新或插入需要的记录
         for chat in db['chats']:
             chat_id = chat['id']
@@ -621,6 +655,21 @@ def save_chats_to_db(conn):
             INSERT OR REPLACE INTO chats (id, title, preview, created_at, updated_at)
             VALUES (?, ?, ?, ?, ?)
             ''', (chat_id, title, preview, created_at, updated_at))
+            
+            # 获取内存中该对话的所有消息ID
+            memory_msg_ids = {msg['id'] for msg in chat.get('messages', [])}
+            
+            # 获取SQLite中该对话的所有消息ID
+            cursor.execute("SELECT id FROM messages WHERE chat_id = ?", (chat_id,))
+            sqlite_msg_ids = {row[0] for row in cursor.fetchall()}
+            
+            # 找出需要删除的消息ID
+            msg_ids_to_delete = sqlite_msg_ids - memory_msg_ids
+            
+            # 删除不再存在于内存中的消息
+            if msg_ids_to_delete:
+                for msg_id in msg_ids_to_delete:
+                    cursor.execute("DELETE FROM messages WHERE id = ?", (msg_id,))
             
             # 保存对话中的消息
             for msg in chat.get('messages', []):
@@ -706,6 +755,23 @@ def save_models_to_db(conn):
     """将模型数据保存到SQLite数据库"""
     try:
         cursor = conn.cursor()
+        
+        # 获取内存中所有模型名称
+        memory_model_names = {model['name'] for model in db['models']}
+        
+        # 获取SQLite中所有模型名称
+        cursor.execute("SELECT name FROM models")
+        sqlite_model_names = {row[0] for row in cursor.fetchall()}
+        
+        # 找出需要删除的模型名称
+        model_names_to_delete = sqlite_model_names - memory_model_names
+        
+        # 删除不再存在于内存中的模型
+        if model_names_to_delete:
+            from app.core.logging_config import logger
+            logger.info(f"删除不存在于内存的模型: {len(model_names_to_delete)} 个")
+            for model_name in model_names_to_delete:
+                cursor.execute("DELETE FROM models WHERE name = ?", (model_name,))
         
         for model in db['models']:
             # 使用INSERT OR REPLACE插入或更新模型

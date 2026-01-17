@@ -11,9 +11,9 @@ class BaseRepository:
     
     def get_connection(self):
         """获取数据库连接"""
-        if not self.connection or self.connection.close():
-            self.connection = get_db_connection()
-        return self.connection
+        # 简单检查连接是否存在，SQLite没有直接的is_closed()方法
+        # 我们每次都获取一个新连接，以避免连接关闭问题
+        return get_db_connection()
     
     def execute(self, query, params=None):
         """执行SQL查询（无返回结果）"""

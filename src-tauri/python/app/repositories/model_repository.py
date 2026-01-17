@@ -50,12 +50,12 @@ class ModelRepository(BaseRepository):
         return self.execute(query, (model_id, version_name, custom_name, api_key, api_base_url, streaming_config))
     
     def update_model_version(self, model_id, version_name, custom_name, api_key, api_base_url, streaming_config):
-        """更新模型版本"""
+        """更新模型版本，不存在则创建"""
         query = '''
-        UPDATE model_versions SET custom_name = ?, api_key = ?, api_base_url = ?, streaming_config = ?
-        WHERE model_id = ? AND version_name = ?
+        INSERT OR REPLACE INTO model_versions (model_id, version_name, custom_name, api_key, api_base_url, streaming_config)
+        VALUES (?, ?, ?, ?, ?, ?)
         '''
-        return self.execute(query, (custom_name, api_key, api_base_url, streaming_config, model_id, version_name))
+        return self.execute(query, (model_id, version_name, custom_name, api_key, api_base_url, streaming_config))
     
     def delete_model_version(self, model_id, version_name):
         """删除模型版本"""

@@ -56,7 +56,12 @@ def configure_model(model_name):
     success, message, model = ModelService.configure_model(model_name, data)
     
     if not success:
-        return jsonify({'error': message}), 404
+        # 根据错误类型返回不同的状态码
+        if message == '模型不存在':
+            return jsonify({'error': message}), 404
+        else:
+            # 其他错误返回500状态码
+            return jsonify({'error': message}), 500
     
     return jsonify({
         'message': message,

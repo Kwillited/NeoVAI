@@ -651,6 +651,8 @@ export const useChatStore = defineStore('chat', {
             content: messageData.content || '',
             // 确保model字段存在
             model: messageData.model || chat.model || 'Chato',
+            // 确保files字段存在（默认为空数组）
+            files: Array.isArray(messageData.files) ? messageData.files : []
           };
         });
 

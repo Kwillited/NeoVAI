@@ -130,9 +130,17 @@ def init_db():
         thinking TEXT,
         created_at TEXT NOT NULL,
         model TEXT,
+        files TEXT,
         FOREIGN KEY (chat_id) REFERENCES chats (id) ON DELETE CASCADE
     )
     ''')
+    
+    # 为已存在的表添加files字段（如果不存在）
+    try:
+        cursor.execute('ALTER TABLE messages ADD COLUMN files TEXT')
+    except Exception as e:
+        # 忽略字段已存在的错误
+        pass
     
     # 创建设置表
     cursor.execute('''
@@ -183,7 +191,10 @@ def auto_save_task():
         with transaction_lock:
             # 检查是否有脏数据需要保存
             if any(dirty_flags.values()):
+                from app.core.logging_config import logger
+                logger.info(f"自动保存触发: 脏标记={dirty_flags}")
                 save_data()
+                logger.info("自动保存完成")
 
 
 def start_auto_save():
@@ -245,6 +256,15 @@ def load_chats_from_db():
                 thinking = msg_row[4] if len(msg_row) > 4 else None
                 msg_created_at = msg_row[5] if len(msg_row) > 5 else datetime.now().isoformat()
                 model = msg_row[6] if len(msg_row) > 6 else None
+                files = msg_row[7] if len(msg_row) > 7 else None
+                
+                # 解析files字段（JSON字符串转列表）
+                files_list = []
+                if files:
+                    try:
+                        files_list = json.loads(files)
+                    except json.JSONDecodeError:
+                        files_list = []
                 
                 message_list.append({
                     'id': msg_id,
@@ -252,7 +272,8 @@ def load_chats_from_db():
                     'content': actual_content,
                     'thinking': thinking,
                     'createdAt': msg_created_at,
-                    'model': model
+                    'model': model,
+                    'files': files_list
                 })
             
             # 添加对话到内存数据库
@@ -688,11 +709,15 @@ def save_chats_to_db(conn):
                 # 确保createdAt有值，即使键存在但值为None也使用默认值
                 msg_created_at = msg.get('createdAt') or datetime.now().isoformat()
                 model = msg.get('model', None)
+                files = msg.get('files', [])
+                
+                # 将files列表转换为JSON字符串
+                files_json = json.dumps(files)
                 
                 cursor.execute('''
-                INSERT OR REPLACE INTO messages (id, chat_id, role, actual_content, thinking, created_at, model)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
-                ''', (msg_id, chat_id, role, content, thinking, msg_created_at, model))
+                INSERT OR REPLACE INTO messages (id, chat_id, role, actual_content, thinking, created_at, model, files)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                ''', (msg_id, chat_id, role, content, thinking, msg_created_at, model, files_json))
         
         from app.core.logging_config import logger
         logger.info("对话数据已保存到SQLite数据库")

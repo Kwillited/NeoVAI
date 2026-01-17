@@ -351,7 +351,8 @@ export const apiService = {
             });
             return {
               name: file.name,
-              content: content
+              content: content,
+              size: file.size  // 保留文件大小
             };
           }
           return file;
@@ -393,7 +394,8 @@ export const apiService = {
             });
             return {
               name: file.name,
-              content: content
+              content: content,
+              size: file.size  // 保留文件大小
             };
           }
           return file;

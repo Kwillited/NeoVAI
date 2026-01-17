@@ -16,26 +16,20 @@
       />
     </div>
     
-    <!-- 居中样式 - 仅对AI消息生效 - 优化后减少了嵌套层级 -->
-    <div v-else class="flex justify-center my-4">
-      <div class="w-full max-w-2xl bg-transparent dark:bg-transparent rounded-xl p-4 overflow-hidden">
-          <div class="markdown-content text-gray-800 dark:text-gray-100 leading-relaxed" v-html="formattedContent" :key="updateKey"></div>
-        
-        <!-- 错误状态显示 -->
-        <div v-if="messageValue.error" class="chat-error mt-2">
-          <i class="fa-solid fa-circle-exclamation text-red-500 mr-1"></i>
-          <span>{{ messageValue.error }}</span>
-        </div>
-        
-        <!-- 打字动画 -->
-        <Loading 
-          v-if="messageValue.isTyping" 
-          type="typing" 
-          size="small" 
-          color="var(--text-color-secondary, #9ca3af)" 
-          containerClass="mt-2 flex justify-center"
-        />
-      </div>
+    <!-- 文档模式样式 -->
+    <div v-else class="flex" :class="{ 'justify-end': isUserMessage }">
+      <!-- AI消息气泡 -->
+      <AIChatBubble 
+        v-if="!isUserMessage" 
+        :message="message" 
+      />
+      
+      <!-- 用户消息气泡 -->
+      <UserChatBubble 
+        v-else 
+        :message="message" 
+        @editMessage="handleEditMessage"
+      />
     </div>
   </div>
 </template>

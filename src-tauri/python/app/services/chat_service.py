@@ -43,13 +43,23 @@ class ChatService(BaseService):
                     content = msg_row[3] if len(msg_row) > 3 else ''
                     msg_created_at = msg_row[5] if len(msg_row) > 5 else datetime.now().isoformat()
                     model = msg_row[6] if len(msg_row) > 6 else None
+                    files = msg_row[7] if len(msg_row) > 7 else None
+                    
+                    # 解析files字段（JSON字符串转列表）
+                    files_list = []
+                    if files:
+                        try:
+                            files_list = json.loads(files)
+                        except json.JSONDecodeError:
+                            files_list = []
                     
                     message_list.append({
                         'id': msg_id,
                         'role': role,
                         'content': content,
                         'createdAt': msg_created_at,
-                        'model': model
+                        'model': model,
+                        'files': files_list
                     })
                 
                 # 添加对话到列表
@@ -156,13 +166,23 @@ class ChatService(BaseService):
                 content = msg_row[3] if len(msg_row) > 3 else ''
                 msg_created_at = msg_row[5] if len(msg_row) > 5 else datetime.now().isoformat()
                 model = msg_row[6] if len(msg_row) > 6 else None
+                files = msg_row[7] if len(msg_row) > 7 else None
+                
+                # 解析files字段（JSON字符串转列表）
+                files_list = []
+                if files:
+                    try:
+                        files_list = json.loads(files)
+                    except json.JSONDecodeError:
+                        files_list = []
                 
                 message_list.append({
                     'id': msg_id,
                     'role': role,
                     'content': content,
                     'createdAt': msg_created_at,
-                    'model': model
+                    'model': model,
+                    'files': files_list
                 })
             
             # 构建对话对象
@@ -450,6 +470,9 @@ class ChatService(BaseService):
             chat['title'] = new_title
         
         try:
+            # 先设置脏标记，确保数据会被保存
+            DataService.set_dirty_flag('chats', True)
+            
             # 使用Repository保存对话和消息
             chat_repo = ChatRepository()
             message_repo = MessageRepository()
@@ -462,7 +485,8 @@ class ChatService(BaseService):
                 actual_content=user_message['content'],
                 thinking=None,
                 created_at=user_message['createdAt'],
-                model=user_message.get('model')
+                model=user_message.get('model'),
+                files=json.dumps(user_message.get('files', []))
             )
             
             # 保存AI消息到数据库
@@ -473,7 +497,8 @@ class ChatService(BaseService):
                 actual_content=ai_message['content'],
                 thinking=ai_message.get('thinking'),
                 created_at=ai_message['createdAt'],
-                model=ai_message.get('model')
+                model=ai_message.get('model'),
+                files=json.dumps(ai_message.get('files', []))
             )
             
             # 更新对话信息
@@ -484,11 +509,15 @@ class ChatService(BaseService):
                 updated_at=now
             )
             
-            # 设置脏标记，确保数据被保存
-            DataService.set_dirty_flag('chats', True)
+            # 添加直接保存成功日志
+            from app.core.logging_config import logger
+            logger.info(f"Direct save succeeded: chat_id={chat['id']}, user_msg_id={user_message['id']}, ai_msg_id={ai_message['id']}")
         except Exception as e:
             # 使用BaseService的日志方法
-            BaseService.log_error(f"更新对话失败: {str(e)}")
+            BaseService.log_error(f"Failed to update chat: {str(e)}")
+            # 脏标记已经设置，自动保存机制会处理剩余工作
+            from app.core.logging_config import logger
+            logger.info(f"Direct save failed, relying on auto-save: chat_id={chat['id']}, error={str(e)}")
 
     @staticmethod
     def _prepare_messages_for_model(chat_id, enhanced_question, deep_thinking=False):
@@ -821,7 +850,8 @@ class ChatService(BaseService):
             'id': str(uuid.uuid4()),
             'role': 'user',
             'content': message_text,
-            'createdAt': now
+            'createdAt': now,
+            'files': files  # 保存原始文件信息
         }
         chat['messages'].append(user_message)
         

@@ -205,7 +205,7 @@ const getFileExtension = (fileName) => {
 
 // 格式化文件大小
 const formatFileSize = (size) => {
-  if (size === 0) return '0 Bytes';
+  if (size === 0 || !size || isNaN(size)) return '0 Bytes';
   
   const k = 1024;
   const sizes = ['Bytes', 'KB', 'MB', 'GB'];

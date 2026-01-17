@@ -14,13 +14,13 @@ class MessageRepository(BaseRepository):
         query = "SELECT * FROM messages WHERE id = ?"
         return self.fetch_one(query, (message_id,))
     
-    def create_message(self, message_id, chat_id, role, actual_content, thinking, created_at, model):
+    def create_message(self, message_id, chat_id, role, actual_content, thinking, created_at, model, files=None):
         """创建新消息"""
         query = '''
-        INSERT INTO messages (id, chat_id, role, actual_content, thinking, created_at, model)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
+        INSERT OR REPLACE INTO messages (id, chat_id, role, actual_content, thinking, created_at, model, files)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         '''
-        return self.execute(query, (message_id, chat_id, role, actual_content, thinking, created_at, model))
+        return self.execute(query, (message_id, chat_id, role, actual_content, thinking, created_at, model, files))
     
     def update_message(self, message_id, role, actual_content, thinking, created_at, model):
         """更新消息"""

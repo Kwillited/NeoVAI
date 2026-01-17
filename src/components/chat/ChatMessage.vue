@@ -6,30 +6,36 @@
       <AIChatBubble 
         v-if="!isUserMessage" 
         :message="message" 
+        :chatStyleDocument="chatStyleDocument"
       />
       
       <!-- 用户消息气泡 -->
       <UserChatBubble 
         v-else 
         :message="message" 
+        :chatStyleDocument="chatStyleDocument"
         @editMessage="handleEditMessage"
       />
     </div>
     
     <!-- 文档模式样式 -->
-    <div v-else class="flex" :class="{ 'justify-end': isUserMessage }">
-      <!-- AI消息气泡 -->
-      <AIChatBubble 
-        v-if="!isUserMessage" 
-        :message="message" 
-      />
+    <div v-else>
+      <!-- AI消息气泡 - 使用文档样式 -->
+      <div v-if="!isUserMessage" class="mb-4 w-full">
+        <AIChatBubble 
+          :message="message" 
+          :chatStyleDocument="chatStyleDocument"
+        />
+      </div>
       
-      <!-- 用户消息气泡 -->
-      <UserChatBubble 
-        v-else 
-        :message="message" 
-        @editMessage="handleEditMessage"
-      />
+      <!-- 用户消息气泡 - 保持气泡样式 -->
+      <div v-else class="flex justify-end mb-4 w-full">
+        <UserChatBubble 
+          :message="message" 
+          :chatStyleDocument="false"
+          @editMessage="handleEditMessage"
+        />
+      </div>
     </div>
   </div>
 </template>

@@ -128,15 +128,10 @@ export const useSettingsStore = defineStore('settings', {
   },
 
   actions: {
-    // 初始化设置监听
+    // 初始化设置监听 - 移除$subscribe，避免TypeError
     initSettingsWatch() {
-      // 监听systemSettings变化，自动保存设置
-      this.$subscribe((mutation, state) => {
-        // 检查是否是systemSettings相关的变化
-        if (mutation.events && mutation.events.some(event => event.key.startsWith('systemSettings.'))) {
-          this.saveSettings();
-        }
-      });
+      // 简化实现：移除$subscribe调用，避免TypeError
+      // 设置保存和应用通过组件内的watch和@change事件处理
     },
     
     // 设置默认模型
@@ -255,9 +250,8 @@ export const useSettingsStore = defineStore('settings', {
 
     // 应用需要立即生效的设置
     applyImmediateSettings(settings) {
-      if ('darkMode' in settings) {
-        this.applyDarkMode();
-      }
+      // 总是应用darkMode设置，确保立即生效
+      this.applyDarkMode();
 
       if ('fontSize' in settings) {
         document.documentElement.style.fontSize = `${this.systemSettings.fontSize}px`;

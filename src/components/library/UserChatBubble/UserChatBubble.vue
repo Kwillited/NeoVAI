@@ -1,5 +1,71 @@
 <template>
-  <div class="flex justify-end max-w-[85%]">
+  <!-- 文档模式样式 -->
+  <div v-if="chatStyleDocument" class="w-full">
+    <div class="relative group">
+      <!-- 文件列表 - 放在消息气泡上方 -->
+      <div v-if="messageValue.files && messageValue.files.length > 0" class="flex flex-wrap gap-2 mb-2">
+        <div 
+          v-for="(file, index) in messageValue.files" 
+          :key="index"
+          class="flex flex-col items-start p-2 bg-white/80 dark:bg-dark-600 rounded-lg text-xs group transition-colors duration-300 ease-in-out max-w-[150px] shadow-md cursor-pointer hover:bg-white dark:hover:bg-dark-500"
+          @click="previewFile(file)"
+        >
+          <div class="flex items-center gap-1 w-full">
+            <i :class="['fa', getFileIcon(file.name), 'text-gray-500']"></i>
+            <span class="truncate font-medium text-gray-800 dark:text-white">{{ file.name }}</span>
+          </div>
+          <div class="flex items-center gap-2 mt-1 w-full text-gray-400 text-[10px]">
+            <span>{{ getFileExtension(file.name) }}</span>
+            <span>{{ formatFileSize(file.size) }}</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 消息内容气泡 -->
+      <div 
+        v-if="messageContent || messageValue.error || messageValue.isTyping"
+        class="bg-primary/20 text-gray-800 rounded-lg px-5 py-4 shadow-sm overflow-hidden w-full"
+      >
+        <!-- 文字内容 -->
+        <div v-if="messageContent" class="markdown-content text-gray-800 dark:text-gray-100 leading-relaxed" v-html="formattedContent" :key="updateKey"></div>
+        
+        <!-- 错误状态显示 -->
+        <div v-if="messageValue.error" class="chat-error mt-2">
+          <i class="fa-solid fa-circle-exclamation text-red-500 mr-1"></i>
+          <span>{{ messageValue.error }}</span>
+        </div>
+        
+        <!-- 打字动画 -->
+        <Loading 
+          v-if="messageValue.isTyping" 
+          type="typing" 
+          size="small" 
+          color="var(--text-color-secondary, #9ca3af)" 
+          containerClass="mt-2"
+        />
+      </div>
+      
+      <!-- 操作按钮 -->
+      <div class="text-sm text-gray-500 dark:text-gray-400 mt-2 flex items-center justify-between w-full">
+        <div class="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+          <!-- 编辑按钮 - 仅对用户消息显示 -->
+          <Tooltip v-if="!messageValue.isTyping" content="编辑消息">
+            <button class="edit-btn text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 p-2 rounded-full transition-all duration-200" @click="startEditMessage">
+              <i class="fa-solid fa-pen"></i>
+            </button>
+          </Tooltip>
+          <Tooltip content="复制消息内容">
+            <button class="copy-btn text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 p-2 rounded-full transition-all duration-200" @click="copyMessageContent">
+              <i class="fa-solid fa-copy"></i>
+            </button>
+          </Tooltip>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 默认气泡样式 -->
+  <div v-else class="flex justify-end max-w-[85%]">
     <div class="relative group flex flex-col items-end">
       <!-- 文件列表 - 放在消息气泡上方 -->
       <div v-if="messageValue.files && messageValue.files.length > 0" class="flex flex-wrap gap-2 mb-2">
@@ -20,71 +86,7 @@
         </div>
       </div>
       
-      <!-- 文件预览模态框 -->
-      <div v-if="showPreviewModal" class="fixed inset-0 flex items-center justify-center z-50" @click="closePreviewModal">
-        <div class="bg-white dark:bg-gray-800 dark:text-white rounded-xl shadow-2xl dark:shadow-2xl border-2 border-gray-200 dark:border-gray-600 p-6 w-full max-w-3xl mx-4 transform transition-all duration-300 scale-100" @click.stop>
-          <!-- 预览模态框标题 -->
-          <div class="mb-4 flex justify-between items-center">
-            <h3 class="text-lg font-semibold text-gray-800 dark:text-white">{{ previewFileData.name }}</h3>
-            <button 
-              class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
-              @click="closePreviewModal"
-            >
-              <i class="fa-solid fa-xmark"></i>
-            </button>
-          </div>
-          
-          <!-- 预览模态框内容 -->
-          <div class="mb-6 max-h-[70vh] overflow-y-auto">
-            <div v-if="previewLoading" class="flex justify-center items-center py-10">
-              <Loading type="spin" size="medium" color="var(--text-color-secondary, #9ca3af)" />
-            </div>
-            <div v-else-if="previewError" class="text-red-500 text-center py-10">
-              <i class="fa-solid fa-circle-exclamation text-4xl mb-2"></i>
-              <p>{{ previewError }}</p>
-            </div>
-            <!-- 文本内容预览 -->
-            <div v-else-if="previewFileContent" class="text-sm text-gray-800 dark:text-gray-300 whitespace-pre-wrap">
-              {{ previewFileContent }}
-            </div>
-            <!-- 图片预览 -->
-            <div v-else-if="previewImageUrl" class="flex justify-center items-center py-4">
-              <img :src="previewImageUrl" alt="预览图片" class="max-w-full max-h-[60vh] object-contain" />
-            </div>
-            <!-- PDF预览 -->
-            <div v-else-if="previewPdfUrl" class="flex flex-col items-center justify-center py-10">
-              <i class="fa-solid fa-file-pdf text-6xl text-red-500 mb-4"></i>
-              <h4 class="text-lg font-medium mb-2">{{ previewFileData.name }}</h4>
-              <p class="text-gray-500 mb-4">PDF文件预览</p>
-              <button 
-                class="px-4 py-2 bg-primary hover:bg-primary/90 text-white rounded-md transition-colors"
-                @click="downloadFile(previewFileData)"
-              >
-                <i class="fa-solid fa-download mr-1"></i>
-                下载PDF
-              </button>
-            </div>
-            <!-- 不支持的文件类型 -->
-            <div v-else class="text-gray-500 text-center py-10">
-              <i class="fa-solid fa-file-circle-question text-4xl mb-2"></i>
-              <p>不支持的文件类型或无法预览</p>
-            </div>
-          </div>
-          
-          <!-- 预览模态框按钮 -->
-          <div class="flex justify-end gap-3">
-            <button 
-              class="px-4 py-2 rounded-md border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 text-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
-              @click="downloadFile(previewFileData)"
-            >
-              <i class="fa-solid fa-download mr-1"></i>
-              下载
-            </button>
-          </div>
-        </div>
-      </div>
-      
-      <!-- 消息内容气泡 - 添加了禁止触发滚动条的样式 -->
+      <!-- 消息内容气泡 -->
       <div 
         v-if="messageContent || messageValue.error || messageValue.isTyping"
         :class="[
@@ -132,6 +134,70 @@
       </div>
     </div>
   </div>
+  
+  <!-- 文件预览模态框 -->
+  <div v-if="showPreviewModal" class="fixed inset-0 flex items-center justify-center z-50" @click="closePreviewModal">
+    <div class="bg-white dark:bg-gray-800 dark:text-white rounded-xl shadow-2xl dark:shadow-2xl border-2 border-gray-200 dark:border-gray-600 p-6 w-full max-w-3xl mx-4 transform transition-all duration-300 scale-100" @click.stop>
+      <!-- 预览模态框标题 -->
+      <div class="mb-4 flex justify-between items-center">
+        <h3 class="text-lg font-semibold text-gray-800 dark:text-white">{{ previewFileData.name }}</h3>
+        <button 
+          class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
+          @click="closePreviewModal"
+        >
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      
+      <!-- 预览模态框内容 -->
+      <div class="mb-6 max-h-[70vh] overflow-y-auto">
+        <div v-if="previewLoading" class="flex justify-center items-center py-10">
+          <Loading type="spin" size="medium" color="var(--text-color-secondary, #9ca3af)" />
+        </div>
+        <div v-else-if="previewError" class="text-red-500 text-center py-10">
+          <i class="fa-solid fa-circle-exclamation text-4xl mb-2"></i>
+          <p>{{ previewError }}</p>
+        </div>
+        <!-- 文本内容预览 -->
+        <div v-else-if="previewFileContent" class="text-sm text-gray-800 dark:text-gray-300 whitespace-pre-wrap">
+          {{ previewFileContent }}
+        </div>
+        <!-- 图片预览 -->
+        <div v-else-if="previewImageUrl" class="flex justify-center items-center py-4">
+          <img :src="previewImageUrl" alt="预览图片" class="max-w-full max-h-[60vh] object-contain" />
+        </div>
+        <!-- PDF预览 -->
+        <div v-else-if="previewPdfUrl" class="flex flex-col items-center justify-center py-10">
+          <i class="fa-solid fa-file-pdf text-6xl text-red-500 mb-4"></i>
+          <h4 class="text-lg font-medium mb-2">{{ previewFileData.name }}</h4>
+          <p class="text-gray-500 mb-4">PDF文件预览</p>
+          <button 
+            class="px-4 py-2 bg-primary hover:bg-primary/90 text-white rounded-md transition-colors"
+            @click="downloadFile(previewFileData)"
+          >
+            <i class="fa-solid fa-download mr-1"></i>
+            下载PDF
+          </button>
+        </div>
+        <!-- 不支持的文件类型 -->
+        <div v-else class="text-gray-500 text-center py-10">
+          <i class="fa-solid fa-file-circle-question text-4xl mb-2"></i>
+          <p>不支持的文件类型或无法预览</p>
+        </div>
+      </div>
+      
+      <!-- 预览模态框按钮 -->
+      <div class="flex justify-end gap-3">
+        <button 
+          class="px-4 py-2 rounded-md border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 text-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
+          @click="downloadFile(previewFileData)"
+        >
+          <i class="fa-solid fa-download mr-1"></i>
+          下载
+        </button>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup>
@@ -148,6 +214,10 @@ const props = defineProps({
     type: [Object, Function], // 支持普通对象和ref包装的对象
     required: true,
     default: () => ({})
+  },
+  chatStyleDocument: {
+    type: Boolean,
+    default: false
   }
 })
 

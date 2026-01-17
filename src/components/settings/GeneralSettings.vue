@@ -86,7 +86,6 @@
             title="深色模式"
             description="启用后，界面将切换到深色主题，减轻夜间使用时的视觉疲劳"
             v-model="settingsStore.systemSettings.darkMode"
-            @change="toggleDarkMode"
           />
           <SettingItem
             type="button-group"
@@ -281,6 +280,15 @@ onMounted(async () => {
 watch(
   () => settingsStore.systemSettings.streamingEnabled,
   (newValue) => {
+    settingsStore.saveSettings();
+  }
+);
+
+// 监听darkMode变化，立即应用
+watch(
+  () => settingsStore.systemSettings.darkMode,
+  (newValue) => {
+    settingsStore.applyDarkMode();
     settingsStore.saveSettings();
   }
 );

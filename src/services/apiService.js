@@ -335,6 +335,29 @@ export const apiService = {
       // 使用合并后的单个端点，通过stream参数控制响应类型
       const endpoint = `/api/chats/${chatId}/messages`;
       
+      // 处理文件，转换为可序列化的格式
+      const processedFiles = await Promise.all(
+        files.map(async (file) => {
+          if (file instanceof File) {
+            // 将File对象转换为base64
+            const content = await new Promise((resolve) => {
+              const reader = new FileReader();
+              reader.onloadend = () => {
+                // 移除data URL前缀，只保留base64内容
+                const base64Content = reader.result.split(',')[1];
+                resolve(base64Content);
+              };
+              reader.readAsDataURL(file);
+            });
+            return {
+              name: file.name,
+              content: content
+            };
+          }
+          return file;
+        })
+      );
+      
       return await requestWithRetry({
         method: 'POST',
         url: endpoint,
@@ -343,7 +366,7 @@ export const apiService = {
           model,
           modelParams,
           ragConfig,
-          files,
+          files: processedFiles,
           stream, // 传递stream参数给后端
           deepThinking // 传递deepThinking参数给后端
         },
@@ -354,10 +377,33 @@ export const apiService = {
     sendStreamingMessage: async (chatId, message, files, options = {}, onMessage, onError, onComplete) => {
       const { model = 'GPT-4', modelParams = {}, ragConfig = {}, deepThinking = false } = options;
       
+      // 处理文件，转换为可序列化的格式
+      const processedFiles = await Promise.all(
+        files.map(async (file) => {
+          if (file instanceof File) {
+            // 将File对象转换为base64
+            const content = await new Promise((resolve) => {
+              const reader = new FileReader();
+              reader.onloadend = () => {
+                // 移除data URL前缀，只保留base64内容
+                const base64Content = reader.result.split(',')[1];
+                resolve(base64Content);
+              };
+              reader.readAsDataURL(file);
+            });
+            return {
+              name: file.name,
+              content: content
+            };
+          }
+          return file;
+        })
+      );
+      
       const url = `/api/chats/${chatId}/messages`;
       const data = {
         message,
-        files,
+        files: processedFiles,
         model,
         modelParams,
         ragConfig,

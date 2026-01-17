@@ -672,6 +672,88 @@ class ChatService(BaseService):
         }, 201
 
     @staticmethod
+    def process_uploaded_files(files):
+        """处理上传的文件，保存到临时目录并提取内容
+        
+        参数:
+            files: 文件列表
+        
+        返回:
+            提取的文件内容列表
+        """
+        extracted_contents = []
+        
+        if not files:
+            return extracted_contents
+        
+        try:
+            import os
+            import tempfile
+            import base64
+            import mimetypes
+            
+            # 创建临时目录
+            temp_dir = tempfile.mkdtemp()
+            
+            for file in files:
+                # 检查文件结构
+                if isinstance(file, dict) and 'name' in file and 'content' in file:
+                    # 这是一个base64编码的文件
+                    file_name = file['name']
+                    file_content_base64 = file['content']
+                    
+                    try:
+                        # 解码base64内容
+                        file_content = base64.b64decode(file_content_base64)
+                        
+                        # 保存到临时文件
+                        file_path = os.path.join(temp_dir, file_name)
+                        with open(file_path, 'wb') as f:
+                            f.write(file_content)
+                        
+                        # 简单的文件内容提取
+                        content = ""
+                        
+                        # 根据文件扩展名选择提取方式
+                        file_ext = os.path.splitext(file_name)[1].lower()
+                        
+                        # 只处理文本类文件
+                        if file_ext in ['.txt', '.md', '.json', '.csv', '.py', '.js', '.html', '.css', '.xml', '.yaml', '.yml']:
+                            with open(file_path, 'r', encoding='utf-8') as f:
+                                content = f.read()
+                        elif file_ext in ['.pdf']:
+                            # 简单处理PDF，只提取文本
+                            try:
+                                from PyPDF2 import PdfReader
+                                reader = PdfReader(file_path)
+                                for page in reader.pages:
+                                    content += page.extract_text() + '\n'
+                            except ImportError:
+                                content = f"[PDF文件内容，无法提取，请安装PyPDF2库]"
+                        elif file_ext in ['.doc', '.docx']:
+                            # 简单处理Word文档
+                            try:
+                                from docx import Document
+                                doc = Document(file_path)
+                                for para in doc.paragraphs:
+                                    content += para.text + '\n'
+                            except ImportError:
+                                content = f"[Word文件内容，无法提取，请安装python-docx库]"
+                        else:
+                            # 其他文件类型，只显示文件信息
+                            content = f"[无法提取该类型文件的内容：{file_name}]"
+                        
+                        if content:
+                            extracted_contents.append(f"文件 {file_name} 内容：\n{content}")
+                    except Exception as decode_error:
+                        BaseService.log_error(f"解码文件 {file_name} 失败: {str(decode_error)}")
+        except Exception as e:
+            # 记录错误但不中断流程
+            BaseService.log_error(f"处理上传文件失败: {str(e)}")
+        
+        return extracted_contents
+    
+    @staticmethod
     def send_message(chat_id, data):
         """发送消息（应用层）
         
@@ -686,6 +768,7 @@ class ChatService(BaseService):
         rag_enabled = data.get('ragConfig', {}).get('enabled', False)
         stream = data.get('stream', False)
         deep_thinking = data.get('deepThinking', False)
+        files = data.get('files', [])
         
         # 查找匹配ID的对话
         chat = ChatService.get_chat(chat_id)
@@ -725,19 +808,27 @@ class ChatService(BaseService):
         # 合并用户自定义参数
         model_params.update(user_model_params)
         
+        # 处理上传的文件
+        file_contents = ChatService.process_uploaded_files(files)
+        
+        # 合并文件内容到消息文本
+        full_message_text = message_text
+        if file_contents:
+            full_message_text += "\n\n" + "\n\n".join(file_contents)
+        
         # 调用RAG系统构造增强提示，仅根据enabled状态决定是否启用
-        enhanced_question = ChatService.get_rag_enhanced_prompt(message_text, {'enabled': rag_enabled}) if rag_enabled else message_text
+        enhanced_question = ChatService.get_rag_enhanced_prompt(full_message_text, {'enabled': rag_enabled}) if rag_enabled else full_message_text
         
         # 根据stream参数决定是返回普通响应还是流式响应
         if stream:
             # 流式响应处理
             return ChatService.handle_streaming_response(
-                chat, message_text, user_message, now,
+                chat, full_message_text, user_message, now,
                 enhanced_question, parsed_model_name, parsed_version_name, model_params, model_display_name, deep_thinking
             )
         else:
             # 普通响应处理
             return ChatService.handle_regular_response(
-                chat, message_text, user_message, now,
+                chat, full_message_text, user_message, now,
                 enhanced_question, parsed_model_name, parsed_version_name, model_params, model_display_name, deep_thinking
             )

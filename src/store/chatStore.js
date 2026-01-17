@@ -117,7 +117,6 @@ export const useChatStore = defineStore('chat', {
         this.chats.unshift(newChat); // 添加到开头，保持最新优先
         this.currentChatId = newChat.id;
         this.messageInput = '';
-        this.uploadedFiles = [];
 
         return newChat;
       } catch (error) {
@@ -151,7 +150,7 @@ export const useChatStore = defineStore('chat', {
 
     // 发送消息（使用API服务）
     async sendMessage(content, model, deepThinking = false, webSearchEnabled = false) {
-      if (!content.trim()) return;
+      if (!content.trim() && this.uploadedFiles.length === 0) return;
       if (!model) {
         this.setError('请先选择一个AI模型');
         return;

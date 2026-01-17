@@ -1,31 +1,37 @@
 <template>
   <div class="flex justify-end max-w-[85%]">
     <div class="relative group flex flex-col items-end">
-      <!-- 消息内容气泡 - 添加了禁止触发滚动条的样式 -->
-      <div :class="[
-        'bg-primary/20 text-gray-800 rounded-2xl rounded-tr-none px-5 py-3 shadow-lg overflow-hidden',
-        // 始终根据内容自动调整宽度，但不超过max-w-full
-        'w-fit',
-        // 最大宽度限制
-        'max-w-full'
-      ]">
-        <!-- 文字内容 -->
-        <div v-if="messageContent" class="markdown-content text-gray-800 dark:text-gray-100 leading-relaxed mb-3" v-html="formattedContent" :key="updateKey"></div>
-        
-        <!-- 文件列表 -->
-        <div v-if="messageValue.files && messageValue.files.length > 0" class="flex flex-wrap gap-2">
-          <div 
-            v-for="(file, index) in messageValue.files" 
-            :key="index"
-            class="flex items-center justify-between p-2 bg-white/80 dark:bg-dark-600 rounded-lg text-xs group transition-colors duration-300 ease-in-out max-w-[150px]"
-          >
-            <div class="flex items-center gap-1 truncate max-w-[80px]">
-              <i :class="['fa', getFileIcon(file.name), 'text-gray-500']"></i>
-              <span class="truncate">{{ file.name }}</span>
-            </div>
-            <span class="text-gray-400 text-[10px]">{{ formatFileSize(file.size) }}</span>
+      <!-- 文件列表 - 放在消息气泡上方 -->
+      <div v-if="messageValue.files && messageValue.files.length > 0" class="flex flex-wrap gap-2 mb-2">
+        <div 
+          v-for="(file, index) in messageValue.files" 
+          :key="index"
+          class="flex flex-col items-start p-2 bg-white/80 dark:bg-dark-600 rounded-lg text-xs group transition-colors duration-300 ease-in-out max-w-[150px] shadow-md"
+        >
+          <div class="flex items-center gap-1 w-full">
+            <i :class="['fa', getFileIcon(file.name), 'text-gray-500']"></i>
+            <span class="truncate font-medium text-gray-800 dark:text-white">{{ file.name }}</span>
+          </div>
+          <div class="flex items-center gap-2 mt-1 w-full text-gray-400 text-[10px]">
+            <span>{{ getFileExtension(file.name) }}</span>
+            <span>{{ formatFileSize(file.size) }}</span>
           </div>
         </div>
+      </div>
+      
+      <!-- 消息内容气泡 - 添加了禁止触发滚动条的样式 -->
+      <div 
+        v-if="messageContent || messageValue.error || messageValue.isTyping"
+        :class="[
+          'bg-primary/20 text-gray-800 rounded-2xl rounded-tr-none px-5 py-3 shadow-lg overflow-hidden',
+          // 始终根据内容自动调整宽度，但不超过max-w-full
+          'w-fit',
+          // 最大宽度限制
+          'max-w-full'
+        ]"
+      >
+        <!-- 文字内容 -->
+        <div v-if="messageContent" class="markdown-content text-gray-800 dark:text-gray-100 leading-relaxed" v-html="formattedContent" :key="updateKey"></div>
         
         <!-- 错误状态显示 -->
         <div v-if="messageValue.error" class="chat-error mt-2">
@@ -189,6 +195,12 @@ const getFileIcon = (fileName) => {
   };
   
   return iconMap[extension] || 'fa-file';
+};
+
+// 获取文件扩展名
+const getFileExtension = (fileName) => {
+  const extension = fileName.split('.').pop().toLowerCase();
+  return `.${extension}`;
 };
 
 // 格式化文件大小

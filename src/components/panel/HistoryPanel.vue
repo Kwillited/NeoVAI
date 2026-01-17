@@ -378,6 +378,9 @@ const handleDeleteAllConfirm = async () => {
     await chatStore.clearAllChats();
     showNotification('所有对话已删除', 'success');
     showDeleteAllModal.value = false;
+    
+    // 删除所有对话后切换到sendMessage内容
+    settingsStore.setActiveContent('sendMessage');
   } catch (error) {
     showNotification('删除失败: ' + error.message, 'error');
   } finally {

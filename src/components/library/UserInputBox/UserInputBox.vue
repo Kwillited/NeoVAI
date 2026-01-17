@@ -3,7 +3,7 @@
   <!-- 聊天输入区域 - 在切换到图谱视图时添加顶部padding -->
   <div id="UserInputBox" class="border-t-0 pb-4 px-6 transition-colors duration-300 ease-in-out" :class="{ 'pt-4': activeView !== 'grid' }">
     <div class="relative w-full max-w-4xl mx-auto">
-      <div class="bg-white dark:bg-dark-700 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md focus-within:shadow-md transition-all duration-300 ease-in-out relative" ref="dragDropArea" @dragover.prevent="isDragOver = true" @dragleave="isDragOver = false" @drop.prevent="handleDrop">
+      <div class="bg-white dark:bg-dark-700 rounded-3xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md focus-within:shadow-md transition-all duration-300 ease-in-out relative" ref="dragDropArea" @dragover.prevent="handleDragOver" @dragenter.prevent="handleDragEnter" @dragleave="handleDragLeave" @drop.prevent="handleDrop">
         <!-- 智能体选择和MCP工具 - 合并到卡片内部 -->
         <div class="px-3 py-1.5 border-b border-gray-200 flex items-center gap-2">
           <div class="flex items-center gap-2">
@@ -281,7 +281,7 @@
         <!-- 拖拽提示区域 - 移动到外层，覆盖整个卡片容器 -->
         <div
           v-if="isDragOver"
-          class="absolute inset-0 flex flex-col items-center justify-center bg-primary/5 border-2 border-dashed border-primary/30 rounded-xl opacity-100 pointer-events-none transition-all duration-300 z-20"
+          class="absolute inset-0 flex flex-col items-center justify-center bg-primary/5 border-2 border-dashed border-primary/30 rounded-3xl opacity-100 pointer-events-none transition-all duration-300 z-20"
         >
           <i class="fa-solid fa-cloud-arrow-up text-primary text-4xl mb-2"></i>
           <span class="text-primary font-medium">释放文件以上传</span>
@@ -411,7 +411,7 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
 import { StorageManager, formatFileSize } from '../../../store/utils.js';
-import Tooltip from '../../common/Tooltip.vue';
+import { Tooltip } from '../index.js';
 import { showNotification } from '../../../services/notificationUtils.js';
 
 // 接收从父组件传递的视图状态
@@ -448,6 +448,8 @@ const agentDropdown = ref(null);
 
 // 本地UI状态
 const isDragOver = ref(false);
+// 用于解决拖拽闪烁问题的计数器
+const dragCounter = ref(0);
 const showModelDropdown = ref(false);
 const showAgentDropdown = ref(false);
 const showParamsPanel = ref(false);
@@ -824,17 +826,25 @@ const showTooltip = (tooltipId, event) => {
   
   // 计算弹窗位置
   if (event) {
-    const rect = event.target.getBoundingClientRect();
-    // 获取触发元素的中心点垂直位置
-    const triggerCenterY = rect.top + rect.height / 2;
+    const trigger = event.target;
+    const tooltip = trigger.nextElementSibling;
     
-    tooltipStyle.value = {
-      // 让tooltip顶部对齐触发元素中心点，实现垂直居中
-      top: `${triggerCenterY}px`,
-      left: `${rect.left}px`,
-      // 添加transform使tooltip自身垂直居中
-      transform: 'translateY(-50%)'
-    };
+    if (tooltip) {
+      // 获取触发元素和视口的相对位置
+      const triggerRect = trigger.getBoundingClientRect();
+      const tooltipRect = tooltip.getBoundingClientRect();
+      
+      // 计算提示框应该显示的位置
+      // 水平方向：显示在触发元素右侧，留出5px间距
+      // 垂直方向：与触发元素顶部对齐
+      tooltipStyle.value = {
+        // 提示框定位到按钮右侧，垂直居中对齐
+        top: `-${(tooltipRect.height - triggerRect.height) / 2}px`,
+        left: `${triggerRect.width + 5}px`,
+        // 移除可能导致定位问题的transform
+        transform: 'none'
+      };
+    }
   }
 };
 
@@ -903,9 +913,34 @@ onUnmounted(() => {
 
 // 处理文件拖放
 const handleDrop = (e) => {
+  dragCounter.value = 0;
   isDragOver.value = false;
   if (e.dataTransfer.files.length > 0) {
     handleFileUpload(e.dataTransfer.files);
+  }
+};
+
+// 改进的拖拽事件处理，解决闪烁问题
+const handleDragOver = (e) => {
+  e.preventDefault();
+  // 确保当鼠标在容器上移动时，isDragOver始终为true
+  if (dragCounter.value === 0) {
+    isDragOver.value = true;
+  }
+};
+
+const handleDragEnter = (e) => {
+  e.preventDefault();
+  dragCounter.value++;
+  if (dragCounter.value === 1) {
+    isDragOver.value = true;
+  }
+};
+
+const handleDragLeave = (e) => {
+  dragCounter.value--;
+  if (dragCounter.value === 0) {
+    isDragOver.value = false;
   }
 };
 

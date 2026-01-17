@@ -100,7 +100,7 @@ import { useSettingsStore } from '../../store/settingsStore.js';
 import { useChatStore } from '../../store/chatStore.js';
 import { Window } from '@tauri-apps/api/window';
 import CommandLine from '../../components/common/CommandLine.vue';
-import Tooltip from '../../components/common/Tooltip.vue';
+import { Tooltip } from '../library/index.js';
 import Button from '../../components/common/Button.vue';
 
 // 使用全局store管理视图状态

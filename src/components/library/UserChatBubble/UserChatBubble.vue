@@ -71,7 +71,7 @@
 
 <script setup>
 import { computed } from 'vue'
-import Tooltip from '../../common/Tooltip.vue'
+import { Tooltip } from '../index.js'
 import Loading from '../../common/Loading.vue'
 // 导入集中化的markdown插件
 import { marked } from '../../../plugins/markdown.js'

@@ -136,6 +136,7 @@ def load_chats_from_db():
         from app.repositories.chat_repository import ChatRepository
         from app.repositories.message_repository import MessageRepository
         from app.core.database import get_db
+        from app.utils.data_utils import build_message_list, build_chat_dict
         
         # 获取数据库会话
         db_session = next(get_db())
@@ -152,29 +153,14 @@ def load_chats_from_db():
             # 获取对话的所有消息
             messages = message_repo.get_messages_by_chat_id(chat.id)
             
-            # 构建消息列表
-            message_list = []
-            for msg in messages:
-                message_list.append({
-                    'id': msg.id,
-                    'role': msg.role,
-                    'content': msg.actual_content,
-                    'thinking': msg.thinking,
-                    'createdAt': msg.created_at,
-                    'model': msg.model,
-                    'files': json.loads(msg.files) if msg.files else []
-                })
+            # 使用公共函数构建消息列表
+            formatted_messages = build_message_list(messages)
+            
+            # 使用公共函数构建对话字典
+            chat_dict = build_chat_dict(chat, formatted_messages)
             
             # 添加对话到内存数据库
-            db['chats'].append({
-                'id': chat.id,
-                'title': chat.title,
-                'preview': chat.preview,
-                'createdAt': chat.created_at,
-                'updatedAt': chat.updated_at,
-                'pinned': chat.pinned,
-                'messages': message_list
-            })
+            db['chats'].append(chat_dict)
         
         from app.core.logging_config import logger
         logger.info(f"从SQLite数据库加载了 {len(db['chats'])} 个对话")
@@ -580,7 +566,7 @@ def save_chats_to_db(conn=None):
             pinned = chat.get('pinned', 0)
             
             # 创建或更新对话
-            chat_repo.create_or_update_chat(chat_id, title, preview, created_at, updated_at, pinned)
+            chat_repo.update_chat(chat_id, title, preview, updated_at, pinned)
             
             # 获取SQLite中该对话的所有消息ID
             sqlite_messages = message_repo.get_messages_by_chat_id(chat_id)
@@ -598,11 +584,7 @@ def save_chats_to_db(conn=None):
                     message_repo.delete_message(msg_id)
             
             # 保存对话中的消息
-            messages = chat.get('messages', [])
-            from app.core.logging_config import logger
-            logger.info(f"保存对话 {chat_id} 的 {len(messages)} 条消息")
-            
-            for msg in messages:
+            for msg in chat.get('messages', []):
                 msg_id = msg['id']
                 role = msg['role']
                 content = msg['content']
@@ -619,7 +601,6 @@ def save_chats_to_db(conn=None):
                 message_repo.create_or_update_message(
                     msg_id, chat_id, role, content, thinking, msg_created_at, model, files_json
                 )
-                logger.debug(f"已保存消息 {msg_id} (角色: {role}, 内容: {content[:20]}{'...' if len(content) > 20 else ''})")
         
         from app.core.logging_config import logger
         logger.info("对话数据已保存到SQLite数据库")

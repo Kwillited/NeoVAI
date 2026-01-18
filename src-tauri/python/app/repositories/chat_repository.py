@@ -36,28 +36,6 @@ class ChatRepository(BaseRepository):
             return self.update(chat)
         return None
     
-    def create_or_update_chat(self, chat_id, title, preview, created_at, updated_at, pinned=0):
-        """创建或更新对话"""
-        chat = self.get_chat_by_id(chat_id)
-        if chat:
-            # 更新现有对话
-            chat.title = title
-            chat.preview = preview
-            chat.updated_at = updated_at
-            chat.pinned = pinned
-            return self.update(chat)
-        else:
-            # 创建新对话
-            chat = Chat(
-                id=chat_id,
-                title=title,
-                preview=preview,
-                created_at=created_at,
-                updated_at=updated_at,
-                pinned=pinned
-            )
-            return self.add(chat)
-    
     def delete_chat(self, chat_id):
         """删除对话"""
         chat = self.get_chat_by_id(chat_id)

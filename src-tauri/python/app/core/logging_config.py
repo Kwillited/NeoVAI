@@ -50,16 +50,10 @@ def update_log_config(config_manager):
     """根据配置更新日志设置"""
     global LOG_LEVEL, LOG_DIR, LOG_FILE
     
-    # 创建日志格式（确保formatter变量在函数内部可用）
-    formatter = logging.Formatter(
-        '%(asctime)s - %(name)s - %(levelname)s - %(filename)s:%(lineno)d - %(message)s'
-    )
-    
     # 更新日志级别
     LOG_LEVEL = logging.INFO
     if config_manager.get('app.debug', True):
         LOG_LEVEL = logging.DEBUG
-        logger.info("调试模式已启用，日志级别设置为DEBUG")
     
     # 更新日志目录
     LOG_DIR = os.path.join(config_manager.get_user_data_dir(), 'logs')
@@ -74,7 +68,6 @@ def update_log_config(config_manager):
     # 更新处理器
     for handler in logger.handlers:
         handler.setLevel(LOG_LEVEL)
-        handler.setFormatter(formatter)
         # 如果是文件处理器，更新文件路径
         if isinstance(handler, RotatingFileHandler):
             # 关闭旧的处理器

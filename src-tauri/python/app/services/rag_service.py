@@ -45,6 +45,17 @@ class RAGService(BaseService):
             self.log_error(f"获取向量存储服务实例失败: {str(e)}")
             return None
     
+    def _get_folder_name_by_id(self, folder_id):
+        """根据folder_id查找对应的文件夹名称"""
+        if not folder_id:
+            return ''
+        
+        folders = self.get_folders()
+        for folder in folders:
+            if folder.get('id') == folder_id:
+                return folder['name']
+        return ''
+    
     def upload_document(self, file, folder_id=''):
         """上传文档到RAG系统并进行向量化处理"""
         # 检查文件名是否为空
@@ -61,14 +72,7 @@ class RAGService(BaseService):
         filename = secure_filename(file.filename)
         
         # 确定保存路径
-        folder_name = ''
-        if folder_id:
-            # 如果提供了folder_id，查找对应的文件夹
-            folders = self.get_folders()
-            for folder in folders:
-                if folder.get('id') == folder_id:
-                    folder_name = folder['name']
-                    break
+        folder_name = self._get_folder_name_by_id(folder_id)
         
         # 构建完整文件路径
         file_path = self._get_file_save_path(filename, folder_name)
@@ -406,13 +410,8 @@ class RAGService(BaseService):
     
     def get_files_in_folder_by_id(self, folder_id):
         """通过folder_id获取指定文件夹中的文件"""
-        # 重用get_folders方法查找文件夹
-        folders = self.get_folders()
-        target_folder_name = None
-        for folder in folders:
-            if folder.get('id') == folder_id:
-                target_folder_name = folder['name']
-                break
+        # 使用公共方法查找文件夹名称
+        target_folder_name = self._get_folder_name_by_id(folder_id)
         
         # 如果没有找到匹配的文件夹，抛出ValueError
         if not target_folder_name:

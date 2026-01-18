@@ -342,20 +342,28 @@ class ChatService(BaseService):
 
 
 
-    def create_ai_message(self, now, content, model_display_name):
+    def create_ai_message(self, now, content, model_display_name, files=None):
         """创建标准格式的AI回复消息"""
-        return {
-            'id': str(uuid.uuid4()),
+        from app.core.logging_config import logger
+        ai_message_id = str(uuid.uuid4())
+        ai_message = {
+            'id': ai_message_id,
             'role': 'assistant',
             'content': content,  # 保留原始content字段以兼容旧版前端
             'createdAt': now,
-            'model': model_display_name
+            'model': model_display_name,
+            'files': files or []  # 添加files字段，默认空列表
         }
+        logger.debug(f"创建AI消息: id={ai_message_id}, model={model_display_name}, content_length={len(content)}")
+        return ai_message
 
     def update_chat_and_save(self, chat, message_text, user_message, ai_message, now):
         """更新对话并保存"""
-        # 添加AI回复到对话（内存）
-        chat['messages'].append(ai_message)
+        from app.core.logging_config import logger
+        chat_id = chat['id']
+        user_msg_id = user_message['id']
+        
+        logger.debug(f"开始保存对话: chat_id={chat_id}, user_msg_id={user_msg_id}")
         
         # 更新对话的更新时间
         chat['updatedAt'] = now
@@ -363,6 +371,7 @@ class ChatService(BaseService):
         # 更新对话预览（使用消息的前50个字符）
         preview_text = message_text[:50] + (message_text[50:] and '...')
         chat['preview'] = preview_text
+        logger.debug(f"更新对话预览: chat_id={chat_id}, preview={preview_text}")
         
         # 自动更新对话标题（如果是首次消息且标题还是默认的"新对话"）
         new_title = chat['title']
@@ -370,52 +379,96 @@ class ChatService(BaseService):
             # 使用用户的第一条消息作为标题（截取前30个字符）
             new_title = message_text[:30] + (message_text[30:] and '...')
             chat['title'] = new_title
+            logger.debug(f"自动更新对话标题: chat_id={chat_id}, old_title={chat['title']}, new_title={new_title}")
         
         try:
+            # 开始事务
+            from app.core.database import get_db
+            db_session = next(get_db())
+            logger.debug(f"开始事务: chat_id={chat_id}")
+            
             # 先设置脏标记，确保数据会被保存
             DataService.set_dirty_flag('chats', True)
+            logger.debug(f"设置脏标记: chats=True")
             
-            # 保存用户消息到数据库
-            self.message_repo.create_message(
-                message_id=user_message['id'],
-                chat_id=chat['id'],
-                role=user_message['role'],
-                actual_content=user_message['content'],
-                thinking=None,
-                created_at=user_message['createdAt'],
-                model=user_message.get('model'),
-                files=json.dumps(user_message.get('files', []))
-            )
+            # 检查用户消息是否已经存在于数据库中，避免重复保存
+            existing_user_message = self.message_repo.get_message_by_id(user_message['id'])
+            if not existing_user_message:
+                # 保存用户消息到数据库
+                logger.debug(f"保存用户消息: chat_id={chat_id}, user_msg_id={user_msg_id}")
+                self.message_repo.create_message(
+                    message_id=user_message['id'],
+                    chat_id=chat['id'],
+                    role=user_message['role'],
+                    actual_content=user_message['content'],
+                    thinking=None,
+                    created_at=user_message['createdAt'],
+                    model=user_message.get('model'),
+                    files=json.dumps(user_message.get('files', []))
+                )
+                logger.info(f"用户消息保存成功: chat_id={chat_id}, user_msg_id={user_msg_id}")
+            else:
+                logger.debug(f"用户消息已存在，跳过保存: chat_id={chat_id}, user_msg_id={user_msg_id}")
             
-            # 保存AI消息到数据库
-            self.message_repo.create_message(
-                message_id=ai_message['id'],
-                chat_id=chat['id'],
-                role=ai_message['role'],
-                actual_content=ai_message['content'],
-                thinking=ai_message.get('thinking'),
-                created_at=ai_message['createdAt'],
-                model=ai_message.get('model'),
-                files=json.dumps(ai_message.get('files', []))
-            )
+            # 保存AI消息到数据库（如果存在）
+            if ai_message:
+                ai_msg_id = ai_message['id']
+                # 添加AI回复到对话（内存）
+                chat['messages'].append(ai_message)
+                logger.info(f"添加AI消息到内存: chat_id={chat_id}, ai_msg_id={ai_msg_id}")
+                
+                # 检查AI消息是否已经存在于数据库中，避免重复保存
+                existing_ai_message = self.message_repo.get_message_by_id(ai_msg_id)
+                if not existing_ai_message:
+                    logger.info(f"开始保存AI消息: chat_id={chat_id}, ai_msg_id={ai_msg_id}")
+                    try:
+                        self.message_repo.create_message(
+                            message_id=ai_msg_id,
+                            chat_id=chat['id'],
+                            role=ai_message['role'],
+                            actual_content=ai_message['content'],
+                            thinking=ai_message.get('thinking'),
+                            created_at=ai_message['createdAt'],
+                            model=ai_message.get('model'),
+                            files=json.dumps(ai_message.get('files', []))
+                        )
+                        logger.info(f"✅ AI消息保存成功: chat_id={chat_id}, ai_msg_id={ai_msg_id}")
+                    except Exception as e:
+                        logger.error(f"❌ AI消息保存失败: chat_id={chat_id}, ai_msg_id={ai_msg_id}, error={str(e)}")
+                else:
+                    logger.info(f"⚠️ AI消息已存在，跳过保存: chat_id={chat_id}, ai_msg_id={ai_msg_id}")
             
             # 更新对话信息
+            logger.debug(f"更新对话信息: chat_id={chat_id}, title={new_title}")
             self.chat_repo.update_chat(
                 chat_id=chat['id'],
                 title=new_title,
                 preview=preview_text,
-                updated_at=now
+                updated_at=now,
+                pinned=chat.get('pinned', 0)
             )
             
+            # 提交事务
+            db_session.commit()
+            logger.debug(f"事务提交成功: chat_id={chat_id}")
+            
             # 添加直接保存成功日志
-            from app.core.logging_config import logger
-            logger.info(f"Direct save succeeded: chat_id={chat['id']}, user_msg_id={user_message['id']}, ai_msg_id={ai_message['id']}")
+            if ai_message:
+                logger.info(f"Direct save succeeded: chat_id={chat_id}, user_msg_id={user_msg_id}, ai_msg_id={ai_message['id']}")
+            else:
+                logger.info(f"Direct save succeeded: chat_id={chat_id}, user_msg_id={user_msg_id}")
         except Exception as e:
+            # 回滚事务
+            logger.error(f"保存对话失败，开始回滚: chat_id={chat_id}, error={str(e)}")
+            from app.core.database import get_db
+            db_session = next(get_db())
+            db_session.rollback()
+            logger.debug(f"事务回滚成功: chat_id={chat_id}")
+            
             # 使用BaseService的日志方法
             BaseService.log_error(f"Failed to update chat: {str(e)}")
             # 脏标记已经设置，自动保存机制会处理剩余工作
-            from app.core.logging_config import logger
-            logger.info(f"Direct save failed, relying on auto-save: chat_id={chat['id']}, error={str(e)}")
+            logger.info(f"Direct save failed, relying on auto-save: chat_id={chat_id}, error={str(e)}")
 
     def _prepare_messages_for_model(self, chat_id, enhanced_question, deep_thinking=False):
         """
@@ -488,10 +541,6 @@ class ChatService(BaseService):
             response_data = {'error': str(e)}
             yield f'data: {json.dumps(response_data, ensure_ascii=False)}\n\n'
 
-    def _prepare_streaming_messages(self, chat_id, enhanced_question, deep_thinking):
-        """准备流式消息格式"""
-        return self._prepare_messages_for_model(chat_id, enhanced_question, deep_thinking)
-    
     def _process_streaming_chunk(self, chunk, full_reply):
         """处理单个流式响应块"""
         # 检查是否是错误消息格式
@@ -511,6 +560,9 @@ class ChatService(BaseService):
                     return chunk, full_reply  # 直接传递格式化的chunk
                 elif 'error' in chunk_data:
                     return chunk, full_reply  # 直接传递错误信息
+                else:
+                    # 如果chunk_data中既没有chunk也没有error，直接返回原chunk
+                    return chunk, full_reply
             else:
                 # 假设chunk是直接的内容块
                 full_reply += chunk
@@ -531,18 +583,24 @@ class ChatService(BaseService):
             formatted_chunk = f'data: {json.dumps(response_data, ensure_ascii=False)}\n\n'
             return formatted_chunk, full_reply
     
-    def _process_full_reply(self, full_reply, now, model_display_name):
-        """处理完整回复，分离思考内容和实际内容"""
+    def _process_think_tags(self, content):
+        """处理内容中的Think标签，提取思考内容并移除标签"""
         import re
         think_pattern = re.compile(r'\s*<think>([\s\S]*?)</think>\s*', re.IGNORECASE)
-        match = think_pattern.match(full_reply)
+        match = think_pattern.match(content)
         
         thinking_content = None
-        actual_content = full_reply
+        actual_content = content
         
         if match:
             thinking_content = match.group(1)
-            actual_content = think_pattern.sub('', full_reply).strip()
+            actual_content = think_pattern.sub('', content).strip()
+        
+        return thinking_content, actual_content
+    
+    def _process_full_reply(self, full_reply, now, model_display_name):
+        """处理完整回复，分离思考内容和实际内容"""
+        thinking_content, actual_content = self._process_think_tags(full_reply)
         
         # 创建AI回复，确保包含完整的模型和版本信息
         ai_message = self.create_ai_message(now, actual_content, model_display_name)
@@ -557,7 +615,7 @@ class ChatService(BaseService):
         def generate():
             try:
                 # 准备消息格式
-                messages = self._prepare_streaming_messages(chat['id'], enhanced_question, deep_thinking)
+                messages = self._prepare_messages_for_model(chat['id'], enhanced_question, deep_thinking)
                 
                 # 获取temperature参数
                 temperature = model_params.get('temperature', 0.7)
@@ -623,16 +681,7 @@ class ChatService(BaseService):
             return {'error': f'调用模型失败: {str(e)}'}, 500
         
         # 处理think标签，分离思考内容和实际内容
-        import re
-        think_pattern = re.compile(r'\s*<think>([\s\S]*?)</think>\s*', re.IGNORECASE)
-        match = think_pattern.match(ai_reply)
-        
-        thinking_content = None
-        actual_content = ai_reply
-        
-        if match:
-            thinking_content = match.group(1)
-            actual_content = think_pattern.sub('', ai_reply).strip()
+        thinking_content, actual_content = self._process_think_tags(ai_reply)
         
         # 创建AI回复，确保包含完整的模型和版本信息
         ai_message = self.create_ai_message(now, actual_content, model_display_name)
@@ -869,6 +918,9 @@ class ChatService(BaseService):
         
         # 调用RAG系统构造增强提示，仅根据enabled状态决定是否启用
         enhanced_question = self.get_rag_enhanced_prompt(full_message_text, {'enabled': rag_enabled}) if rag_enabled else full_message_text
+        
+        # 保存用户消息到数据库，即使模型调用失败也要保存
+        self.update_chat_and_save(chat, full_message_text, user_message, None, now)
         
         # 根据stream参数决定是返回普通响应还是流式响应
         if stream:

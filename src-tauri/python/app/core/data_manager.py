@@ -598,7 +598,11 @@ def save_chats_to_db(conn=None):
                     message_repo.delete_message(msg_id)
             
             # 保存对话中的消息
-            for msg in chat.get('messages', []):
+            messages = chat.get('messages', [])
+            from app.core.logging_config import logger
+            logger.info(f"保存对话 {chat_id} 的 {len(messages)} 条消息")
+            
+            for msg in messages:
                 msg_id = msg['id']
                 role = msg['role']
                 content = msg['content']
@@ -615,6 +619,7 @@ def save_chats_to_db(conn=None):
                 message_repo.create_or_update_message(
                     msg_id, chat_id, role, content, thinking, msg_created_at, model, files_json
                 )
+                logger.debug(f"已保存消息 {msg_id} (角色: {role}, 内容: {content[:20]}{'...' if len(content) > 20 else ''})")
         
         from app.core.logging_config import logger
         logger.info("对话数据已保存到SQLite数据库")
